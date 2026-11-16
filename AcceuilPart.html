@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plateforme de Gestion - Laboratoire</title>
+
+  <!-- Inclusion de Tailwind CSS v4 via CDN -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+  <!-- Styles CSS personnalisés (basés sur index.css) -->
+  <style>
+    @font-face {
+      font-family: "Font Awesome 5 Brands:Regular";
+      src: url("https://static.figma.com/font/Font%20Awesome%205%20Brands-Regular-400_1") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: "Font Awesome 5 Free:Solid";
+      src: url("https://static.figma.com/font/Font%20Awesome%205%20Free-Solid-900_1") format("woff2");
+      font-style: normal;
+      font-weight: 900;
+    }
+    @font-face {
+      font-family: "Roboto:Bold";
+      src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: "Roboto:Regular";
+      src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    :root {
+      color: #1d284f;
+      background: #1d284f;
+      font-family: "Roboto:Regular", Arial, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      min-width: 320px;
+      min-height: 100dvh;
+      margin: 0;
+    }
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    /* --- STRUCTURE GLOBALE --- */
+    .site-shell {
+      min-height: 100dvh;
+      width: 100%;
+      overflow-x: hidden;
+      background: #1d284f;
+    }
+
+    /* --- BARRE DE NAVIGATION (TOPBAR) --- */
+    .topbar {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      height: 60px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: #1d284f;
+      padding: 0 16px;
+    }
+
+    .logo-wrap {
+      display: grid;
+      width: 153px;
+      height: 45px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 15px;
+      background: white;
+    }
+    .logo-wrap img {
+      width: 147px;
+      height: 42px;
+      object-fit: cover;
+    }
+
+    .main-nav {
+      position: absolute;
+      left: 50%;
+      display: flex;
+      width: 508px;
+      transform: translateX(-50%);
+      align-items: center;
+      justify-content: center;
+      gap: 45px;
+    }
+    .main-nav a {
+      padding-bottom: 4px;
+      color: white;
+      font-family: "Roboto:Bold", Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .main-nav a.active {
+      border-bottom: 2px solid #c94a29;
+    }
+    .main-nav a:hover {
+      color: #f4b4a2;
+    }
+
+    /* --- ACTIONS DE COMPTE ET LANGUE --- */
+    .account-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .notification {
+      color: white;
+      font-size: 18px;
+    }
+    .fa {
+      font-family: "Font Awesome 5 Free:Solid";
+      font-style: normal;
+      font-weight: 900;
+    }
+    .fab {
+      font-family: "Font Awesome 5 Brands:Regular";
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 10px;
+      color: white;
+      font-size: 12px;
+    }
+    .profile .fa {
+      color: #c94a29;
+      font-size: 12px;
+    }
+
+    .language {
+      position: relative;
+    }
+    .language > button {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: white;
+      font-size: 11px;
+      background: transparent;
+      border: none;
+    }
+    .language > button img {
+      width: 28px;
+      height: 28px;
+      object-fit: cover;
+    }
+    .language-menu {
+      position: absolute;
+      top: 36px;
+      right: 0;
+      width: 112px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      display: none;
+    }
+    .language-menu.open {
+      display: block;
+    }
+    .language-menu button {
+      display: block;
+      width: 100%;
+      padding: 9px 12px;
+      text-align: left;
+      font-size: 12px;
+      background: none;
+      border: none;
+    }
+    .language-menu button:hover,
+    .language-menu button.selected {
+      background: #f8e7e2;
+      color: #9e3318;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    /* --- SECTION HERO --- */
+    .hero {
+      position: relative;
+      display: flex;
+      height: 180px;
+      align-items: center;
+      padding: 0 48px;
+      overflow: hidden;
+    }
+    .hero > img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 47%;
+    }
+    .hero-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(15, 22, 46, 0.85), rgba(29, 40, 79, 0.4));
+    }
+    .hero-title {
+      position: relative;
+      border-left: 4px solid #c94a29;
+      border-radius: 8px;
+      background: rgba(15, 22, 46, 0.75);
+      padding: 16px 28px;
+      backdrop-filter: blur(2px);
+    }
+    .hero-title h1 {
+      color: white;
+      font-family: "Roboto:Bold";
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .hero-title p {
+      margin-top: 5px;
+      color: #9ba8bd;
+      font-size: 13px;
+    }
+
+    /* --- SECTIONS DE CONTENU --- */
+    .content-section {
+      padding: 28px 48px 40px;
+    }
+    .info-section {
+      background: white;
+    }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .section-heading h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Roboto:Bold";
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .section-heading h2 .fa {
+      color: #c94a29;
+    }
+    .section-heading > p {
+      color: #64748b;
+      font-size: 12px;
+    }
+    .section-heading.light {
+      color: white;
+    }
+    .section-heading.light > p {
+      color: white;
+      opacity: 0.9;
+      font-size: 13px;
+    }
+
+    /* --- CARTES & GRILLES --- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .info-card {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+    .info-card > img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+    }
+    .info-card > div {
+      padding: 14px;
+    }
+    .info-card h3, .experiment-card h3 {
+      color: #1d284f;
+      font-family: "Roboto:Bold";
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .info-card p {
+      min-height: 45px;
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 16.8px;
+    }
+    .info-card button {
+      margin-top: 2px;
+      color: #c94a29;
+      font-family: "Roboto:Bold";
+      font-size: 11px;
+      font-weight: 700;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    /* --- SECTION EXPÉRIMENTATIONS --- */
+    .experiments-section {
+      background: #c94a29;
+      padding-top: 32px;
+      padding-bottom: 32px;
+    }
+    .experiment-card {
+      overflow: hidden;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .experiment-card > img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+    .experiment-body {
+      display: flex;
+      min-height: 166px;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+    .experiment-card h3 {
+      font-size: 15px;
+    }
+    .experiment-card p {
+      min-height: 48px;
+      margin-top: 6px;
+      color: #4b5563;
+      font-size: 12px;
+      line-height: 16.8px;
+    }
+    .reward {
+      margin-bottom: 12px;
+      border-radius: 4px;
+      background: #fef3c7;
+      padding: 4px 8px;
+      color: #92400e;
+      font-family: "Roboto:Bold";
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .experiment-card button {
+      margin-top: auto;
+      border-radius: 6px;
+      background: #1d284f;
+      padding: 8px 16px;
+      color: white;
+      font-family: "Roboto:Bold";
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .experiment-card button:hover {
+      background: #111a38;
+      transform: translateY(-1px);
+    }
+
+    /* --- SECTION INSCRIPTIONS & TABLEAU --- */
+    .registrations-section {
+      background: #1d284f;
+      padding-top: 32px;
+      padding-bottom: 32px;
+    }
+    .registrations-heading button {
+      color: #9ba8bd;
+      font-size: 11.8px;
+      text-decoration: underline;
+      background: none;
+      border: none;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      color: white;
+      font-size: 13px;
+    }
+    thead th {
+      padding: 8px 12px;
+      color: #9ba8bd;
+      font-family: "Roboto:Bold";
+      font-size: 12px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    tbody th, tbody td {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    tbody th {
+      border-radius: 6px 0 0 6px;
+      font-family: "Roboto:Bold";
+    }
+    tbody td:last-child {
+      border-radius: 0 6px 6px 0;
+    }
+    .status {
+      color: #9ba8bd;
+    }
+    .status.confirmed, .received {
+      color: #81c784;
+    }
+    .status.confirmed {
+      font-family: "Roboto:Bold";
+    }
+
+    /* --- PIED DE PAGE --- */
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f162e;
+      padding: 24px 48px;
+    }
+    .university {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #9ba8bd;
+      font-size: 12px;
+    }
+    .university > .fa {
+      color: #c94a29;
+      font-size: 20px;
+    }
+    .university strong {
+      font-family: "Roboto:Bold";
+    }
+    .socials {
+      display: flex;
+      gap: 16px;
+      color: white;
+      font-size: 16px;
+    }
+    .socials a:hover {
+      color: #f08061;
+    }
+
+    /* --- NOTIFICATION TOAST --- */
+    .toast {
+      position: fixed;
+      z-index: 40;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      max-width: min(390px, calc(100vw - 32px));
+      align-items: center;
+      gap: 18px;
+      border-left: 4px solid #c94a29;
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px 16px;
+      color: #1d284f;
+      font-size: 13px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+    .toast button {
+      margin-left: auto;
+      color: #64748b;
+      font-size: 22px;
+      line-height: 1;
+      background: none;
+      border: none;
+    }
+
+    /* --- MEDIA QUERIES (Responsive) --- */
+    @media (max-width: 960px) {
+      .main-nav {
+        gap: 22px;
+        width: auto;
+      }
+      .language > button span, .profile span {
+        display: none;
+      }
+      .account-actions {
+        gap: 14px;
+      }
+      .content-section, footer, .hero {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+      .card-grid {
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        height: 64px;
+      }
+      .logo-wrap {
+        width: 130px;
+        height: 42px;
+      }
+      .logo-wrap img {
+        width: 126px;
+        height: 37px;
+      }
+      .mobile-menu {
+        display: flex;
+        margin-left: auto;
+        width: 36px;
+        height: 36px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+      }
+      .mobile-menu span {
+        width: 17px;
+        height: 2px;
+        background: white;
+      }
+      .main-nav {
+        top: 64px;
+        left: 0;
+        right: 0;
+        display: none;
+        width: auto;
+        transform: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: #182244;
+        padding: 10px 18px 16px;
+        box-shadow: 0 12px 18px rgba(0, 0, 0, 0.18);
+      }
+      .main-nav.is-open {
+        display: flex;
+      }
+      .main-nav a {
+        padding: 11px 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .main-nav a.active {
+        border-bottom-color: #c94a29;
+      }
+      .account-actions {
+        margin-left: 12px;
+        gap: 12px;
+      }
+      .profile {
+        padding: 7px;
+      }
+      .hero {
+        height: 200px;
+        padding: 20px;
+      }
+      .hero-title {
+        width: 100%;
+        padding: 14px 18px;
+        white-space: normal;
+      }
+      .hero-title h1 {
+        font-size: 20px;
+      }
+      .content-section {
+        padding: 26px 20px 30px;
+      }
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      table, thead, tbody, tr, th, td {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      table {
+        border-spacing: 0;
+      }
+      tbody {
+        display: grid;
+        gap: 12px;
+      }
+      tbody tr {
+        overflow: hidden;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      tbody th, tbody td {
+        border-radius: 0 !important;
+        background: transparent;
+        white-space: normal;
+      }
+      tbody th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      tbody td {
+        display: grid;
+        grid-template-columns: 112px 1fr;
+        gap: 8px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+      }
+      tbody td::before {
+        content: attr(data-label);
+        color: #9ba8bd;
+        font-family: "Roboto:Bold";
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Conteneur principal -->
+  <div class="site-shell">
+
+    <!-- En-tête / Barre de navigation -->
+    <header class="topbar">
+      <div class="logo-wrap">
+        <!-- Logo de l'établissement ou du labo -->
+        <img src="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=150&auto=format&fit=crop&q=80" alt="Logo" />
+      </div>
+
+      <!-- Navigation principale -->
+      <nav class="main-nav" id="mainNav">
+        <a href="#" class="active">Accueil</a>
+        <a href="#">Projets</a>
+        <a href="#">Expérimentations</a>
+        <a href="#">Planning</a>
+        <a href="#">Paramètres</a>
+      </nav>
+
+      <!-- Actions de compte et préférences -->
+      <div class="account-actions">
+        <span class="notification"><i class="fa">&#xf0f3;</i></span>
+        <div class="profile">
+          <i class="fa">&#xf007;</i>
+          <span>Mon Compte</span>
+        </div>
+        
+        <!-- Sélecteur de langue -->
+        <div class="language" id="langDropdown">
+          <button id="langBtn" type="button">
+            <span>FR</span>
+            <i class="fa" style="font-size: 9px;">&#xf078;</i>
+          </button>
+          <div class="language-menu" id="langMenu">
+            <button class="selected" type="button">Français (FR)</button>
+            <button type="button">English (EN)</button>
+          </div>
+        </div>
+
+        <!-- Bouton Menu Mobile (Burger) -->
+        <button class="mobile-menu" id="mobileMenuBtn" aria-label="Menu mobile">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Section Hero / Bannière -->
+    <section class="hero">
+      <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1200&auto=format&fit=crop&q=80" alt="Laboratoire de recherche" />
+      <div class="hero-shade"></div>
+      <div class="hero-title">
+        <h1>Gestion des Expérimentations & Laboratoire</h1>
+        <p>Suivi des protocoles, des participants et des sessions de recherche.</p>
+      </div>
+    </section>
+
+    <!-- Section Informations / Guides -->
+    <section class="content-section info-section">
+      <div class="section-heading">
+        <h2><i class="fa">&#xf05a;</i> Informations et Guides</h2>
+        <p>Dernière mise à jour : <strong>Novembre 2026</strong></p>
+      </div>
+      <div class="card-grid">
+        <div class="info-card">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&auto=format&fit=crop&q=80" alt="Guide" />
+          <div>
+            <h3>Protocoles de Recherche</h3>
+            <p>Consultez les directives éthiques et les étapes obligatoires pour valider vos protocoles expérimentaux.</p>
+            <button type="button">Lire le guide →</button>
+          </div>
+        </div>
+        <div class="info-card">
+          <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&auto=format&fit=crop&q=80" alt="Ressources" />
+          <div>
+            <h3>Gestion du Matériel</h3>
+            <p>Réservez les salles, casques VR, capteurs physiologiques et équipements informatiques nécessaires.</p>
+            <button type="button">Accéder au planning →</button>
+          </div>
+        </div>
+        <div class="info-card">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&auto=format&fit=crop&q=80" alt="Équipe" />
+          <div>
+            <h3>Collaboration Équipe</h3>
+            <p>Partagez vos rapports d'expérimentation et suivez l'avancement des projets inter-équipes.</p>
+            <button type="button">Voir les rapports →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Expérimentations en cours -->
+    <section class="content-section experiments-section">
+      <div class="section-heading light">
+        <h2><i class="fa" style="color: white;">&#xf093;</i> Expérimentations Actives</h2>
+        <p>Sélectionnez une étude pour vous inscrire ou consulter les créneaux disponibles.</p>
+      </div>
+      <div class="card-grid">
+        <div class="experiment-card">
+          <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&auto=format&fit=crop&q=80" alt="Exp 1" />
+          <div class="experiment-body">
+            <div class="reward">Rétribution : 15€ / 45min</div>
+            <h3>Étude Ergonomie & Interface</h3>
+            <p>Évaluation de l'impact des contrastes visuels sur la fatigue oculaire lors de tâches prolongées.</p>
+            <button type="button">S'inscrire à un créneau</button>
+          </div>
+        </div>
+        <div class="experiment-card">
+          <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&auto=format&fit=crop&q=80" alt="Exp 2" />
+          <div class="experiment-body">
+            <div class="reward">Rétribution : Crédits ECTS</div>
+            <h3>Analyse Vocale & NLP</h3>
+            <p>Enregistrement de phrases courtes pour calibrer un modèle de reconnaissance vocale contextuelle.</p>
+            <button type="button">S'inscrire à un créneau</button>
+          </div>
+        </div>
+        <div class="experiment-card">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80" alt="Exp 3" />
+          <div class="experiment-body">
+            <div class="reward">Rétribution : Bon d'achat 20€</div>
+            <h3>Tests Réalité Virtuelle</h3>
+            <p>Navigation en environnement simulé pour mesurer la perception de l'espace et l'orientation.</p>
+            <button type="button">S'inscrire à un créneau</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Inscriptions et Participations -->
+    <section class="content-section registrations-section">
+      <div class="section-heading light registrations-heading">
+        <h2><i class="fa" style="color: white;">&#xf073;</i> Mes Inscriptions Récentes</h2>
+        <button type="button">Voir tout l'historique</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Expérimentation</th>
+              <th>Date & Heure</th>
+              <th>Lieu / Salle</th>
+              <th>Statut</th>
+              <th>Rétribution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th data-label="Expérimentation">Étude Ergonomie & Interface</th>
+              <td data-label="Date & Heure">28 Nov 2026 - 14:00</td>
+              <td data-label="Lieu / Salle">Salle B204</td>
+              <td data-label="Statut"><span class="status confirmed">Confirmé</span></td>
+              <td data-label="Rétribution"><span class="received">15,00 € (En attente)</span></td>
+            </tr>
+            <tr>
+              <th data-label="Expérimentation">Analyse Vocale & NLP</th>
+              <td data-label="Date & Heure">02 Déc 2026 - 10:30</td>
+              <td data-label="Lieu / Salle">Labo LIUM - Bât. Informatique</td>
+              <td data-label="Statut"><span class="status">En attente de validation</span></td>
+              <td data-label="Rétribution">Crédits ECTS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Pied de page -->
+    <footer>
+      <div class="university">
+        <i class="fa">&#xf19d;</i>
+        <div>
+          <strong>Université / Laboratoire de Recherche</strong><br>
+          Plateforme de gestion académique et expérimentale — Tous droits réservés.
+        </div>
+      </div>
+      <div class="socials">
+        <a href="#" aria-label="GitHub"><i class="fab">&#xf09b;</i></a>
+        <a href="#" aria-label="Twitter"><i class="fab">&#xf099;</i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab">&#xf0e1;</i></a>
+      </div>
+    </footer>
+
+    <!-- Notification Toast (Exemple interactif) -->
+    <div class="toast" id="notificationToast">
+      <div>
+        <strong>Rappel de session :</strong> Votre prochaine expérience commence dans 24 heures.
+      </div>
+      <button type="button" id="closeToastBtn" aria-label="Fermer">&times;</button>
+    </div>
+
+  </div>
+
+  <!-- Scripts JavaScript pour l'interactivité -->
+  <script>
+    // 1. Gestion du menu mobile (Burger)
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mainNav = document.getElementById('mainNav');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mainNav.classList.toggle('is-open');
+    });
+
+    // 2. Gestion du menu déroulant de langue
+    const langBtn = document.getElementById('langBtn');
+    const langMenu = document.getElementById('langMenu');
+
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langMenu.classList.toggle('open');
+    });
+
+    // Fermer le menu langue si on clique ailleurs sur la page
+    window.addEventListener('click', () => {
+      if (langMenu.classList.contains('open')) {
+        langMenu.classList.remove('open');
+      }
+    });
+
+    // 3. Gestion de la fermeture du Toast de notification
+    const closeToastBtn = document.getElementById('closeToastBtn');
+    const notificationToast = document.getElementById('notificationToast');
+
+    closeToastBtn.addEventListener('click', () => {
+      notificationToast.style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>
