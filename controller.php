@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// 1. Correction du chemin avec __DIR__ et suppression du slash de début
 require_once __DIR__ . '/model/model.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -12,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $utilisateur = check_login($nom, $prenom);
 
     if ($utilisateur) {
-        // Succès : l'utilisateur existe en BDD
-        // (Optionnel mais recommandé) On peut démarrer une session pour garder ses infos en mémoire
-        $_SESSION['user_id'] = $utilisateur['id']; // Remplace 'id' par le nom exact de ta colonne ID en SQL
-        $_SESSION['user_nom'] = $utilisateur['nom'];
-        $_SESSION['user_prenom'] = $utilisateur['prenom'];
+        
+        $_SESSION['user_id'] = $utilisateur['id_util'];
+        $_SESSION['user_nom'] = $utilisateur['nom_util'];
+        $_SESSION['user_prenom'] = $utilisateur['prenom_util'];
+        $_SESSION['user_role'] = $utilisateur['type_util'];
 
         // Redirection vers la page d'accueil sécurisée
         header("Location: views/PartAcc.php");
