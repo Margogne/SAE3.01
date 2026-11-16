@@ -78,7 +78,7 @@
             <div class="profile-menu-heading">
               <span class="avatar dark">TL</span>
               <span>
-                <strong>T. Dubois</strong>
+                <strong><?php echo $_SESSION['user_nom']. ' ' . $_SESSION['user_prenom']; ?> </strong>    <!-- a changer en une variable de BDD -->
                 <small>Participant</small>
               </span>
             </div>
@@ -90,6 +90,9 @@
 
       </div>
     </header>
+
+    <!-- NO CHECK AU DELA -->
+
 
     <!-- En-tête de la page -->
     <section class="page-heading" id="projets">

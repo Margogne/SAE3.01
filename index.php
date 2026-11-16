@@ -1,4 +1,4 @@
-<?php echo "Hello World"; 
-
-echo "Hello is maxime"?>
-
+<?php 
+$is_update = null;
+require 'controller.php';
+?>
