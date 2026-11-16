@@ -1,6 +1,7 @@
 <?php
 
-require '/model/model.php';
+// 1. Correction du chemin avec __DIR__ et suppression du slash de début
+require_once __DIR__ . '/model/model.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
@@ -16,7 +17,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     header("Location: views/ID.php");
     exit();
 }
-
-require_once __DIR__ . '/views/ID.php';
 
 ?>
