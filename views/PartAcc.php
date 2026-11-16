@@ -78,7 +78,7 @@
             <div class="profile-menu-heading">
               <span class="avatar dark">TL</span>
               <span>
-                <strong>J. John Testeur</strong>    <!-- a changer en une variable de BDD -->
+                <strong><?php echo $_SESSION['user_nom']. ' ' . $_SESSION['user_prenom']; ?> </strong>    <!-- a changer en une variable de BDD -->
                 <small>Participant</small>
               </span>
             </div>
