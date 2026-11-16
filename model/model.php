@@ -3,7 +3,7 @@
 function get_bdd()
 {
     $serveur = "localhost";
-    $base = "TD5";
+    $base = "lab_projectgrp04";
     $user = "root";
     $password = "";
 
@@ -13,24 +13,14 @@ function get_bdd()
     return $pdo;
 }
 
-function get_tasks()
+function get_part_name($id)
 {
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM tasks');
-    $tasks = $query->fetchAll(PDO::FETCH_ASSOC);
-    return $tasks;
+    $query = $bdd->query('SELECT nom_util FROM utilisateur WHERE id = ' . $id);
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+    return $result;
 }
-
-function get_task($id)
-{
-    $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM tasks WHERE id = ' . $id);
-    $task = $query->fetch(PDO::FETCH_ASSOC);
-    return $task;
-}
-
-
-
+/*
 function create_task($name, $description, $echeance)
 {
     $bdd = get_bdd();
@@ -54,3 +44,4 @@ function update_task($id, $name, $description, $echeance)
     $result = $query->execute(array($name, $description, $echeance, $id));
     return $result;
 }
+*/

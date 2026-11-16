@@ -1,45 +1,22 @@
 <?php
 
-require 'model.php';
+require '/model/model.php';
 
-if (isset($_POST['name']) && isset($_POST['description']) && isset($_POST['date'])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
+    // TODO (Prochaine étape) : Récupérer les données ($_POST['name'], $_POST['prenom']) 
+    // et interroger le modèle pour vérifier l'existence en base de données.
 
-    $name = htmlspecialchars($_POST['name']);
-    $description = htmlspecialchars($_POST['description']);
-    $date = htmlspecialchars($_POST['date']);
-
-    if (isset($_POST['id'])) {
-        $id = htmlspecialchars($_POST['id']);
-
-        $result = update_task($id, $name, $description, $date);
-        if ($result) {
-            echo 'Tâche modifié';
-        }
-    } else {
-        $result = create_task($name, $description, $date);
-        if ($result) {
-            echo 'Tâche ajouté';
-        }
-    }
+    // Pour l'instant : redirection directe vers la page d'accueil/partenaire
+    header("Location: views/PartAcc.html");
+    exit();
+    
+} else {
+    // Si on accède à controller.php directement sans soumettre le formulaire, on renvoie vers le formulaire
+    header("Location: views/ID.php");
+    exit();
 }
 
-if (isset($_GET['id'])) {
-    $id = htmlspecialchars($_GET['id']);
+require_once __DIR__ . '/views/ID.php';
 
-    if (isset($_GET['action']) && $_GET['action'] === 'delete') {
-        $result = delete_task($id);
-        if ($result) {
-            echo 'Tâche supprimé !';
-        }
-    }
-
-
-    if (isset($_GET['action']) && $_GET['action'] === 'update') {
-        $is_update = true;
-        $task = get_task($id);
-    }
-}
-
-$tasks = get_tasks();
-
-require 'views/ID.php';
+?>
