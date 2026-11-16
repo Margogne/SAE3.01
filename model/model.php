@@ -3,7 +3,7 @@
 function get_bdd()
 {
     $serveur = "localhost";
-    $base = "lab_projectgrp04";
+    $base = "lab_project_grp04";
     $user = "root";
     $password = "";
 
@@ -20,28 +20,15 @@ function get_part_name($id)
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
 }
-/*
-function create_task($name, $description, $echeance)
-{
-    $bdd = get_bdd();
-    $query = $bdd->prepare('INSERT INTO `tasks` (`id`, `name`, `description`, `date`) VALUES (NULL, ?, ?, ?);');
-    $result = $query->execute(array($name, $description, $echeance));
-    return $result;
-}
 
-function delete_task($id)
+function check_login($nom, $prenom)
 {
     $bdd = get_bdd();
-    $query = $bdd->prepare('DELETE FROM tasks WHERE `tasks`.`id` = ?');
-    $result = $query->execute(array($id));
-    return $result;
+    // On prépare la requête pour chercher l'utilisateur par son nom et son prénom
+    // Remplace 'nom' et 'prenom' par les noms exacts de tes colonnes dans la table SQL si besoin
+    $query = $bdd->prepare('SELECT * FROM utilisateur WHERE nom_util = ? AND prenom_util = ?');
+    $query->execute([$nom, $prenom]);
+    
+    // Retourne les informations de l'utilisateur si trouvé, ou false sinon
+    return $query->fetch(PDO::FETCH_ASSOC);
 }
-
-function update_task($id, $name, $description, $echeance)
-{
-    $bdd = get_bdd();
-    $query = $bdd->prepare('UPDATE `tasks` SET `name` = ?, `description` = ?, `date` = ? WHERE `tasks`.`id` = ?;');
-    $result = $query->execute(array($name, $description, $echeance, $id));
-    return $result;
-}
-*/

@@ -5,12 +5,26 @@ require_once __DIR__ . '/model/model.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
-    // TODO (Prochaine étape) : Récupérer les données ($_POST['name'], $_POST['prenom']) 
-    // et interroger le modèle pour vérifier l'existence en base de données.
+    $nom = trim($_POST['name'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
 
-    // Pour l'instant : redirection directe vers la page d'accueil/partenaire
-    header("Location: views/PartAcc.html");
-    exit();
+    $utilisateur = check_login($nom, $prenom);
+
+    if ($utilisateur) {
+        // Succès : l'utilisateur existe en BDD
+        // (Optionnel mais recommandé) On peut démarrer une session pour garder ses infos en mémoire
+        session_start();
+        $_SESSION['user'] = $utilisateur;
+
+        // Redirection vers la page d'accueil sécurisée
+        header("Location: views/PartAcc.html");
+        exit();
+    } else {
+        // Échec : aucun utilisateur trouvé avec ce nom et prénom
+        // Pour l'instant, on le renvoie vers la page d'identification
+        header("Location: views/ID.php?erreur=1");
+        exit();
+    }
     
 } else {
     // Si on accède à controller.php directement sans soumettre le formulaire, on renvoie vers le formulaire
