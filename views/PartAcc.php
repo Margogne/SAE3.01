@@ -12,27 +12,23 @@ if (!isset($_SESSION['user_id'])) {
 // 1. RÉCUPÉRATION DE TOUS LES PROJETS DEPUIS LA BASE DE DONNÉES
 $ExperimentationsData = Get_Exp_WithSess();
 
-// 2. RÉCUPÉRATION DES FILTRES ET PARAMÈTRES D'URL ($_GET)
+// 2. RÉCUPÉRATION DES PARAMÈTRES DE RECHERCHE ($_GET)
 $searchQuery = trim($_GET['search'] ?? '');
-$modalProjectId = isset($_GET['projet_id']) ? (int) $_GET['projet_id'] : null;
 
-// 3. FILTRAGE DES PROJETS EN PHP
+// 3. FILTRAGE DES EXPÉRIMENTATIONS EN PHP
 $filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery) {
   $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'], 'UTF-8');
   return ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
 });
 
-// =========================================================================
-// 4. RECHERCHE DE L'EXPÉRIMENTATION SÉLECTIONNÉE POUR LA MODALE
-// =========================================================================
-$selectedProject = null;
-if ($modalProjectId !== null) {
-  foreach ($ExperimentationsData as $p) {
-    if ($p['id'] === $modalProjectId) {
-      $selectedProject = $p;
-      break;
-    }
-  }
+// 4. INFOS UTILISATEUR EN SESSION
+$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
+$userPrenom = $_SESSION['user_prenom'] ?? '';
+$userRole = $_SESSION['user_role'] ?? 'Participant';
+
+$initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
+if (empty($initiales)) {
+  $initiales = 'U';
 }
 
 // 5. PRÉPARATION DES INFOS UTILISATEUR EN SESSION
@@ -43,16 +39,6 @@ $userRole = $_SESSION['user_role'] ?? 'Participant';
 $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
 if (empty($initiales)) {
   $initiales = 'U';
-}
-
-function buildFilterQuery(array $extra = []): string
-{
-  $params = [];
-  if (!empty($_GET['search'])) {
-    $params['search'] = $_GET['search'];
-  }
-  $merged = array_merge($params, $extra);
-  return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
 }
 // ============================================================================
 // HTML DE LA PAGE
@@ -153,7 +139,7 @@ function buildFilterQuery(array $extra = []): string
     <!-- En-tête de la page -->
     <section class="page-heading" id="projets">
       <h1>
-        <img src="../assets/img/SymbolFichier.png" alt=""  />
+        <img src="../assets/img/SymbolFichier.png" alt="" />
         Expérimentations
       </h1>
     </section>
@@ -211,9 +197,9 @@ function buildFilterQuery(array $extra = []): string
                 <h3><?= htmlspecialchars($project['title']) ?></h3>
                 <p class="project-description"><?= htmlspecialchars($project['description']) ?></p>
                 <div class="project-footer">
-                  <!-- Lien PHP qui ouvre la modale en ajoutant ?projet_id=X tout en gardant les filtres -->
-                  <a href="<?= htmlspecialchars(buildFilterQuery(['projet_id' => $project['id']])) ?>"
-                    class="view-details-btn" style="text-decoration: none;">
+                  <!-- Redirection directe vers la page 2 avec l'ID de l'expérimentation -->
+                  <a href="PartExpSess.php?id=<?= urlencode((string) $project['id']) ?>" class="view-details-btn"
+                    style="text-decoration: none;">
                     Voir la fiche <span class="fa">&#xf061;</span>
                   </a>
                 </div>
@@ -231,28 +217,6 @@ function buildFilterQuery(array $extra = []): string
         <strong>Le Mans Université</strong> • <?= htmlspecialchars($userRole) ?> - Catalogue des expérimentations
       </p>
     </footer>
-
-    <!-- /!\il faudra le remplcé par une page projet (maybe)/!\ -->
-    <!-- Modale de détail d'un projet -->
-    <?php if ($selectedProject !== null): ?>
-      <div class="modal-backdrop" id="projectModal" role="presentation" style="display: flex;">
-        <section class="project-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-          <a href="<?= htmlspecialchars(buildFilterQuery()) ?>" class="modal-close" aria-label="Fermer"
-            style="text-decoration: none;">×</a>
-          <img src="<?= htmlspecialchars($selectedProject['image']) ?>"
-            alt="<?= htmlspecialchars($selectedProject['title']) ?>" />
-          <div>
-            <p class="project-category"><?= htmlspecialchars($selectedProject['category']) ?></p>
-            <h2 id="modalTitle"><?= htmlspecialchars($selectedProject['title']) ?></h2>
-            <p><?= htmlspecialchars($selectedProject['description']) ?></p>
-            <span class="owner">
-              <span class="fa">&#xf2bc;</span>
-              <span><?= htmlspecialchars($selectedProject['owner']) ?></span>
-            </span>
-          </div>
-        </section>
-      </div>
-    <?php endif; ?>
 
   </div>
 
