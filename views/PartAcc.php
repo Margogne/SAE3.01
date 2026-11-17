@@ -5,8 +5,8 @@ require_once '../model/model.php';
 
 // Sécurité : redirection si l'utilisateur n'est pas connecté
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ID.php");
-    exit();
+  header("Location: ID.php");
+  exit();
 }
 
 // 1. RÉCUPÉRATION DE TOUS LES PROJETS DEPUIS LA BASE DE DONNÉES
@@ -14,21 +14,12 @@ $ExperimentationsData = Get_Exp_WithSess();
 
 // 2. RÉCUPÉRATION DES FILTRES ET PARAMÈTRES D'URL ($_GET)
 $searchQuery = trim($_GET['search'] ?? '');
-$selectedDomain = $_GET['domain'] ?? 'Tous';
-$selectedStatus = $_GET['status'] ?? 'Tous';
-$mineOnly = isset($_GET['mine']) && $_GET['mine'] === '1';
-$modalProjectId = isset($_GET['projet_id']) ? (int)$_GET['projet_id'] : null;
+$modalProjectId = isset($_GET['projet_id']) ? (int) $_GET['projet_id'] : null;
 
 // 3. FILTRAGE DES PROJETS EN PHP
-$filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery, $selectedDomain, $selectedStatus, $mineOnly) {
-    $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'], 'UTF-8');
-    $matchesQuery = ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
-
-    $matchesDomain = ($selectedDomain === 'Tous') || ($project['domain'] === $selectedDomain);
-    $matchesStatus = ($selectedStatus === 'Tous') || ($project['status'] === $selectedStatus);
-    $matchesMine = (!$mineOnly) || ($project['mine'] === true);
-
-    return $matchesQuery && $matchesDomain && $matchesStatus && $matchesMine;
+$filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery) {
+  $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'], 'UTF-8');
+  return ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
 });
 
 // =========================================================================
@@ -36,12 +27,12 @@ $filteredProjects = array_filter($ExperimentationsData, function ($project) use 
 // =========================================================================
 $selectedProject = null;
 if ($modalProjectId !== null) {
-    foreach ($ExperimentationsData as $p) {
-        if ($p['id'] === $modalProjectId) {
-            $selectedProject = $p;
-            break;
-        }
+  foreach ($ExperimentationsData as $p) {
+    if ($p['id'] === $modalProjectId) {
+      $selectedProject = $p;
+      break;
     }
+  }
 }
 
 // 5. PRÉPARATION DES INFOS UTILISATEUR EN SESSION
@@ -51,18 +42,17 @@ $userRole = $_SESSION['user_role'] ?? 'Participant';
 
 $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
 if (empty($initiales)) {
-    $initiales = 'U';
+  $initiales = 'U';
 }
 
-function buildFilterQuery(array $extra = []): string {
-    $params = [];
-    if (!empty($_GET['search'])) $params['search'] = $_GET['search'];
-    if (!empty($_GET['domain']) && $_GET['domain'] !== 'Tous') $params['domain'] = $_GET['domain'];
-    if (!empty($_GET['status']) && $_GET['status'] !== 'Tous') $params['status'] = $_GET['status'];
-    if (!empty($_GET['mine'])) $params['mine'] = '1';
-    
-    $merged = array_merge($params, $extra);
-    return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
+function buildFilterQuery(array $extra = []): string
+{
+  $params = [];
+  if (!empty($_GET['search'])) {
+    $params['search'] = $_GET['search'];
+  }
+  $merged = array_merge($params, $extra);
+  return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
 }
 // ============================================================================
 // HTML DE LA PAGE
@@ -70,6 +60,7 @@ function buildFilterQuery(array $extra = []): string {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -78,6 +69,7 @@ function buildFilterQuery(array $extra = []): string {
   <!-- Lien vers la feuille de style externe -->
   <link rel="stylesheet" href="../style/Partstyle.css" />
 </head>
+
 <body>
 
   <!-- DIV principale de l'application -->
@@ -92,14 +84,14 @@ function buildFilterQuery(array $extra = []): string {
       <!-- Navigation principale -->
       <nav class="main-nav" aria-label="Navigation principale">
         <a class="nav-link" href="#dashboard">Dashboard</a>
-        <a class="nav-link active" href="PartAcc.php">Projets</a>
+        <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
         <a class="nav-link" href="#ressources">Ressources</a>
         <a class="nav-link" href="#messagerie">Messagerie</a>
       </nav>
 
       <!-- Actions de l'en-tête (Langue, Notifications, Profil) -->
       <div class="header-actions">
-        
+
         <!-- Sélecteur de langue (fonctionne au survol/clic via CSS) -->
         <div class="menu-anchor language-anchor">
           <button type="button" class="header-button language-button" aria-haspopup="menu">
@@ -150,7 +142,8 @@ function buildFilterQuery(array $extra = []): string {
             </div>
             <a href="#profil" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</a>
             <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span> Paramètres</a>
-            <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span> Se déconnecter</a>
+            <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
+                class="fa">&#xf2f5;</span> Se déconnecter</a>
           </div>
         </div>
 
@@ -160,39 +153,35 @@ function buildFilterQuery(array $extra = []): string {
     <!-- En-tête de la page -->
     <section class="page-heading" id="projets">
       <h1>
-        <span class="fa">&#xf114;</span>
-        Projets
+        <img src="../assets/img/SymbolFichier.png" alt=""  />
+        Expérimentations
       </h1>
     </section>
 
     <!-- Corps principal -->
     <main>
       <!-- Panneau de filtres et recherche  -->
-      <section class="filter-panel" aria-label="Filtres des projets">
+      <section class="filter-panel" aria-label="Recherche de projets">
         <h2>
           <span class="fa">&#xf0b0;</span>
           Filtrer &amp; Rechercher
         </h2>
-        
-        <form method="GET" action="PartAcc.php" class="filter-grid">
-          <label class="field">
+
+        <form method="GET" action="PartAcc.php" class="filter-form-centered">
+          <label class="field search-container-single">
             <span>Mot-clé / Titre</span>
             <span class="search-field">
               <span class="fa search-icon">&#xf002;</span>
-              <input 
-                type="search" 
-                name="search" 
-                value="<?= htmlspecialchars($searchQuery) ?>" 
-                placeholder="Rechercher un projet, un mot-clé..." 
-              />
+              <input type="search" name="search" value="<?= htmlspecialchars($searchQuery) ?>"
+                placeholder="Rechercher un projet, un mot-clé..." />
             </span>
           </label>
 
-          <div class="field" style="grid-column: 1 / -1; flex-direction: row; gap: 12px; align-items: center; margin-top: 4px;">
+          <div class="filter-actions-single">
             <button type="submit" class="btn-filter-submit">
-              <span class="fa">&#xf002;</span> Appliquer les filtres
+              <span class="fa">&#xf002;</span> Rechercher
             </button>
-            <?php if ($searchQuery !== '' || $selectedDomain !== 'Tous' || $selectedStatus !== 'Tous' || $mineOnly): ?>
+            <?php if ($searchQuery !== ''): ?>
               <a href="PartAcc.php" class="btn-filter-reset">Réinitialiser</a>
             <?php endif; ?>
           </div>
@@ -206,7 +195,8 @@ function buildFilterQuery(array $extra = []): string {
             <span class="fa" style="font-size: 32px; margin-bottom: 12px; display: block;">&#xf002;</span>
             <strong>Aucun projet trouvé</strong>
             <p>Modifiez vos critères de recherche pour afficher d’autres projets.</p>
-            <a href="PartAcc.php" style="display: inline-block; margin-top: 12px; padding: 8px 16px; background: #c94a29; color: white; text-decoration: none; border-radius: 6px;">
+            <a href="PartAcc.php"
+              style="display: inline-block; margin-top: 12px; padding: 8px 16px; background: #c94a29; color: white; text-decoration: none; border-radius: 6px;">
               Réinitialiser les filtres
             </a>
           </div>
@@ -222,7 +212,8 @@ function buildFilterQuery(array $extra = []): string {
                 <p class="project-description"><?= htmlspecialchars($project['description']) ?></p>
                 <div class="project-footer">
                   <!-- Lien PHP qui ouvre la modale en ajoutant ?projet_id=X tout en gardant les filtres -->
-                  <a href="<?= htmlspecialchars(buildFilterQuery(['projet_id' => $project['id']])) ?>" class="view-details-btn" style="text-decoration: none;">
+                  <a href="<?= htmlspecialchars(buildFilterQuery(['projet_id' => $project['id']])) ?>"
+                    class="view-details-btn" style="text-decoration: none;">
                     Voir la fiche <span class="fa">&#xf061;</span>
                   </a>
                 </div>
@@ -246,8 +237,10 @@ function buildFilterQuery(array $extra = []): string {
     <?php if ($selectedProject !== null): ?>
       <div class="modal-backdrop" id="projectModal" role="presentation" style="display: flex;">
         <section class="project-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-          <a href="<?= htmlspecialchars(buildFilterQuery()) ?>" class="modal-close" aria-label="Fermer" style="text-decoration: none;">×</a>
-          <img src="<?= htmlspecialchars($selectedProject['image']) ?>" alt="<?= htmlspecialchars($selectedProject['title']) ?>" />
+          <a href="<?= htmlspecialchars(buildFilterQuery()) ?>" class="modal-close" aria-label="Fermer"
+            style="text-decoration: none;">×</a>
+          <img src="<?= htmlspecialchars($selectedProject['image']) ?>"
+            alt="<?= htmlspecialchars($selectedProject['title']) ?>" />
           <div>
             <p class="project-category"><?= htmlspecialchars($selectedProject['category']) ?></p>
             <h2 id="modalTitle"><?= htmlspecialchars($selectedProject['title']) ?></h2>
@@ -264,4 +257,5 @@ function buildFilterQuery(array $extra = []): string {
   </div>
 
 </body>
+
 </html>
