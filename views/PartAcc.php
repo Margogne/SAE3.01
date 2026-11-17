@@ -1,72 +1,29 @@
 <?php
 session_start();
 
+require_once '../model/model.php';
+
 // Sécurité : redirection si l'utilisateur n'est pas connecté
 if (!isset($_SESSION['user_id'])) {
     header("Location: ID.php");
     exit();
 }
 
-// =========================================================================
-// 1. DONNÉES DES PROJETS (À remplacer plus tard par un appel à BDD + model.php)
-// =========================================================================
-$projectsData = [
-    [
-        'id' => 1,
-        'category' => 'Robotique & Ergonomie',
-        'title' => 'Robot Porteur Humanoïde',
-        'description' => "Étude de l'assistance physique sans infrastructure pour la réduction des troubles musculosquelettiques.",
-        'owner' => 'Dr. L. Oubahssi',
-        'status' => 'En gestion',
-        'statusColor' => '#34d399',
-        'image' => 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&auto=format&fit=crop&q=80',
-        'domain' => 'Robotique',
-        'mine' => true
-    ],
-    [
-        'id' => 2,
-        'category' => 'IHM & Réalité Virtuelle',
-        'title' => 'Interface VR & Ergonomie',
-        'description' => "Évaluation de la charge mentale des opérateurs lors d'interactions en immersion 3D.",
-        'owner' => 'Prof. M. Jardin',
-        'status' => 'Tests actifs',
-        'statusColor' => '#60a5fa',
-        'image' => 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=600&auto=format&fit=crop&q=80',
-        'domain' => 'Réalité virtuelle',
-        'mine' => false
-    ],
-    [
-        'id' => 3,
-        'category' => 'TAL & Langage',
-        'title' => 'Analyse NLP & Questionnaires',
-        'description' => "Extraction automatique de concepts et retour d'expérience qualitatif des apprenants.",
-        'owner' => 'Dr. A. Leroux',
-        'status' => 'En gestion',
-        'statusColor' => '#34d399',
-        'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80',
-        'domain' => 'Langage',
-        'mine' => true
-    ]
-];
+// 1. RÉCUPÉRATION DE TOUS LES PROJETS DEPUIS LA BASE DE DONNÉES
+$projectsData = get_all_projects();
 
-// =========================================================================
 // 2. RÉCUPÉRATION DES FILTRES ET PARAMÈTRES D'URL ($_GET)
-// =========================================================================
 $searchQuery = trim($_GET['search'] ?? '');
 $selectedDomain = $_GET['domain'] ?? 'Tous';
 $selectedStatus = $_GET['status'] ?? 'Tous';
 $mineOnly = isset($_GET['mine']) && $_GET['mine'] === '1';
 $modalProjectId = isset($_GET['projet_id']) ? (int)$_GET['projet_id'] : null;
 
-// =========================================================================
 // 3. FILTRAGE DES PROJETS EN PHP
-// =========================================================================
 $filteredProjects = array_filter($projectsData, function ($project) use ($searchQuery, $selectedDomain, $selectedStatus, $mineOnly) {
-    // Recherche textuelle insensible à la casse
     $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'] . ' ' . $project['owner'], 'UTF-8');
     $matchesQuery = ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
 
-    // Filtres domaine, statut et "mes projets"
     $matchesDomain = ($selectedDomain === 'Tous') || ($project['domain'] === $selectedDomain);
     $matchesStatus = ($selectedStatus === 'Tous') || ($project['status'] === $selectedStatus);
     $matchesMine = (!$mineOnly) || ($project['mine'] === true);
@@ -87,20 +44,16 @@ if ($modalProjectId !== null) {
     }
 }
 
-// =========================================================================
 // 5. PRÉPARATION DES INFOS UTILISATEUR EN SESSION
-// =========================================================================
 $userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
 $userPrenom = $_SESSION['user_prenom'] ?? '';
 $userRole = $_SESSION['user_role'] ?? 'Participant';
 
-// Calcul automatique des initiales pour l'avatar
 $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
 if (empty($initiales)) {
     $initiales = 'U';
 }
 
-// Fonction utilitaire pour conserver les filtres actifs dans les liens d'URL
 function buildFilterQuery(array $extra = []): string {
     $params = [];
     if (!empty($_GET['search'])) $params['search'] = $_GET['search'];
@@ -111,57 +64,26 @@ function buildFilterQuery(array $extra = []): string {
     $merged = array_merge($params, $extra);
     return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
 }
+// ============================================================================
+// HTML DE LA PAGE
+// ============================================================================
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catalogue des Expérimentations - Le Mans Université</title>
+  <title>Page participant - Le Mans Université</title>
 
   <!-- Lien vers la feuille de style externe -->
   <link rel="stylesheet" href="../style/Partstyle.css" />
-  
-  <!-- /!\il faudra le passer en css/!\ Styles complémentaires pour le fonctionnement pur CSS/PHP des menus et boutons -->
-  <style>
-    .menu-anchor { position: relative; }
-    .menu-anchor:hover .dropdown,
-    .menu-anchor:focus-within .dropdown {
-      display: block !important;
-    }
-    /*TEST*/
-    .btn-filter-submit {
-      padding: 9px 16px;
-      background-color: #c94a29;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-filter-submit:hover {
-      background-color: #a83b1e;
-    }
-    .btn-filter-reset {
-      padding: 9px 14px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 13px;
-    }
-    .btn-filter-reset:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: white;
-    }
-  </style>
 </head>
 <body>
 
   <!-- DIV principale de l'application -->
   <div class="app-shell" data-node-id="281:2782">
 
-    <!-- En-tête de navigation -->
+    <!-- HEADER -- Bandeau navigation -->
     <header class="site-header" id="siteHeader" data-node-id="281:2908">
       <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
         <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
@@ -293,7 +215,6 @@ function buildFilterQuery(array $extra = []): string {
             </span>
           </label>
 
-          <!-- Boutons de soumission et réinitialisation du formulaire PHP -->
           <div class="field" style="grid-column: 1 / -1; flex-direction: row; gap: 12px; align-items: center; margin-top: 4px;">
             <button type="submit" class="btn-filter-submit">
               <span class="fa">&#xf002;</span> Appliquer les filtres
@@ -356,11 +277,10 @@ function buildFilterQuery(array $extra = []): string {
     </footer>
 
     <!-- /!\il faudra le remplcé par une page projet (maybe)/!\ -->
-    <!-- Modale de détail d'un projet (Affichée uniquement si ?projet_id=X est valide) -->
+    <!-- Modale de détail d'un projet -->
     <?php if ($selectedProject !== null): ?>
       <div class="modal-backdrop" id="projectModal" role="presentation" style="display: flex;">
         <section class="project-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-          <!-- Lien de fermeture qui retire projet_id de l'URL tout en conservant les filtres -->
           <a href="<?= htmlspecialchars(buildFilterQuery()) ?>" class="modal-close" aria-label="Fermer" style="text-decoration: none;">×</a>
           <img src="<?= htmlspecialchars($selectedProject['image']) ?>" alt="<?= htmlspecialchars($selectedProject['title']) ?>" />
           <div>
