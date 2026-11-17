@@ -10,7 +10,7 @@
     <div class="app-shell">
       <header class="site-header">
         <button class="brand" aria-label="Retour au tableau de bord">
-          <img src="/assets/d8ecf.png" alt="Le Mans Université" />
+          <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
         </button>
 
         <nav class="main-navigation" aria-label="Navigation principale">
@@ -27,9 +27,9 @@
               aria-haspopup="menu"
               aria-expanded="false"
             >
-              <img src="/assets/f142b.svg" alt="" />
+              <img src="../assets/img/Globe.svg" alt="" />
               <span>FR</span>
-              <img class="small-chevron" src="/assets/7f146.svg" alt="" />
+              <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
           </div>
 
@@ -40,7 +40,7 @@
               aria-haspopup="dialog"
               aria-expanded="false"
             >
-              <img src="/assets/79a80.svg" alt="" />
+              <img src="../assets/img/bell.svg" alt="" />
             </button>
           </div>
 
@@ -55,7 +55,7 @@
                 <strong>Dr. L. Oubahssi</strong>
                 <small>Enseignant-Chercheur</small>
               </span>
-              <img class="profile-chevron" src="/assets/795d2.svg" alt="" />
+              <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
           </div>
         </div>
@@ -84,7 +84,7 @@
             <article class="overview-card">
               <div class="card-top">
                 <span class="card-icon">
-                  <img src="/assets/b8201.svg" alt="" />
+                  <img src="../assets/img/ProjetsActifs.svg" alt="" />
                 </span>
                 <strong class="card-value">6</strong>
               </div>
@@ -99,7 +99,7 @@
             <article class="overview-card">
               <div class="card-top">
                 <span class="card-icon">
-                  <img src="/assets/50779.svg" alt="" />
+                  <img src="../assets/img/Expérimentations.svg" alt="" />
                 </span>
                 <strong class="card-value">12</strong>
               </div>
@@ -113,7 +113,7 @@
             <article class="overview-card">
               <div class="card-top">
                 <span class="card-icon">
-                  <img src="/assets/7d555.svg" alt="" />
+                  <img src="../assets/img/Participants.svg" alt="" />
                 </span>
                 <strong class="card-value">24</strong>
               </div>
@@ -124,7 +124,7 @@
             <article class="overview-card">
               <div class="card-top">
                 <span class="card-icon">
-                  <img src="/assets/ee56d.svg" alt="" />
+                  <img src="../assets/img/RessourcesPartagées.svg" alt="" />
                 </span>
                 <strong class="card-value">18</strong>
               </div>
