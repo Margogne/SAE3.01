@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -69,8 +70,8 @@
           <button class="profile-button" id="profileBtn" aria-expanded="false" aria-haspopup="menu">
             <span class="avatar">TL</span>
             <span class="profile-copy">
-              <strong>T. Dubois</strong>
-              <small>Participant</small>
+              <strong><?php echo $_SESSION['user_nom']. '.' . $_SESSION['user_prenom']; ?></strong>
+              <small><?php echo $_SESSION['user_role']; ?></small>
             </span>
             <span class="fa profile-chevron" id="profileChevron">&#xf078;</span>
           </button>
@@ -78,8 +79,8 @@
             <div class="profile-menu-heading">
               <span class="avatar dark">TL</span>
               <span>
-                <strong><?php echo $_SESSION['user_nom']. ' ' . $_SESSION['user_prenom']; ?> </strong>    <!-- a changer en une variable de BDD -->
-                <small>Participant</small>
+                <strong><?php echo $_SESSION['user_nom']. '.' . $_SESSION['user_prenom']; ?></strong>    <!-- a changer en une variable de BDD -->
+                <small><?php echo $_SESSION['user_role']; ?></small>
               </span>
             </div>
             <button class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</button>
@@ -179,6 +180,7 @@
   </div>
 
   <!-- Script JavaScript pour la logique interactive et le filtrage -->
+  
   <script>
     // Données des projets (inspirées de App.tsx)
     const projectsData = [
@@ -391,7 +393,7 @@
 
     // Initialisation au chargement
     renderProjects();
-  </script>
+  </script> 
 
 </body>
 </html>
