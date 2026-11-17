@@ -21,7 +21,7 @@ $modalProjectId = isset($_GET['projet_id']) ? (int)$_GET['projet_id'] : null;
 
 // 3. FILTRAGE DES PROJETS EN PHP
 $filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery, $selectedDomain, $selectedStatus, $mineOnly) {
-    $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'] . ' ' . $project['owner'], 'UTF-8');
+    $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'], 'UTF-8');
     $matchesQuery = ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
 
     $matchesDomain = ($selectedDomain === 'Tous') || ($project['domain'] === $selectedDomain);
@@ -32,7 +32,7 @@ $filteredProjects = array_filter($ExperimentationsData, function ($project) use 
 });
 
 // =========================================================================
-// 4. RECHERCHE DU PROJET SÉLECTIONNÉ POUR LA MODALE
+// 4. RECHERCHE DE L'EXPÉRIMENTATION SÉLECTIONNÉE POUR LA MODALE
 // =========================================================================
 $selectedProject = null;
 if ($modalProjectId !== null) {
@@ -188,33 +188,6 @@ function buildFilterQuery(array $extra = []): string {
             </span>
           </label>
 
-          <label class="field">
-            <span>Domaine de recherche</span>
-            <select name="domain">
-              <option value="Tous" <?= $selectedDomain === 'Tous' ? 'selected' : '' ?>>Tous les domaines</option>
-              <option value="Robotique" <?= $selectedDomain === 'Robotique' ? 'selected' : '' ?>>Robotique</option>
-              <option value="Réalité virtuelle" <?= $selectedDomain === 'Réalité virtuelle' ? 'selected' : '' ?>>Réalité virtuelle</option>
-              <option value="Langage" <?= $selectedDomain === 'Langage' ? 'selected' : '' ?>>Langage</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Statut</span>
-            <select name="status">
-              <option value="Tous" <?= $selectedStatus === 'Tous' ? 'selected' : '' ?>>Tous les statuts</option>
-              <option value="En gestion" <?= $selectedStatus === 'En gestion' ? 'selected' : '' ?>>En gestion</option>
-              <option value="Tests actifs" <?= $selectedStatus === 'Tests actifs' ? 'selected' : '' ?>>Tests actifs</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Mes projets</span>
-            <span class="checkbox-field">
-              <input type="checkbox" name="mine" value="1" <?= $mineOnly ? 'checked' : '' ?> />
-              <span>Afficher uniquement les miens</span>
-            </span>
-          </label>
-
           <div class="field" style="grid-column: 1 / -1; flex-direction: row; gap: 12px; align-items: center; margin-top: 4px;">
             <button type="submit" class="btn-filter-submit">
               <span class="fa">&#xf002;</span> Appliquer les filtres
@@ -242,20 +215,12 @@ function buildFilterQuery(array $extra = []): string {
             <article class="project-card">
               <div class="project-image">
                 <img src="<?= htmlspecialchars($project['image']) ?>" alt="<?= htmlspecialchars($project['title']) ?>" />
-                <span class="status-pill">
-                  <i style="background-color: <?= htmlspecialchars($project['statusColor']) ?>; width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px;"></i>
-                  <?= htmlspecialchars($project['status']) ?>
-                </span>
               </div>
               <div class="project-content">
                 <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
                 <h3><?= htmlspecialchars($project['title']) ?></h3>
                 <p class="project-description"><?= htmlspecialchars($project['description']) ?></p>
                 <div class="project-footer">
-                  <span class="owner">
-                    <span class="fa">&#xf2bc;</span>
-                    <?= htmlspecialchars($project['owner']) ?>
-                  </span>
                   <!-- Lien PHP qui ouvre la modale en ajoutant ?projet_id=X tout en gardant les filtres -->
                   <a href="<?= htmlspecialchars(buildFilterQuery(['projet_id' => $project['id']])) ?>" class="view-details-btn" style="text-decoration: none;">
                     Voir la fiche <span class="fa">&#xf061;</span>
