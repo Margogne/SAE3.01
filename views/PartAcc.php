@@ -40,6 +40,7 @@ $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)
 if (empty($initiales)) {
   $initiales = 'U';
 }
+
 // ============================================================================
 // HTML DE LA PAGE
 // ============================================================================
@@ -132,7 +133,6 @@ if (empty($initiales)) {
                 class="fa">&#xf2f5;</span> Se déconnecter</a>
           </div>
         </div>
-
       </div>
     </header>
 
@@ -217,9 +217,7 @@ if (empty($initiales)) {
         <strong>Le Mans Université</strong> • <?= htmlspecialchars($userRole) ?> - Catalogue des expérimentations
       </p>
     </footer>
-
   </div>
-
 </body>
 
 </html>

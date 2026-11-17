@@ -1,19 +1,35 @@
 <?php
 session_start();
 
+require_once '../model/model.php';
+
 // Sécurité : redirection si non connecté
 if (!isset($_SESSION['user_id'])) {
     header("Location: ID.php");
     exit();
 }
 
-// Infos utilisateur en session (identique à PartAcc.php)
+// Récupération de l'ID expérimentation
+$id_exp = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+if ($id_exp <= 0) {
+    header("Location: PartAcc.php");
+    exit();
+}
+
+// Chargement des données de l'exp depuis la BDD
+$exp = get_exp_details($id_exp);
+if (!$exp) {
+    header("Location: PartAcc.php");
+    exit();
+}
+
+// Infos utilisateur en session
 $userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
 $userPrenom = $_SESSION['user_prenom'] ?? '';
 $userRole = $_SESSION['user_role'] ?? 'Participant';
 $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
 
-// Gestion de la modale d'inscription en 3 étapes via l'URL (?step=1, 2 ou 3)
+// Gestion de l'inscription via l'URL
 $step = isset($_GET['step']) ? (int) $_GET['step'] : 0;
 $selectedSlot = isset($_GET['slot']) ? (int) $_GET['slot'] : null;
 $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
@@ -24,8 +40,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Détail de l'expérimentation - Le Mans Université</title>
-    <!-- Réutilisation de la feuille de style principale -->
+    <title><?= htmlspecialchars($exp['titre_exp']) ?> - Le Mans Université</title>
     <link rel="stylesheet" href="../style/Partstyle.css" />
 </head>
 
@@ -33,20 +48,57 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
 
     <div class="app-shell">
 
-        <!-- EN-TÊTE IDENTIQUE À PartAcc.php (Réutilise 100% du CSS existant) -->
+        <!-- EN-TÊTE IDENTIQUE  -->
         <header class="site-header">
             <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
                 <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
             </a>
 
+            <!-- Navigation principale -->
             <nav class="main-nav" aria-label="Navigation principale">
                 <a class="nav-link" href="#dashboard">Dashboard</a>
-                <a class="nav-link active" href="PartAcc.php">Projets</a>
+                <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
                 <a class="nav-link" href="#messagerie">Messagerie</a>
             </nav>
 
+            <!-- Actions de l'en-tête (Langue, Notifications, Profil) -->
             <div class="header-actions">
+
+                <!-- langue -->
+                <div class="menu-anchor language-anchor">
+                    <button type="button" class="header-button language-button" aria-haspopup="menu">
+                        <span>FR</span>
+                        <span class="fa" style="font-size: 9px;">&#xf078;</span>
+                    </button>
+                    <div class="dropdown language-menu" role="menu" style="display: none;">
+                        <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                                class="fa">&#xf00c;</span></a>
+                        <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                    </div>
+                </div>
+
+                <!-- notifications -->
+                <div class="menu-anchor">
+                    <button type="button" class="header-button icon-button" aria-label="Notifications"
+                        aria-haspopup="dialog">
+                        <span class="fa">&#xf0f3;</span>
+                    </button>
+                    <div class="dropdown notification-menu" role="dialog" aria-label="Notifications"
+                        style="display: none;">
+                        <h2>Notifications</h2>
+                        <div class="empty-notifications">
+                            <span class="notification-illustration">
+                                <span class="fa" style="font-size: 24px; color: #9ba8bd;">&#xf0a2;</span>
+                            </span>
+                            <strong>Aucune notification</strong>
+                            <p>Vous êtes à jour. Les nouvelles activités apparaîtront ici.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profil -->
                 <div class="menu-anchor profile-anchor">
                     <button type="button" class="profile-button" aria-haspopup="menu">
                         <span class="avatar"><?= htmlspecialchars($initiales) ?></span>
@@ -73,6 +125,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                     </div>
                 </div>
             </div>
+
         </header>
 
         <!-- BANDEAU HERO DE L'EXPÉRIMENTATION -->
@@ -84,15 +137,15 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                     <span class="fa">&#xf060;</span> Retour aux expérimentations
                 </a>
                 <div class="badges">
-                    <span>Robotique &amp; Ergonomie</span>
+                    <span><?= htmlspecialchars($exp['nom_proj'] ?? 'Expérimentation') ?></span>
                     <span class="status"><span class="fa">&#xf111;</span> En cours</span>
                 </div>
-                <h1>Robot Porteur Humanoïde — Assistance physique sans infrastructure</h1>
+                <h1><?= htmlspecialchars($exp['titre_exp']) ?></h1>
                 <div class="project-meta">
-                    <span><span class="fa">&#xf4ff;</span> Responsable : Dr. L. Oubahssi</span>
-                    <span><span class="fa">&#xf133;</span> Début : 1 Septembre 2026</span>
-                    <span><span class="fa">&#xf133;</span> Fin : 24 Décembre 2026</span>
-                    <span><span class="fa">&#xf1ad;</span> Site : IUT Laval</span>
+                    <span><span class="fa">&#xf4ff;</span> Responsable : <?= htmlspecialchars($responsable) ?></span>
+                    <span><span class="fa">&#xf133;</span> Début : <?= htmlspecialchars($dateDebut) ?></span>
+                    <span><span class="fa">&#xf133;</span> Fin : <?= htmlspecialchars($dateFin) ?></span>
+                    <span><span class="fa">&#xf1ad;</span> Site : <?= htmlspecialchars($site) ?></span>
                 </div>
             </div>
         </section>
@@ -101,48 +154,45 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
         <main class="project-body">
             <div class="content-column">
 
-                <!-- Encart Logistique -->
+                <!-- rectangle Orange -->
                 <article class="logistics-card">
-                    <h2><span class="fa">&#xf085;</span> Logistique</h2>
+                    <h2><span class="fa">&#xf085;</span> Logistique &amp; Informations pratiques</h2>
                     <dl>
                         <div>
-                            <dt>Salle assignée :</dt>
-                            <dd>Halle Robotique Laval</dd>
+                            <dt>Durée estimée :</dt>
+                            <dd><?= !empty($exp['dur_exp']) ? htmlspecialchars($exp['dur_exp']) : 'Non précisée' ?></dd>
                         </div>
                         <div>
                             <dt>Équipement réservé :</dt>
-                            <dd>Robot Porteur H1</dd>
+                            <dd><?= htmlspecialchars($equipements) ?></dd>
                         </div>
                         <div>
-                            <dt>Chercheur assigné :</dt>
+                            <dt>Chercheur(s) assigné(s) :</dt>
                             <dd>
-                                <span>Dr. L. Oubahssi</span>
-                                <span>Dr. S. Georges</span>
+                                <?php if (!empty($exp['chercheurs'])): ?>
+                                    <?php foreach ($exp['chercheurs'] as $ch): ?>
+                                        <span><?= htmlspecialchars($ch['prenom_util'] . ' ' . $ch['nom_util']) ?></span>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <span>Non renseigné</span>
+                                <?php endif; ?>
                             </dd>
                         </div>
                         <div>
-                            <dt>Nombre de participants :</dt>
-                            <dd>12/14</dd>
+                            <dt>Rétribution / Indemnisation :</dt>
+                            <dd><?= !empty($exp['retrib_exp']) ? htmlspecialchars($exp['retrib_exp']) : 'Aucune' ?></dd>
                         </div>
                     </dl>
                 </article>
 
-                <!-- Encart Description -->
+                <!-- Description -->
                 <article class="description-card">
                     <header>
                         <h2><span class="fa">&#xf036;</span> Description &amp; Objectifs Scientifiques</h2>
                         <a href="#rapports" class="btn-reports">Voir les rapports d’activités</a>
                     </header>
                     <p>
-                        Ce projet étudie l’intégration de robots porteurs humanoïdes dans des environnements
-                        de travail industriels ou logistiques. L’objectif principal est de réduire les
-                        troubles musculosquelettiques (TMS) liés aux tâches répétitives de portage lourd,
-                        sans nécessiter la modification des infrastructures existantes.
-                    </p>
-                    <p>
-                        Les données biométriques et ergonomiques collectées lors des phases
-                        d’expérimentation permettront d’ajuster les algorithmes de suivi de trajectoire et
-                        de commande d’effort du robot.
+                        <?= nl2br(htmlspecialchars($exp['desc_exp'] ?? 'Aucune description disponible pour cette expérimentation.')) ?>
                     </p>
                 </article>
             </div>
@@ -155,7 +205,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
             <?php endif; ?>
         </main>
 
-        <!-- PIED DE PAGE IDENTIQUE À PartAcc.php (Réutilise 100% du CSS existant) -->
+        <!-- PIED DE PAGE -->
         <footer>
             <span class="fa">&#xf19d;</span>
             <p>
@@ -164,11 +214,11 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
             </p>
         </footer>
 
-        <!-- MODALE D'INSCRIPTION EN 3 ÉTAPES (Gérée en PHP) -->
+        <!-- INSCRIPTION EN 3 ÉTAPES /!\GENERER PAR IA/!\-->
         <?php if ($step >= 1 && $step <= 3): ?>
             <div class="modal-backdrop" role="dialog" aria-modal="true">
                 <div class="consent-modal">
-                    <a href="PartExpSess.php" class="modal-close" aria-label="Fermer">×</a>
+                    <a href="PartExpSess.php?id=<?= $id_exp ?>" class="modal-close" aria-label="Fermer">×</a>
 
                     <p class="modal-kicker">
                         <?= $step === 1 ? 'fiche consentement' : ($step === 2 ? 'sélection créneaux' : 'confirmation') ?>
@@ -189,8 +239,8 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                             <li>Droit de retrait à tout moment sans justification</li>
                         </ul>
                         <div class="modal-actions">
-                            <a href="PartExpSess.php" class="secondary-button">Retour</a>
-                            <a href="?step=2" class="next-button">
+                            <a href="PartExpSess.php?id=<?= $id_exp ?>" class="secondary-button">Retour</a>
+                            <a href="?id=<?= $id_exp ?>&step=2" class="next-button">
                                 <strong>Accepter</strong>
                                 <small>Suivant</small>
                             </a>
@@ -199,6 +249,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                     <?php elseif ($step === 2): ?>
                         <h2>Sélection des créneaux horaires :</h2>
                         <form method="GET" action="PartExpSess.php" class="slot-form">
+                            <input type="hidden" name="id" value="<?= $id_exp ?>" />
                             <input type="hidden" name="step" value="3" />
                             <div class="slot-list">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -209,7 +260,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                                 <?php endfor; ?>
                             </div>
                             <div class="modal-actions">
-                                <a href="?step=1" class="secondary-button">Retour</a>
+                                <a href="?id=<?= $id_exp ?>&step=1" class="secondary-button">Retour</a>
                                 <button type="submit" class="next-button">
                                     <strong>Valider</strong>
                                     <small>Suivant</small>
@@ -221,11 +272,10 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <div class="confirmation">
                             <span class="fa">&#xf00c;</span>
                             <h2>Inscription confirmée</h2>
-                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été
-                                enregistrée.</p>
+                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été enregistrée.</p>
                         </div>
                         <div class="modal-actions">
-                            <a href="?registered=1" class="next-button done">Terminer</a>
+                            <a href="?id=<?= $id_exp ?>&registered=1" class="next-button done">Terminer</a>
                         </div>
                     <?php endif; ?>
                 </div>

@@ -81,3 +81,60 @@ function Get_Exp_WithSess() {
     }
     return $ExperimentationsData;
 }
+
+function buildFilterQuery(array $extra = []): string
+{
+  $params = [];
+  if (!empty($_GET['search'])) {
+    $params['search'] = $_GET['search'];
+  }
+  $merged = array_merge($params, $extra);
+  return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
+}
+
+function get_exp_details($id_exp)
+{
+    $bdd = get_bdd();
+
+    // 1. Récupération des infos de l'expérimentation, du projet et du laboratoire associé
+    $sql = 'SELECT e.*, p.nom_proj, l.nom_lab, l.ville_lab
+            FROM EXPERIMENTATION e
+            LEFT JOIN PROJET p ON e.id_proj = p.id_proj
+            LEFT JOIN LABORATOIRE l ON p.id_lab = l.id_lab
+            WHERE e.id_exp = ?';
+    $query = $bdd->prepare($sql);
+    $query->execute([$id_exp]);
+    $exp = $query->fetch(PDO::FETCH_ASSOC);
+
+    if (!$exp) {
+        return null;
+    }
+
+    // 2. Récupération des chercheurs associés (table UTILISATEUR via TRAVAILLER)
+    $sqlChercheurs = 'SELECT u.nom_util, u.prenom_util 
+                      FROM UTILISATEUR u
+                      JOIN TRAVAILLER t ON u.id_util = t.id_util
+                      WHERE t.id_exp = ?
+                      ORDER BY t.num_ordre ASC';
+    $qChercheurs = $bdd->prepare($sqlChercheurs);
+    $qChercheurs->execute([$id_exp]);
+    $exp['chercheurs'] = $qChercheurs->fetchAll(PDO::FETCH_ASSOC);
+
+    // 3. Récupération des ressources/équipements réservés pour les sessions de cette expérimentation
+    $sqlRessources = 'SELECT DISTINCT r.nom_ress 
+                      FROM RESSOURCE r
+                      JOIN CONTENIR c ON r.id_ress = c.id_ress
+                      JOIN SESSION s ON c.id_sess = s.id_sess
+                      WHERE s.id_exp = ?';
+    $qRessources = $bdd->prepare($sqlRessources);
+    $qRessources->execute([$id_exp]);
+    $exp['ressources'] = $qRessources->fetchAll(PDO::FETCH_COLUMN);
+
+    // 4. Récupération des sessions "En cours" associées (utile pour la suite / les créneaux)
+    $sqlSessions = 'SELECT * FROM SESSION WHERE id_exp = ? AND statut_sess = "En cours"';
+    $qSessions = $bdd->prepare($sqlSessions);
+    $qSessions->execute([$id_exp]);
+    $exp['sessions'] = $qSessions->fetchAll(PDO::FETCH_ASSOC);
+
+    return $exp;
+}
