@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // 1. RÉCUPÉRATION DE TOUS LES PROJETS DEPUIS LA BASE DE DONNÉES
-$projectsData = get_all_projects();
+$ExperimentationsData = Get_Exp_WithSess();
 
 // 2. RÉCUPÉRATION DES FILTRES ET PARAMÈTRES D'URL ($_GET)
 $searchQuery = trim($_GET['search'] ?? '');
@@ -20,7 +20,7 @@ $mineOnly = isset($_GET['mine']) && $_GET['mine'] === '1';
 $modalProjectId = isset($_GET['projet_id']) ? (int)$_GET['projet_id'] : null;
 
 // 3. FILTRAGE DES PROJETS EN PHP
-$filteredProjects = array_filter($projectsData, function ($project) use ($searchQuery, $selectedDomain, $selectedStatus, $mineOnly) {
+$filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery, $selectedDomain, $selectedStatus, $mineOnly) {
     $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'] . ' ' . $project['owner'], 'UTF-8');
     $matchesQuery = ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
 
@@ -36,7 +36,7 @@ $filteredProjects = array_filter($projectsData, function ($project) use ($search
 // =========================================================================
 $selectedProject = null;
 if ($modalProjectId !== null) {
-    foreach ($projectsData as $p) {
+    foreach ($ExperimentationsData as $p) {
         if ($p['id'] === $modalProjectId) {
             $selectedProject = $p;
             break;
