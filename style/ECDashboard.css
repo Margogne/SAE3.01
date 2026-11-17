@@ -114,6 +114,8 @@
 }
 
 .brand {
+  background: none;
+  border: none;
   position: absolute;
   top: 7px;
   left: 45px;
@@ -138,6 +140,8 @@
 }
 
 .nav-link {
+  background: none;
+  border: none;
   position: relative;
   display: flex;
   height: 54px;
@@ -235,6 +239,8 @@
 }
 
 .profile-trigger {
+  background: none;
+  border: none;
   display: flex;
   width: 215px;
   height: 52px;
