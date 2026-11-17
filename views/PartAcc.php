@@ -73,6 +73,7 @@ $filteredProjects = array_filter($projectsData, function ($project) use ($search
 
     return $matchesQuery && $matchesDomain && $matchesStatus && $matchesMine;
 });
+
 // =========================================================================
 // 4. RECHERCHE DU PROJET SÉLECTIONNÉ POUR LA MODALE
 // =========================================================================
@@ -128,6 +129,7 @@ function buildFilterQuery(array $extra = []): string {
     .menu-anchor:focus-within .dropdown {
       display: block !important;
     }
+    /*TEST*/
     .btn-filter-submit {
       padding: 9px 16px;
       background-color: #c94a29;
