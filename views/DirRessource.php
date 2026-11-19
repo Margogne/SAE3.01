@@ -1,3 +1,4 @@
+<?php include("../model/DirRessourceModel.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,14 +100,18 @@
                       d="M12 12H6m6 8H6m6 8H6m6 8H6m36-24h-6m6 8h-6m6 8h-6m6 8h-6" />
                   </g>
                 </svg>
-
                 <p class="text-66"><span class="text-rgb-29-40-79"> Équipements &amp; Matériel</span></p>
               </div>
               <div class="button-67">
                 <p class="text-68"><span class="text-white">+ Nouveau matériel</span></p>
               </div>
             </div>
+
             <div class="list-69">
+              <?php
+              foreach(get_equipements_materiels() as $materiel) {
+                
+              ?>
               <div class="item-70">
                 <div class="container-71">
                   <div class="background-72">
@@ -115,8 +120,8 @@
                     </div>
                   </div>
                   <div class="container-75">
-                    <p class="text-76"><span class="text-rgb-31-41-55">Robot Porteur H1
-                      </span><span class="text-rgb-100-116-139">IUT Laval • Halle Robotique</span></p>
+                    <p class="text-76"><span class="text-rgb-31-41-55"><?php echo $materiel['nom_ress'] ;?>
+  
                   </div>
                 </div>
                 <div class="container-77">
@@ -128,6 +133,8 @@
                   </div>
                 </div>
               </div>
+              <?php } ?>
+              <!--
               <div class="item-82">
                 <div class="container-83">
                   <div class="background-84">
@@ -151,6 +158,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="item-96">
                 <div class="container-97">
                   <div class="background-98">
@@ -173,8 +181,10 @@
                     <p class="text-109"><span class="text-white">Affecter</span></p>
                   </div>
                 </div>
-              </div>
+              </div>-->
             </div>
+
+
           </div>
           <div class="node-110">
             <div class="horizontalborder-111">
@@ -191,6 +201,8 @@
               </div>
             </div>
             <div class="list-117">
+              <?php foreach(get_salles() as $salle) { ?>
+
               <div class="item-118">
                 <div class="container-119">
                   <div class="background-120">
@@ -199,7 +211,7 @@
                     </div>
                   </div>
                   <div class="container-123">
-                    <p class="text-124"><span class="text-rgb-31-41-55">Salle CAVE VR (Immersion)</span></p>
+                    <p class="text-124"><span class="text-rgb-31-41-55"><?php echo $salle['nom_ress']; ?></span></p>
                     <div class="container-125">
                       <p class="text-126"><span class="text-rgb-100-116-139">Le Mans • Bat. Informatique</span></p>
                     </div>
@@ -214,6 +226,8 @@
                   </div>
                 </div>
               </div>
+                <?php } ?>
+              <!--
               <div class="item-132">
                 <div class="container-133">
                   <div class="background-134">
@@ -259,7 +273,8 @@
                     <p class="text-159"><span class="text-white">Calendrier</span></p>
                   </div>
                 </div>
-              </div>
+              </div>-->
+
             </div>
           </div>
         </div>
@@ -280,6 +295,7 @@
             </div>
           </div>
           <div class="container-173">
+
             <div class="doc-1-rgpd-174">
               <div class="container-175">
                 <div class="container-176">
@@ -309,6 +325,7 @@
                 </div>
               </div>
             </div>
+            
             <div class="doc-2-statistiques-191">
               <div class="container-192">
                 <div class="container-193">
@@ -374,9 +391,6 @@
       </div>
       <div class="footer-225">
         <div class="container-226">
-          <div class="container-227">
-            <p class="text-228"><span class="text-rgb-201-74-41"></span></p>
-          </div>
           <div class="container-229">
             <p class="text-230"><span class="text-rgb-155-168-189">Le Mans Université • Directeur - Ressources</span>
             </p>
