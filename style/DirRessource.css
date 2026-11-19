@@ -354,6 +354,7 @@ a {
   font-weight: 700;
   font-size: 22px;
   color: var(--text-white);
+  margin-left : 20px;
 }
 
 .text-55 {
@@ -695,6 +696,7 @@ a {
   font-weight: 700;
   font-size: 16px;
   color: var(--text-rgb-29-40-79);
+  margin-left : 20px;
 }
 
 .text-168 {

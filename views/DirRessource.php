@@ -72,9 +72,6 @@
       <div class="en-t-te-48">
         <div class="container-49">
           <div class="heading-1-50">
-            <div class="container-51">
-              <p class="text-52"><span class="text-rgb-201-74-41"></span></p>
-            </div>
             <p class="text-53"><span class="text-white">Gestion des Ressources, Salles &amp; Modèles Types</span></p>
           </div>
           <div class="container-54">
@@ -270,9 +267,6 @@
           <div class="horizontalborder-161">
             <div class="container-162">
               <div class="heading-2-163">
-                <div class="container-164">
-                  <p class="text-165"><span class="text-rgb-201-74-41"></span></p>
-                </div>
                 <p class="text-166"><span class="text-rgb-29-40-79">Modèles &amp; Documents Types (Bibliothèque
                     Chercheurs)</span></p>
               </div>
