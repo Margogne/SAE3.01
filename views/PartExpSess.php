@@ -29,10 +29,29 @@ $userPrenom = $_SESSION['user_prenom'] ?? '';
 $userRole = $_SESSION['user_role'] ?? 'Participant';
 $initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
 
-// Gestion de l'inscription via l'URL
+// Gestion de la modale d'inscription en 3 étapes via l'URL
 $step = isset($_GET['step']) ? (int) $_GET['step'] : 0;
 $selectedSlot = isset($_GET['slot']) ? (int) $_GET['slot'] : null;
 $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
+
+// Préparation des variables d'affichage de l'expérimentation
+$responsable = !empty($exp['chercheurs'])
+    ? $exp['chercheurs'][0]['prenom_util'] . ' ' . $exp['chercheurs'][0]['nom_util']
+    : 'Non renseigné';
+
+$site = !empty($exp['nom_lab'])
+    ? $exp['nom_lab'] . (!empty($exp['ville_lab']) ? ' (' . $exp['ville_lab'] . ')' : '')
+    : 'Non renseigné';
+
+$dateDebut = !empty($exp['datedeb_exp']) ? date('d/m/Y', strtotime($exp['datedeb_exp'])) : 'Non définie';
+$dateFin = !empty($exp['datefin_exp']) ? date('d/m/Y', strtotime($exp['datefin_exp'])) : 'Non définie';
+$equipements = !empty($exp['ressources']) ? implode(', ', $exp['ressources']) : 'Aucun équipement spécifique';
+
+// Sessions dont le statut est autre que "Terminé"
+$sessionsActives = array_filter($exp['sessions'] ?? [], function ($session) {
+    $statut = trim($session['statut_sess'] ?? '');
+    return $statut !== '' && mb_strtolower($statut, 'UTF-8') !== 'terminé';
+});
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -72,10 +91,10 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <span class="fa" style="font-size: 9px;">&#xf078;</span>
                     </button>
                     <div class="dropdown language-menu" role="menu" style="display: none;">
-                        <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                        <a href="?id=<?= $id_exp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                                 class="fa">&#xf00c;</span></a>
-                        <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
-                        <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                        <a href="?id=<?= $id_exp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?id=<?= $id_exp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
                     </div>
                 </div>
 
@@ -121,7 +140,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span>
                             Paramètres</a>
                         <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                                class="fa">&#xf2f5;</span> Se déconnecter</a>
+                                class="fa">&#xf2f5;</span>Se déconnecter</a>
                     </div>
                 </div>
             </div>
@@ -182,18 +201,40 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                             <dt>Rétribution / Indemnisation :</dt>
                             <dd><?= !empty($exp['retrib_exp']) ? htmlspecialchars($exp['retrib_exp']) : 'Aucune' ?></dd>
                         </div>
+                        <div>
+                            <dt>Description &amp; Objectifs Scientifiques :</dt>
+                            <dd><?= nl2br(htmlspecialchars($exp['desc_exp'] ?? 'Aucune description disponible pour cette expérimentation.')) ?>
+                            </dd>
+                        </div>
                     </dl>
                 </article>
 
-                <!-- Description -->
+                <!-- Listing -->
                 <article class="description-card">
                     <header>
-                        <h2><span class="fa">&#xf036;</span> Description &amp; Objectifs Scientifiques</h2>
-                        <a href="#rapports" class="btn-reports">Voir les rapports d’activités</a>
+                        <h2><!--<span class="fa">&#xf073;</span> --> Sessions disponibles</h2>
                     </header>
-                    <p>
-                        <?= nl2br(htmlspecialchars($exp['desc_exp'] ?? 'Aucune description disponible pour cette expérimentation.')) ?>
-                    </p>
+
+                    <?php if (empty($sessionsActives)): ?>
+                        <p>Aucune session disponible pour cette expérimentation.</p>
+                    <?php else: ?>
+                        <ul class="sessions-list">
+                            <?php foreach ($sessionsActives as $session): ?>
+                                <?php
+                                $sessDebut = !empty($session['datedeb_sess']) ? date('d/m/Y H:i', strtotime($session['datedeb_sess'])) : 'Date début non définie';
+                                $sessFin = !empty($session['datefin_sess']) ? date('d/m/Y H:i', strtotime($session['datefin_sess'])) : 'Date fin non définie';
+                                $sessStatut = $session['statut_sess'] ?? 'Non précisé';
+                                ?>
+                                <li class="session-item">
+                                    <div class="session-info">
+                                        <strong>Session #<?= htmlspecialchars((string) ($session['id_sess'] ?? '')) ?></strong>
+                                        <span>Du <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></span>
+                                    </div>
+                                    <span class="session-status"><?= htmlspecialchars($sessStatut) ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </article>
             </div>
 
@@ -272,7 +313,8 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <div class="confirmation">
                             <span class="fa">&#xf00c;</span>
                             <h2>Inscription confirmée</h2>
-                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été enregistrée.</p>
+                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été
+                                enregistrée.</p>
                         </div>
                         <div class="modal-actions">
                             <a href="?id=<?= $id_exp ?>&registered=1" class="next-button done">Terminer</a>
