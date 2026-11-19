@@ -276,9 +276,6 @@
               </div>
             </div>
             <div class="button-169">
-              <div class="container-170">
-                <p class="text-171"><span class="text-rgb-201-74-41"></span></p>
-              </div>
               <p class="text-172"><span class="text-rgb-201-74-41">Déposer un nouveau modèle</span></p>
             </div>
           </div>
