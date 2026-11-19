@@ -8,59 +8,9 @@
   </head>
   <body>
     <div class="app-shell">
-      <header class="site-header">
-        <a class="brand" href="#main" aria-label="Le Mans Université">
-          <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
-        </a>
-
-        <nav class="main-nav" aria-label="Navigation principale">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#projets">Projets</a>
-          <a href="#ressources">Ressources</a>
-          <a href="#messagerie">Messagerie</a>
-        </nav>
-
-        <div class="header-actions">
-          <div class="menu-anchor">
-            <button
-              class="language-button"
-              type="button"
-              aria-expanded="false"
-            >
-              <img src="../assets/img/Globe.svg" alt="" />
-              <span>FR</span>
-              <img src="../assets/img/Vector.svg" alt="" />
-            </button>
-          </div>
-
-          <div class="menu-anchor">
-            <button
-              class="icon-button"
-              type="button"
-              aria-label="Notifications"
-              aria-expanded="false"
-            >
-              <img src="../assets/img/bell.svg" alt="" />
-            </button>
-          </div>
-
-          <div class="menu-anchor profile-anchor">
-            <button
-              class="profile-button"
-              type="button"
-              aria-expanded="false"
-            >
-              <span class="avatar">LO</span>
-              <span class="profile-copy">
-                <b>Dr. L. Oubahssi</b>
-                <small>Enseignant-Chercheur</small>
-              </span>
-              <img src="../assets/img/Vector.svg" alt="" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+      <?php
+        //include '../model/header.php';
+      ?>
       <section class="page-heading">
         <div class="page-heading-inner">
           <a href="#projets" class="back-link">
