@@ -52,6 +52,9 @@ $sessionsActives = array_filter($exp['sessions'] ?? [], function ($session) {
     $statut = trim($session['statut_sess'] ?? '');
     return $statut !== '' && mb_strtolower($statut, 'UTF-8') !== 'terminé';
 });
+
+$registeredSessionId = isset($_GET['registered_session']) ? (int) $_GET['registered_session'] : null;
+$modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -221,16 +224,24 @@ $sessionsActives = array_filter($exp['sessions'] ?? [], function ($session) {
                         <ul class="sessions-list">
                             <?php foreach ($sessionsActives as $session): ?>
                                 <?php
+                                $sessId = (int) ($session['id_sess'] ?? 0);
                                 $sessDebut = !empty($session['datedeb_sess']) ? date('d/m/Y H:i', strtotime($session['datedeb_sess'])) : 'Date début non définie';
                                 $sessFin = !empty($session['datefin_sess']) ? date('d/m/Y H:i', strtotime($session['datefin_sess'])) : 'Date fin non définie';
                                 $sessStatut = $session['statut_sess'] ?? 'Non précisé';
+                                $isThisSessionRegistered = ($registeredSessionId === $sessId);
                                 ?>
                                 <li class="session-item">
                                     <div class="session-info">
-                                        <strong>Session #<?= htmlspecialchars((string) ($session['id_sess'] ?? '')) ?></strong>
-                                        <span>Du <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></span>
+                                        <strong>Session #<?= htmlspecialchars((string) $sessId) ?> — Du <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></strong>
+                                        <span class="session-status-sub"><?= htmlspecialchars($sessStatut) ?></span>
                                     </div>
-                                    <span class="session-status"><?= htmlspecialchars($sessStatut) ?></span>
+                                    <?php if ($isThisSessionRegistered): ?>
+                                        <span class="session-register-btn registered">Inscrit</span>
+                                    <?php else: ?>
+                                        <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessId ?>&amp;step=1" class="session-register-btn">
+                                            S’inscrire
+                                        </a>
+                                    <?php endif; ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
