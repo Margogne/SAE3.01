@@ -40,10 +40,10 @@
         aria-haspopup="menu"
         aria-expanded="false"
       >
-        <span class="avatar">LO</span>
+        <span class="avatar"><?= htmlspecialchars($initials) ?></span>
         <span class="profile-copy">
-          <strong>Dr. L. Oubahssi</strong>
-          <small>Enseignant-Chercheur</small>
+          <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
+          <small><?= htmlspecialchars($userRole) ?></small>
         </span>
         <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
       </button>
