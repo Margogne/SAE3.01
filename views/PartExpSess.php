@@ -10,69 +10,22 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Récupération de l'ID expérimentation
-$id_exp = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-if ($id_exp <= 0) {
+$idExp = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+if ($idExp <= 0) {
     header("Location: PartAcc.php");
     exit();
 }
 
 // Chargement des données de l'exp depuis la BDD
-$exp = get_exp_details($id_exp);
+$exp = get_exp_details($idExp);
 if (!$exp) {
     header("Location: PartAcc.php");
     exit();
 }
 
-// Infos utilisateur en session
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Participant';
-$initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
-
-// Gestion de la modale d'inscription en 3 étapes via l'URL
-$step = isset($_GET['step']) ? (int) $_GET['step'] : 0;
-$selectedSlot = isset($_GET['slot']) ? (int) $_GET['slot'] : null;
-$isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
-
-// Préparation des variables d'affichage de l'expérimentation
-$responsable = !empty($exp['chercheurs'])
-    ? $exp['chercheurs'][0]['prenom_util'] . ' ' . $exp['chercheurs'][0]['nom_util']
-    : 'Non renseigné';
-
-$site = !empty($exp['nom_lab'])
-    ? $exp['nom_lab'] . (!empty($exp['ville_lab']) ? ' (' . $exp['ville_lab'] . ')' : '')
-    : 'Non renseigné';
-
-$dateDebut = !empty($exp['datedeb_exp']) ? date('d/m/Y', strtotime($exp['datedeb_exp'])) : 'Non définie';
-$dateFin = !empty($exp['datefin_exp']) ? date('d/m/Y', strtotime($exp['datefin_exp'])) : 'Non définie';
-$equipements = !empty($exp['ressources']) ? implode(', ', $exp['ressources']) : 'Aucun équipement spécifique';
-
-// Sessions dont le statut est autre que "Terminé"
-$sessionsActives = array_filter($exp['sessions'] ?? [], function ($session) {
-    $statut = trim($session['statut_sess'] ?? '');
-    return $statut !== '' && mb_strtolower($statut, 'UTF-8') !== 'terminé';
-});
-
-$registeredSessionId = isset($_GET['registered_session']) ? (int) $_GET['registered_session'] : null;
-$modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
-
-// Gestion de l'inscription à la session si l'utilisateur a validé
-$userId = (int) $_SESSION['user_id'];
-$sessionId = $modalSessionId ?? 0;
-
-$inscriptionOk = false;
-$inscriptionErreur = '';
-
-if ($step === 3 && $sessionId > 0 && $userId > 0) {
-    try {
-        $inscriptionOk = inscrire_utilisateur_session($sessionId, $userId);
-        if (!$inscriptionOk) {
-            $inscriptionErreur = "L'enregistrement n'a pas pu aboutir.";
-        }
-    } catch (PDOException $e) {
-        $inscriptionErreur = "Erreur base de données lors de l'inscription.";
-    }
-}
+// Préparation des données de la page dans model.php
+$pageData = prepare_part_exp_sess_data($exp, $_GET, $_SESSION);
+extract($pageData);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -112,10 +65,10 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                         <span class="fa" style="font-size: 9px;">&#xf078;</span>
                     </button>
                     <div class="dropdown language-menu" role="menu" style="display: none;">
-                        <a href="?id=<?= $id_exp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                        <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                                 class="fa">&#xf00c;</span></a>
-                        <a href="?id=<?= $id_exp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-                        <a href="?id=<?= $id_exp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                        <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
                     </div>
                 </div>
 
@@ -141,7 +94,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                 <!-- Profil -->
                 <div class="menu-anchor profile-anchor">
                     <button type="button" class="profile-button" aria-haspopup="menu">
-                        <span class="avatar"><?= htmlspecialchars($initiales) ?></span>
+                        <span class="avatar"><?= htmlspecialchars($initials) ?></span>
                         <span class="profile-copy">
                             <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
                             <small><?= htmlspecialchars($userRole) ?></small>
@@ -150,7 +103,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                     </button>
                     <div class="dropdown profile-menu" role="menu" style="display: none;">
                         <div class="profile-menu-heading">
-                            <span class="avatar dark"><?= htmlspecialchars($initiales) ?></span>
+                            <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
                             <span>
                                 <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
                                 <small><?= htmlspecialchars($userRole) ?></small>
@@ -233,20 +186,19 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                 <!-- Listing -->
                 <article class="description-card">
                     <header>
-                        <h2><!--<span class="fa">&#xf073;</span> --> Sessions disponibles</h2>
+                        <h2><span class="fa">&#xf073;</span> Sessions disponibles</h2>
                     </header>
 
-                    <?php if (empty($sessionsActives)): ?>
+                    <?php if (empty($activeSessions)): ?>
                         <p>Aucune session disponible pour cette expérimentation.</p>
                     <?php else: ?>
                         <ul class="sessions-list">
-                            <?php foreach ($sessionsActives as $session): ?>
+                            <?php foreach ($activeSessions as $session): ?>
                                 <?php
                                 $sessId = (int) ($session['id_sess'] ?? 0);
                                 $sessDebut = !empty($session['datedeb_sess']) ? date('d/m/Y H:i', strtotime($session['datedeb_sess'])) : 'Date début non définie';
                                 $sessFin = !empty($session['datefin_sess']) ? date('d/m/Y H:i', strtotime($session['datefin_sess'])) : 'Date fin non définie';
                                 $sessStatut = $session['statut_sess'] ?? 'Non précisé';
-                                $isThisSessionRegistered = ($registeredSessionId === $sessId);
                                 ?>
                                 <li class="session-item">
                                     <div class="session-info">
@@ -255,10 +207,11 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                                         <span class="session-status-sub"><?= htmlspecialchars($sessStatut) ?></span>
                                     </div>
                                     <!-- Bouton d'inscription -->
-                                    <?php if ($isThisSessionRegistered): ?>
+                                    <?php /*la variable*/ $userId = (int) ($_SESSION['user_id'] ?? 0); ?>
+                                    <?php if (get_participation($sessId, $userId)): ?>
                                         <span class="session-register-btn registered">Inscrit</span>
                                     <?php else: ?>
-                                        <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessId ?>&amp;step=1"
+                                        <a href="?id=<?= $idExp ?>&amp;session_id=<?= $sessId ?>&amp;step=1"
                                             class="session-register-btn">
                                             S’inscrire
                                         </a>
@@ -284,7 +237,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
         <?php if ($step >= 1 && $step <= 3): ?>
             <div class="modal-backdrop" role="dialog" aria-modal="true">
                 <div class="consent-modal">
-                    <a href="PartExpSess.php?id=<?= $id_exp ?>" class="modal-close" aria-label="Fermer">×</a>
+                    <a href="PartExpSess.php?id=<?= $idExp ?>" class="modal-close" aria-label="Fermer">×</a>
 
                     <p class="modal-kicker">
                         <?= $step === 1 ? 'fiche consentement' : ($step === 2 ? 'sélection créneaux' : 'confirmation') ?>
@@ -305,8 +258,8 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                             <li>Droit de retrait à tout moment sans justification</li>
                         </ul>
                         <div class="modal-actions">
-                            <a href="PartExpSess.php?id=<?= $id_exp ?>" class="secondary-button">Retour</a>
-                            <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessionId ?>&amp;step=2" class="next-button">
+                            <a href="PartExpSess.php?id=<?= $idExp ?>" class="secondary-button">Retour</a>
+                            <a href="?id=<?= $idExp ?>&amp;session_id=<?= $sessionId ?>&amp;step=2" class="next-button">
                                 <strong>Accepter</strong>
                                 <small>Suivant</small>
                             </a>
@@ -315,7 +268,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                     <?php elseif ($step === 2): ?>
                         <h2>Sélection des créneaux horaires :</h2>
                         <form method="GET" action="PartExpSess.php" class="slot-form">
-                            <input type="hidden" name="id" value="<?= $id_exp ?>" />
+                            <input type="hidden" name="id" value="<?= $idExp ?>" />
                             <input type="hidden" name="session_id" value="<?= $sessionId ?>" />
                             <input type="hidden" name="step" value="3" />
                             <div class="slot-list">
@@ -327,7 +280,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                                 <?php endfor; ?>
                             </div>
                             <div class="modal-actions">
-                                <a href="?id=<?= $id_exp ?>&step=1" class="secondary-button">Retour</a>
+                                <a href="?id=<?= $idExp ?>&step=1" class="secondary-button">Retour</a>
                                 <button type="submit" class="next-button">
                                     <strong>Valider</strong>
                                     <small>Suivant</small>
@@ -350,7 +303,7 @@ if ($step === 3 && $sessionId > 0 && $userId > 0) {
                             <?php endif; ?>
                         </div>
                         <div class="modal-actions">
-                            <a href="?id=<?= $id_exp ?>&amp;registered_session=<?= $sessionId ?>"
+                            <a href="?id=<?= $idExp ?>&amp;registered_session=<?= $sessionId ?>"
                                 class="next-button done">Terminer</a>
                         </div>
                     <?php endif; ?>

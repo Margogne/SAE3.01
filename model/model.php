@@ -8,17 +8,14 @@ function get_bdd()
     $password = "";
 
     $dsn = "mysql:host=$serveur;dbname=$base;charset=utf8mb4";
-    $pdo =  new PDO($dsn, $user, $password);
-
-    return $pdo;
+    return new PDO($dsn, $user, $password);
 }
 
 function get_part_name($id)
 {
     $bdd = get_bdd();
     $query = $bdd->query('SELECT nom_util FROM utilisateur WHERE id = ' . $id);
-    $result = $query->fetch(PDO::FETCH_ASSOC);
-    return $result;
+    return $query->fetch(PDO::FETCH_ASSOC);
 }
 
 function check_login($nom, $prenom)
@@ -26,16 +23,15 @@ function check_login($nom, $prenom)
     $bdd = get_bdd();
     $query = $bdd->prepare('SELECT * FROM utilisateur WHERE nom_util = ? AND prenom_util = ?');
     $query->execute([$nom, $prenom]);
-    
-    // Retourne les informations de l'utilisateur si trouvé, ou false sinon
+
     return $query->fetch(PDO::FETCH_ASSOC);
 }
 
-function get_all_projects() {
+function get_all_projects()
+{
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM PROJET');
-    $projets = $query->fetchAll(PDO::FETCH_ASSOC);
-    
+    $projets = $bdd->query('SELECT * FROM PROJET')->fetchAll(PDO::FETCH_ASSOC);
+
     $projectsData = [];
     foreach ($projets as $p) {
         $projectsData[] = [
@@ -46,24 +42,24 @@ function get_all_projects() {
             'owner' => 'Responsable projet',
             'status' => 'En cours',
             'statusColor' => '#34d399',
-            'image' => '../assets/img/FondProjet.png', // Image par défaut
+            'image' => '../assets/img/FondProjet.png',
             'domain' => 'Général',
             'mine' => false
         ];
     }
+
     return $projectsData;
 }
 
-function Get_Exp_WithSess() {
+function Get_Exp_WithSess()
+{
     $bdd = get_bdd();
-    // On sélectionne les expérimentations qui possèdent au moins une session "En cours"
     $sql = 'SELECT DISTINCT e.* FROM EXPERIMENTATION e 
             JOIN SESSION s ON e.id_exp = s.id_exp 
             WHERE s.statut_sess = "En cours"';
-            
-    $query = $bdd->query($sql);
-    $experimentations = $query->fetchAll(PDO::FETCH_ASSOC);
-    
+
+    $experimentations = $bdd->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
     $ExperimentationsData = [];
     foreach ($experimentations as $e) {
         $ExperimentationsData[] = [
@@ -71,32 +67,30 @@ function Get_Exp_WithSess() {
             'category' => 'Recherche',
             'title' => $e['titre_exp'],
             'description' => $e['desc_exp'],
-            //'owner' => 'Responsable expérimentation',
-            //'status' => 'En cours',
             'statusColor' => '#34d399',
             'image' => '../assets/img/ExperimentationStandard.png',
             'domain' => 'Général',
             'mine' => false
         ];
     }
+
     return $ExperimentationsData;
 }
 
 function buildFilterQuery(array $extra = []): string
 {
-  $params = [];
-  if (!empty($_GET['search'])) {
-    $params['search'] = $_GET['search'];
-  }
-  $merged = array_merge($params, $extra);
-  return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
+    $params = [];
+    if (!empty($_GET['search'])) {
+        $params['search'] = $_GET['search'];
+    }
+    $merged = array_merge($params, $extra);
+    return empty($merged) ? 'PartAcc.php' : 'PartAcc.php?' . http_build_query($merged);
 }
 
 function get_exp_details($id_exp)
 {
     $bdd = get_bdd();
 
-    // 1. Récupération des infos de l'expérimentation, du projet et du laboratoire associé
     $sql = 'SELECT e.*, p.nom_proj, l.nom_lab, l.ville_lab
             FROM EXPERIMENTATION e
             LEFT JOIN PROJET p ON e.id_proj = p.id_proj
@@ -110,7 +104,6 @@ function get_exp_details($id_exp)
         return null;
     }
 
-    // 2. Récupération des chercheurs associés (table UTILISATEUR via TRAVAILLER)
     $sqlChercheurs = 'SELECT u.nom_util, u.prenom_util 
                       FROM UTILISATEUR u
                       JOIN TRAVAILLER t ON u.id_util = t.id_util
@@ -120,7 +113,6 @@ function get_exp_details($id_exp)
     $qChercheurs->execute([$id_exp]);
     $exp['chercheurs'] = $qChercheurs->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. Récupération des ressources/équipements réservés pour les sessions de cette expérimentation
     $sqlRessources = 'SELECT DISTINCT r.nom_ress 
                       FROM RESSOURCE r
                       JOIN CONTENIR c ON r.id_ress = c.id_ress
@@ -130,7 +122,6 @@ function get_exp_details($id_exp)
     $qRessources->execute([$id_exp]);
     $exp['ressources'] = $qRessources->fetchAll(PDO::FETCH_COLUMN);
 
-    // 4. Récupération des sessions "En cours" associées (utile pour la suite / les créneaux)
     $sqlSessions = 'SELECT * FROM SESSION WHERE id_exp = ? AND statut_sess = "En cours"';
     $qSessions = $bdd->prepare($sqlSessions);
     $qSessions->execute([$id_exp]);
@@ -142,8 +133,6 @@ function get_exp_details($id_exp)
 function inscrire_utilisateur_session(int $idSess, int $idUtil): bool
 {
     $bdd = get_bdd();
-
-    // INSERT IGNORE évite une erreur SQL si l'utilisateur est déjà inscrit à cette session
     $sql = 'INSERT IGNORE INTO PARTICIPER (id_sess, id_util) VALUES (:id_sess, :id_util)';
     $stmt = $bdd->prepare($sql);
 
@@ -151,4 +140,117 @@ function inscrire_utilisateur_session(int $idSess, int $idUtil): bool
         ':id_sess' => $idSess,
         ':id_util' => $idUtil,
     ]);
+}
+
+function filter_experimentations(array $items, string $search): array
+{
+    if ($search === '') {
+        return $items;
+    }
+
+    $needle = mb_strtolower($search, 'UTF-8');
+
+    return array_filter($items, function ($item) use ($needle) {
+        $haystack = mb_strtolower(
+            ($item['title'] ?? '') . ' ' . ($item['category'] ?? '') . ' ' . ($item['description'] ?? ''),
+            'UTF-8'
+        );
+        return mb_strpos($haystack, $needle) !== false;
+    });
+}
+
+function init_part_acc_page(string $rawSearch, array $session): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $search = trim($rawSearch);
+    $projects = filter_experimentations(Get_Exp_WithSess(), $search);
+
+    $userNom = $session['user_nom'] ?? 'Utilisateur';
+    $userPrenom = $session['user_prenom'] ?? '';
+    $userRole = $session['user_role'] ?? 'Participant';
+
+    $initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
+
+    return compact('search', 'projects', 'userNom', 'userPrenom', 'userRole', 'initials');
+}
+
+function prepare_part_exp_sess_data(array $exp, array $get, array $session): array
+{
+    $userNom = $session['user_nom'] ?? 'Utilisateur';
+    $userPrenom = $session['user_prenom'] ?? '';
+    $userRole = $session['user_role'] ?? 'Participant';
+    $initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
+
+    $step = isset($get['step']) ? (int) $get['step'] : 0;
+    $selectedSlot = isset($get['slot']) ? (int) $get['slot'] : null;
+
+    $responsable = !empty($exp['chercheurs'])
+        ? $exp['chercheurs'][0]['prenom_util'] . ' ' . $exp['chercheurs'][0]['nom_util']
+        : 'Non renseigné';
+
+    $site = !empty($exp['nom_lab'])
+        ? $exp['nom_lab'] . (!empty($exp['ville_lab']) ? ' (' . $exp['ville_lab'] . ')' : '')
+        : 'Non renseigné';
+
+    $dateDebut = !empty($exp['datedeb_exp']) ? date('d/m/Y', strtotime($exp['datedeb_exp'])) : 'Non définie';
+    $dateFin = !empty($exp['datefin_exp']) ? date('d/m/Y', strtotime($exp['datefin_exp'])) : 'Non définie';
+    $equipements = !empty($exp['ressources']) ? implode(', ', $exp['ressources']) : 'Aucun équipement spécifique';
+
+    $activeSessions = array_filter($exp['sessions'] ?? [], function ($s) {
+        $statut = trim($s['statut_sess'] ?? '');
+        return $statut !== '' && mb_strtolower($statut, 'UTF-8') !== 'terminé';
+    });
+
+    $registeredSessionId = isset($get['registered_session']) ? (int) $get['registered_session'] : null;
+    $sessionId = isset($get['session_id']) ? (int) $get['session_id'] : 0;
+    $userId = (int) ($session['user_id'] ?? 0);
+
+    $inscriptionOk = false;
+    $inscriptionErreur = '';
+
+    if ($step === 3 && $sessionId > 0 && $userId > 0) {
+        try {
+            $inscriptionOk = inscrire_utilisateur_session($sessionId, $userId);
+            if (!$inscriptionOk) {
+                $inscriptionErreur = "L'enregistrement n'a pas pu aboutir.";
+            }
+        } catch (PDOException $e) {
+            $inscriptionErreur = "Erreur base de données lors de l'inscription.";
+        }
+    }
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initials',
+        'step',
+        'selectedSlot',
+        'responsable',
+        'site',
+        'dateDebut',
+        'dateFin',
+        'equipements',
+        'activeSessions',
+        'registeredSessionId',
+        'sessionId',
+        'inscriptionOk',
+        'inscriptionErreur'
+    );
+}
+
+function get_participation($id_sess, $id_util)
+{
+    $bdd = get_bdd();
+
+    $sql = 'SELECT * FROM PARTICIPER WHERE id_sess = ? AND id_util = ?';
+
+    $query = $bdd->prepare($sql);
+    $query->execute([$id_sess, $id_util]);
+    $participation = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $participation ?: null;
 }
