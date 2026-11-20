@@ -1,3 +1,4 @@
+<?php include ("../model/ECDashboardModel.php")?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -91,7 +92,7 @@
               <h3>Projets actifs</h3>
               <p>2 échéances cette semaine</p>
               <div class="card-actions">
-                <button>Proposer un projet</button>
+                <a href="ECCreateProject.php"><button>Proposer un projet</button></a>
                 <button>Voir mes projets</button>
               </div>
             </article>
@@ -106,7 +107,7 @@
               <h3>Expérimentations</h3>
               <p>8 en cours · 4 à valider</p>
               <div class="card-actions">
-                <button>Créer une expérimentation</button>
+                <a href="ECCreateExp.php"><button >Créer une expérimentation</button></a>
               </div>
             </article>
 
@@ -138,19 +139,29 @@
           <article class="recent-card">
             <h2>Expérimentations récentes</h2>
             <div class="experiment-list">
+              <?php foreach(get_experimentations() as $exp){?>
               <div class="experiment-row">
                 <span class="status-marker green" aria-hidden="true"></span>
                 <div class="experiment-info">
-                  <h3>Analyse des interactions pédagogiques</h3>
-                  <p>En cours</p>
+                  <h3><?php echo $exp['titre_exp'];?></h3>
+                  <p><?php $dateAjd = new DateTimeImmutable();
+                  if(new DateTimeImmutable($exp['datefin_exp']) < $dateAjd){
+                    echo "Terminée";
+                  } 
+                  else{
+                    echo "En cours";
+                  }
+                  ?></p>
                   <button>
                     <span>Voir la fiche</span>
                     <span class="font-awesome" aria-hidden="true">&#xf061;</span>
                   </button>
                 </div>
-                <time>21 sept.</time>
+                <time><?php echo $exp['datefin_exp']; ?></time>
               </div>
+              <?php }?>
 
+              <!--
               <div class="experiment-row">
                 <span class="status-marker terracotta" aria-hidden="true"></span>
                 <div class="experiment-info">
@@ -176,7 +187,8 @@
                 </div>
                 <time>23 sept.</time>
               </div>
-            </div>
+            </div> -->
+
           </article>
 
           <aside class="deadline-card">
