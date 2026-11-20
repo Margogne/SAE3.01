@@ -1,3 +1,6 @@
+<?php 
+echo var_dump($_POST). "testsetestsetsetset";
+include("../model/ECCreateExpModel.php") ?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -37,7 +40,7 @@
 
       <main id="main" class="main-content">
         <div class="content-grid">
-          <form class="experiment-form">
+          <form class="experiment-form" method="POST">
             <section class="form-card first-card">
               <h2>
                 <span class="fa-icon" aria-hidden="true">&#xf044;</span>
@@ -45,18 +48,19 @@
               </h2>
 
               <label class="field project-field">
-                <span>Projet associé *</span>
-                <select name="project" required>
-                  <option value="" disabled selected>Choisir un projet</option>
-                  <option>Projet de recherche pédagogique</option>
-                  <option>Expérience d’immersion virtuelle</option>
-                </select>
-              </label>
+              <span>Projet associé *</span>
+              <select name="id_proj" required>
+                <option value="" disabled selected>Choisir un projet</option>
+                <?php foreach (get_projets() as $projet) { ?>
+                  <option value="<?= (int) $projet['id_proj']; ?>"> <?php echo $projet['nom_proj']; ?></option>
+                <?php } ?>
+              </select>
+            </label>
 
               <label class="field">
                 <span>Titre de l’expérimenation *</span>
                 <input
-                  name="title"
+                  name="titre_exp"
                   required
                   type="text"
                   placeholder="Ex: Étude ergonomique des casques VR en environnement pédagogique"
@@ -66,7 +70,7 @@
               <label class="field">
                 <span>Description courte (résumé pour les catalogues/listes) *</span>
                 <input
-                  name="summary"
+                  name="desc_exp"
                   required
                   type="text"
                   placeholder="Résumé en 1 ou 2 phrases pour l'affichage synthétique dans l'application..."
@@ -85,11 +89,11 @@
               <div class="date-row">
                 <label class="field">
                   <span>Date de Début de l’experimentation *</span>
-                  <input name="startDate" required type="date" />
+                  <input name="datedeb_exp" required type="date" />
                 </label>
                 <label class="field">
                   <span>Date de Fin de l’expérimentation *</span>
-                  <input name="endDate" required type="date" />
+                  <input name="datefin_exp" required type="date" />
                 </label>
               </div>
             </section>
