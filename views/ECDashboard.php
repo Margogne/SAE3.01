@@ -9,7 +9,7 @@
   <body>
     <div class="app-shell">
       <?php
-        include '../model/header.php';
+        include '../model/ECHeaderModel.php';
       ?>
 
       <main class="dashboard-content">
