@@ -1,9 +1,9 @@
 <?php
-echo var_dump($_POST);
+
 if(isset($_POST["titre_exp"]) && isset( $_POST["desc_exp"]) && isset($_POST["id_proj"])){
 
     insert_exp();
-    echo "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    echo var_dump($_POST);
 
 }
 function get_bdd()
