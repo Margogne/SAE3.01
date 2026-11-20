@@ -10,29 +10,22 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Récupération de l'ID expérimentation
-$id_exp = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-if ($id_exp <= 0) {
+$idExp = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+if ($idExp <= 0) {
     header("Location: PartAcc.php");
     exit();
 }
 
 // Chargement des données de l'exp depuis la BDD
-$exp = get_exp_details($id_exp);
+$exp = get_exp_details($idExp);
 if (!$exp) {
     header("Location: PartAcc.php");
     exit();
 }
 
-// Infos utilisateur en session
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Participant';
-$initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
-
-// Gestion de l'inscription via l'URL
-$step = isset($_GET['step']) ? (int) $_GET['step'] : 0;
-$selectedSlot = isset($_GET['slot']) ? (int) $_GET['slot'] : null;
-$isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
+// Préparation des données de la page dans model.php
+$pageData = prepare_part_exp_sess_data($exp, $_GET, $_SESSION);
+extract($pageData);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -72,10 +65,10 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <span class="fa" style="font-size: 9px;">&#xf078;</span>
                     </button>
                     <div class="dropdown language-menu" role="menu" style="display: none;">
-                        <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                        <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                                 class="fa">&#xf00c;</span></a>
-                        <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
-                        <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                        <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
                     </div>
                 </div>
 
@@ -101,7 +94,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                 <!-- Profil -->
                 <div class="menu-anchor profile-anchor">
                     <button type="button" class="profile-button" aria-haspopup="menu">
-                        <span class="avatar"><?= htmlspecialchars($initiales) ?></span>
+                        <span class="avatar"><?= htmlspecialchars($initials) ?></span>
                         <span class="profile-copy">
                             <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
                             <small><?= htmlspecialchars($userRole) ?></small>
@@ -110,7 +103,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                     </button>
                     <div class="dropdown profile-menu" role="menu" style="display: none;">
                         <div class="profile-menu-heading">
-                            <span class="avatar dark"><?= htmlspecialchars($initiales) ?></span>
+                            <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
                             <span>
                                 <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
                                 <small><?= htmlspecialchars($userRole) ?></small>
@@ -121,7 +114,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                         <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span>
                             Paramètres</a>
                         <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                                class="fa">&#xf2f5;</span> Se déconnecter</a>
+                                class="fa">&#xf2f5;</span>Se déconnecter</a>
                     </div>
                 </div>
             </div>
@@ -138,7 +131,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                 </a>
                 <div class="badges">
                     <span><?= htmlspecialchars($exp['nom_proj'] ?? 'Expérimentation') ?></span>
-                    <span class="status"><span class="fa">&#xf111;</span> En cours</span>
+                    <span class="status"> En cours</span>
                 </div>
                 <h1><?= htmlspecialchars($exp['titre_exp']) ?></h1>
                 <div class="project-meta">
@@ -182,27 +175,53 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                             <dt>Rétribution / Indemnisation :</dt>
                             <dd><?= !empty($exp['retrib_exp']) ? htmlspecialchars($exp['retrib_exp']) : 'Aucune' ?></dd>
                         </div>
+                        <div>
+                            <dt>Description &amp; Objectifs Scientifiques :</dt>
+                            <dd><?= nl2br(htmlspecialchars($exp['desc_exp'] ?? 'Aucune description disponible pour cette expérimentation.')) ?>
+                            </dd>
+                        </div>
                     </dl>
                 </article>
 
-                <!-- Description -->
+                <!-- Listing -->
                 <article class="description-card">
                     <header>
-                        <h2><span class="fa">&#xf036;</span> Description &amp; Objectifs Scientifiques</h2>
-                        <a href="#rapports" class="btn-reports">Voir les rapports d’activités</a>
+                        <h2><span class="fa">&#xf073;</span> Sessions disponibles</h2>
                     </header>
-                    <p>
-                        <?= nl2br(htmlspecialchars($exp['desc_exp'] ?? 'Aucune description disponible pour cette expérimentation.')) ?>
-                    </p>
+
+                    <?php if (empty($activeSessions)): ?>
+                        <p>Aucune session disponible pour cette expérimentation.</p>
+                    <?php else: ?>
+                        <ul class="sessions-list">
+                            <?php foreach ($activeSessions as $session): ?>
+                                <?php
+                                $sessId = (int) ($session['id_sess'] ?? 0);
+                                $sessDebut = !empty($session['datedeb_sess']) ? date('d/m/Y H:i', strtotime($session['datedeb_sess'])) : 'Date début non définie';
+                                $sessFin = !empty($session['datefin_sess']) ? date('d/m/Y H:i', strtotime($session['datefin_sess'])) : 'Date fin non définie';
+                                $sessStatut = $session['statut_sess'] ?? 'Non précisé';
+                                ?>
+                                <li class="session-item">
+                                    <div class="session-info">
+                                        <strong>Session #<?= htmlspecialchars((string) $sessId) ?> — Du
+                                            <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></strong>
+                                        <span class="session-status-sub"><?= htmlspecialchars($sessStatut) ?></span>
+                                    </div>
+                                    <!-- Bouton d'inscription -->
+                                    <?php /*la variable*/ $userId = (int) ($_SESSION['user_id'] ?? 0); ?>
+                                    <?php if (get_participation($sessId, $userId)): ?>
+                                        <span class="session-register-btn registered">Inscrit</span>
+                                    <?php else: ?>
+                                        <a href="?id=<?= $idExp ?>&amp;session_id=<?= $sessId ?>&amp;step=1"
+                                            class="session-register-btn">
+                                            S’inscrire
+                                        </a>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </article>
             </div>
-
-            <!-- Bouton d'inscription -->
-            <?php if ($isRegistered): ?>
-                <span class="register-button registered">Inscrit</span>
-            <?php else: ?>
-                <a href="?step=1" class="register-button">S’inscrire</a>
-            <?php endif; ?>
         </main>
 
         <!-- PIED DE PAGE -->
@@ -218,7 +237,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
         <?php if ($step >= 1 && $step <= 3): ?>
             <div class="modal-backdrop" role="dialog" aria-modal="true">
                 <div class="consent-modal">
-                    <a href="PartExpSess.php?id=<?= $id_exp ?>" class="modal-close" aria-label="Fermer">×</a>
+                    <a href="PartExpSess.php?id=<?= $idExp ?>" class="modal-close" aria-label="Fermer">×</a>
 
                     <p class="modal-kicker">
                         <?= $step === 1 ? 'fiche consentement' : ($step === 2 ? 'sélection créneaux' : 'confirmation') ?>
@@ -239,8 +258,8 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                             <li>Droit de retrait à tout moment sans justification</li>
                         </ul>
                         <div class="modal-actions">
-                            <a href="PartExpSess.php?id=<?= $id_exp ?>" class="secondary-button">Retour</a>
-                            <a href="?id=<?= $id_exp ?>&step=2" class="next-button">
+                            <a href="PartExpSess.php?id=<?= $idExp ?>" class="secondary-button">Retour</a>
+                            <a href="?id=<?= $idExp ?>&amp;session_id=<?= $sessionId ?>&amp;step=2" class="next-button">
                                 <strong>Accepter</strong>
                                 <small>Suivant</small>
                             </a>
@@ -249,7 +268,8 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                     <?php elseif ($step === 2): ?>
                         <h2>Sélection des créneaux horaires :</h2>
                         <form method="GET" action="PartExpSess.php" class="slot-form">
-                            <input type="hidden" name="id" value="<?= $id_exp ?>" />
+                            <input type="hidden" name="id" value="<?= $idExp ?>" />
+                            <input type="hidden" name="session_id" value="<?= $sessionId ?>" />
                             <input type="hidden" name="step" value="3" />
                             <div class="slot-list">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -260,7 +280,7 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
                                 <?php endfor; ?>
                             </div>
                             <div class="modal-actions">
-                                <a href="?id=<?= $id_exp ?>&step=1" class="secondary-button">Retour</a>
+                                <a href="?id=<?= $idExp ?>&step=1" class="secondary-button">Retour</a>
                                 <button type="submit" class="next-button">
                                     <strong>Valider</strong>
                                     <small>Suivant</small>
@@ -270,20 +290,26 @@ $isRegistered = isset($_GET['registered']) && $_GET['registered'] === '1';
 
                     <?php elseif ($step === 3): ?>
                         <div class="confirmation">
-                            <span class="fa">&#xf00c;</span>
-                            <h2>Inscription confirmée</h2>
-                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été enregistrée.</p>
+                            <?php if ($inscriptionOk): ?>
+                                <span class="fa">&#xf00c;</span>
+                                <h2>Inscription confirmée</h2>
+                                <p>
+                                    Votre inscription à la session #<?= htmlspecialchars((string) $sessionId) ?>
+                                    (horaire <?= htmlspecialchars((string) $selectedSlot) ?>) a bien été enregistrée.
+                                </p>
+                            <?php else: ?>
+                                <h2>Inscription non enregistrée</h2>
+                                <p><?= htmlspecialchars($inscriptionErreur ?: 'Session invalide.') ?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="modal-actions">
-                            <a href="?id=<?= $id_exp ?>&registered=1" class="next-button done">Terminer</a>
+                            <a href="?id=<?= $idExp ?>&amp;registered_session=<?= $sessionId ?>"
+                                class="next-button done">Terminer</a>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
         <?php endif; ?>
-
     </div>
-
 </body>
-
 </html>

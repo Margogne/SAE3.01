@@ -1,49 +1,14 @@
 <?php
 session_start();
-
 require_once '../model/model.php';
 
-// Sécurité : redirection si l'utilisateur n'est pas connecté
-if (!isset($_SESSION['user_id'])) {
-  header("Location: ID.php");
-  exit();
+$pageData = init_part_acc_page($_GET['search'] ?? '', $_SESSION);
+if ($pageData === null) {
+    header('Location: ID.php');
+    exit();
 }
 
-// 1. RÉCUPÉRATION DE TOUS LES PROJETS DEPUIS LA BASE DE DONNÉES
-$ExperimentationsData = Get_Exp_WithSess();
-
-// 2. RÉCUPÉRATION DES PARAMÈTRES DE RECHERCHE ($_GET)
-$searchQuery = trim($_GET['search'] ?? '');
-
-// 3. FILTRAGE DES EXPÉRIMENTATIONS EN PHP
-$filteredProjects = array_filter($ExperimentationsData, function ($project) use ($searchQuery) {
-  $searchable = mb_strtolower($project['title'] . ' ' . $project['category'] . ' ' . $project['description'], 'UTF-8');
-  return ($searchQuery === '') || (mb_strpos($searchable, mb_strtolower($searchQuery, 'UTF-8')) !== false);
-});
-
-// 4. INFOS UTILISATEUR EN SESSION
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Participant';
-
-$initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
-if (empty($initiales)) {
-  $initiales = 'U';
-}
-
-// 5. PRÉPARATION DES INFOS UTILISATEUR EN SESSION
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Participant';
-
-$initiales = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1));
-if (empty($initiales)) {
-  $initiales = 'U';
-}
-
-// ============================================================================
-// HTML DE LA PAGE
-// ============================================================================
+extract($pageData);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -52,23 +17,17 @@ if (empty($initiales)) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page participant - Le Mans Université</title>
-
-  <!-- Lien vers la feuille de style externe -->
   <link rel="stylesheet" href="../style/Partstyle.css" />
 </head>
 
 <body>
-
-  <!-- DIV principale de l'application -->
   <div class="app-shell" data-node-id="281:2782">
 
-    <!-- HEADER -- Bandeau navigation -->
     <header class="site-header" id="siteHeader" data-node-id="281:2908">
       <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
         <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
       </a>
 
-      <!-- Navigation principale -->
       <nav class="main-nav" aria-label="Navigation principale">
         <a class="nav-link" href="#dashboard">Dashboard</a>
         <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
@@ -76,10 +35,7 @@ if (empty($initiales)) {
         <a class="nav-link" href="#messagerie">Messagerie</a>
       </nav>
 
-      <!-- Actions de l'en-tête (Langue, Notifications, Profil) -->
       <div class="header-actions">
-
-        <!-- Sélecteur de langue (fonctionne au survol/clic via CSS) -->
         <div class="menu-anchor language-anchor">
           <button type="button" class="header-button language-button" aria-haspopup="menu">
             <span>FR</span>
@@ -92,7 +48,6 @@ if (empty($initiales)) {
           </div>
         </div>
 
-        <!-- Menu des notifications -->
         <div class="menu-anchor">
           <button type="button" class="header-button icon-button" aria-label="Notifications" aria-haspopup="dialog">
             <span class="fa">&#xf0f3;</span>
@@ -109,10 +64,9 @@ if (empty($initiales)) {
           </div>
         </div>
 
-        <!-- Menu du profil utilisateur -->
         <div class="menu-anchor profile-anchor">
           <button type="button" class="profile-button" aria-haspopup="menu">
-            <span class="avatar"><?= htmlspecialchars($initiales) ?></span>
+            <span class="avatar"><?= htmlspecialchars($initials) ?></span>
             <span class="profile-copy">
               <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
               <small><?= htmlspecialchars($userRole) ?></small>
@@ -121,7 +75,7 @@ if (empty($initiales)) {
           </button>
           <div class="dropdown profile-menu" role="menu" style="display: none;">
             <div class="profile-menu-heading">
-              <span class="avatar dark"><?= htmlspecialchars($initiales) ?></span>
+              <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
               <span>
                 <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
                 <small><?= htmlspecialchars($userRole) ?></small>
@@ -136,7 +90,6 @@ if (empty($initiales)) {
       </div>
     </header>
 
-    <!-- En-tête de la page -->
     <section class="page-heading" id="projets">
       <h1>
         <img src="../assets/img/SymbolFichier.png" alt="" />
@@ -144,9 +97,7 @@ if (empty($initiales)) {
       </h1>
     </section>
 
-    <!-- Corps principal -->
     <main>
-      <!-- Panneau de filtres et recherche  -->
       <section class="filter-panel" aria-label="Recherche de projets">
         <h2>
           <span class="fa">&#xf0b0;</span>
@@ -158,7 +109,7 @@ if (empty($initiales)) {
             <span>Mot-clé / Titre</span>
             <span class="search-field">
               <span class="fa search-icon">&#xf002;</span>
-              <input type="search" name="search" value="<?= htmlspecialchars($searchQuery) ?>"
+              <input type="search" name="search" value="<?= htmlspecialchars($search) ?>"
                 placeholder="Rechercher un projet, un mot-clé..." />
             </span>
           </label>
@@ -167,16 +118,15 @@ if (empty($initiales)) {
             <button type="submit" class="btn-filter-submit">
               <span class="fa">&#xf002;</span> Rechercher
             </button>
-            <?php if ($searchQuery !== ''): ?>
+            <?php if ($search !== ''): ?>
               <a href="PartAcc.php" class="btn-filter-reset">Réinitialiser</a>
             <?php endif; ?>
           </div>
         </form>
       </section>
 
-      <!-- Grille des projets générée en PHP -->
       <section class="project-grid" id="projectGrid" aria-live="polite">
-        <?php if (empty($filteredProjects)): ?>
+        <?php if (empty($projects)): ?>
           <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ba8bd;">
             <span class="fa" style="font-size: 32px; margin-bottom: 12px; display: block;">&#xf002;</span>
             <strong>Aucun projet trouvé</strong>
@@ -187,7 +137,7 @@ if (empty($initiales)) {
             </a>
           </div>
         <?php else: ?>
-          <?php foreach ($filteredProjects as $project): ?>
+          <?php foreach ($projects as $project): ?>
             <article class="project-card">
               <div class="project-image">
                 <img src="<?= htmlspecialchars($project['image']) ?>" alt="<?= htmlspecialchars($project['title']) ?>" />
@@ -197,7 +147,6 @@ if (empty($initiales)) {
                 <h3><?= htmlspecialchars($project['title']) ?></h3>
                 <p class="project-description"><?= htmlspecialchars($project['description']) ?></p>
                 <div class="project-footer">
-                  <!-- Redirection directe vers la page 2 avec l'ID de l'expérimentation -->
                   <a href="PartExpSess.php?id=<?= urlencode((string) $project['id']) ?>" class="view-details-btn"
                     style="text-decoration: none;">
                     Voir la fiche <span class="fa">&#xf061;</span>
@@ -210,7 +159,6 @@ if (empty($initiales)) {
       </section>
     </main>
 
-    <!-- Pied de page -->
     <footer>
       <span class="fa">&#xf19d;</span>
       <p>
