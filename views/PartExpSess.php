@@ -232,13 +232,16 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
                                 ?>
                                 <li class="session-item">
                                     <div class="session-info">
-                                        <strong>Session #<?= htmlspecialchars((string) $sessId) ?> — Du <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></strong>
+                                        <strong>Session #<?= htmlspecialchars((string) $sessId) ?> — Du
+                                            <?= htmlspecialchars($sessDebut) ?> au <?= htmlspecialchars($sessFin) ?></strong>
                                         <span class="session-status-sub"><?= htmlspecialchars($sessStatut) ?></span>
                                     </div>
+                                    <!-- Bouton d'inscription -->
                                     <?php if ($isThisSessionRegistered): ?>
                                         <span class="session-register-btn registered">Inscrit</span>
                                     <?php else: ?>
-                                        <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessId ?>&amp;step=1" class="session-register-btn">
+                                        <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessId ?>&amp;step=1"
+                                            class="session-register-btn">
                                             S’inscrire
                                         </a>
                                     <?php endif; ?>
@@ -248,13 +251,6 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
                     <?php endif; ?>
                 </article>
             </div>
-
-            <!-- Bouton d'inscription -->
-            <?php if ($isRegistered): ?>
-                <span class="register-button registered">Inscrit</span>
-            <?php else: ?>
-                <a href="?step=1" class="register-button">S’inscrire</a>
-            <?php endif; ?>
         </main>
 
         <!-- PIED DE PAGE -->
