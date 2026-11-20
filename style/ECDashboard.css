@@ -80,6 +80,7 @@
     min-width: 320px;
     min-height: 100dvh;
     background: #f4f6f8;
+    margin: 0;
   }
 
   button,

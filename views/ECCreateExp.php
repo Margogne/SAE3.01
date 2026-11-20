@@ -9,7 +9,7 @@
   <body>
     <div class="app-shell">
       <?php
-        //include '../model/header.php';
+        include '../model/header.php';
       ?>
       <section class="page-heading">
         <div class="page-heading-inner">
