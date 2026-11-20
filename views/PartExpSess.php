@@ -55,6 +55,24 @@ $sessionsActives = array_filter($exp['sessions'] ?? [], function ($session) {
 
 $registeredSessionId = isset($_GET['registered_session']) ? (int) $_GET['registered_session'] : null;
 $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
+
+// Gestion de l'inscription à la session si l'utilisateur a validé
+$userId = (int) $_SESSION['user_id'];
+$sessionId = $modalSessionId ?? 0;
+
+$inscriptionOk = false;
+$inscriptionErreur = '';
+
+if ($step === 3 && $sessionId > 0 && $userId > 0) {
+    try {
+        $inscriptionOk = inscrire_utilisateur_session($sessionId, $userId);
+        if (!$inscriptionOk) {
+            $inscriptionErreur = "L'enregistrement n'a pas pu aboutir.";
+        }
+    } catch (PDOException $e) {
+        $inscriptionErreur = "Erreur base de données lors de l'inscription.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -160,7 +178,7 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
                 </a>
                 <div class="badges">
                     <span><?= htmlspecialchars($exp['nom_proj'] ?? 'Expérimentation') ?></span>
-                    <span class="status"><span class="fa">&#xf111;</span> En cours</span>
+                    <span class="status"> En cours</span>
                 </div>
                 <h1><?= htmlspecialchars($exp['titre_exp']) ?></h1>
                 <div class="project-meta">
@@ -288,7 +306,7 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
                         </ul>
                         <div class="modal-actions">
                             <a href="PartExpSess.php?id=<?= $id_exp ?>" class="secondary-button">Retour</a>
-                            <a href="?id=<?= $id_exp ?>&step=2" class="next-button">
+                            <a href="?id=<?= $id_exp ?>&amp;session_id=<?= $sessionId ?>&amp;step=2" class="next-button">
                                 <strong>Accepter</strong>
                                 <small>Suivant</small>
                             </a>
@@ -298,6 +316,7 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
                         <h2>Sélection des créneaux horaires :</h2>
                         <form method="GET" action="PartExpSess.php" class="slot-form">
                             <input type="hidden" name="id" value="<?= $id_exp ?>" />
+                            <input type="hidden" name="session_id" value="<?= $sessionId ?>" />
                             <input type="hidden" name="step" value="3" />
                             <div class="slot-list">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -318,21 +337,26 @@ $modalSessionId = isset($_GET['session_id']) ? (int) $_GET['session_id'] : null;
 
                     <?php elseif ($step === 3): ?>
                         <div class="confirmation">
-                            <span class="fa">&#xf00c;</span>
-                            <h2>Inscription confirmée</h2>
-                            <p>Votre demande pour l’horaire <?= htmlspecialchars((string) $selectedSlot) ?> a bien été
-                                enregistrée.</p>
+                            <?php if ($inscriptionOk): ?>
+                                <span class="fa">&#xf00c;</span>
+                                <h2>Inscription confirmée</h2>
+                                <p>
+                                    Votre inscription à la session #<?= htmlspecialchars((string) $sessionId) ?>
+                                    (horaire <?= htmlspecialchars((string) $selectedSlot) ?>) a bien été enregistrée.
+                                </p>
+                            <?php else: ?>
+                                <h2>Inscription non enregistrée</h2>
+                                <p><?= htmlspecialchars($inscriptionErreur ?: 'Session invalide.') ?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="modal-actions">
-                            <a href="?id=<?= $id_exp ?>&registered=1" class="next-button done">Terminer</a>
+                            <a href="?id=<?= $id_exp ?>&amp;registered_session=<?= $sessionId ?>"
+                                class="next-button done">Terminer</a>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
         <?php endif; ?>
-
     </div>
-
 </body>
-
 </html>

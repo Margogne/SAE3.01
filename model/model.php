@@ -138,3 +138,17 @@ function get_exp_details($id_exp)
 
     return $exp;
 }
+
+function inscrire_utilisateur_session(int $idSess, int $idUtil): bool
+{
+    $bdd = get_bdd();
+
+    // INSERT IGNORE évite une erreur SQL si l'utilisateur est déjà inscrit à cette session
+    $sql = 'INSERT IGNORE INTO PARTICIPER (id_sess, id_util) VALUES (:id_sess, :id_util)';
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':id_sess' => $idSess,
+        ':id_util' => $idUtil,
+    ]);
+}
