@@ -1,8 +1,6 @@
 <?php
 
-if(isset($_POST["titre_exp"]) && isset( $_POST["desc_exp"]) && isset($_POST["id_proj"])){
-    insert_exp();
-}
+
 function get_bdd()
 {
     $serveur = "localhost";
