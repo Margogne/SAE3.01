@@ -34,7 +34,8 @@ extract($pageData);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?= htmlspecialchars($exp['titre_exp']) ?> - Le Mans Université</title>
-    <link rel="stylesheet" href="../style/Partstyle.css" />
+    <link rel="stylesheet" href="../style/PartGenStyle.css" />
+    <link rel="stylesheet" href="../style/PartExpStyle.css" />
 </head>
 
 <body>
@@ -49,8 +50,8 @@ extract($pageData);
 
             <!-- Navigation principale -->
             <nav class="main-nav" aria-label="Navigation principale">
-                <a class="nav-link" href="#dashboard">Dashboard</a>
-                <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
+                <a class="nav-link" href="PartAcc.php">Accueil</a>
+                <a class="nav-link active" href="#Experimentation">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
                 <a class="nav-link" href="#messagerie">Messagerie</a>
             </nav>

@@ -17,7 +17,7 @@ extract($pageData);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page participant - Le Mans Université</title>
-  <link rel="stylesheet" href="../style/Partstyle.css" />
+  <link rel="stylesheet" href="../style/PartGenStyle.css" />
 </head>
 
 <body>
@@ -29,8 +29,8 @@ extract($pageData);
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
-        <a class="nav-link" href="#dashboard">Dashboard</a>
-        <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
+        <a class="nav-link active" href="PartAcc.php">Accueil</a>
+        <a class="nav-link" href="#Experimentation">Expérimentations</a>
         <a class="nav-link" href="#ressources">Ressources</a>
         <a class="nav-link" href="#messagerie">Messagerie</a>
       </nav>
@@ -84,7 +84,8 @@ extract($pageData);
             <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</a>
             <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span> Paramètres</a>
             <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                class="fa">&#xf2f5;</span> Se déconnecter</a>
+                class="fa">&#xf2f5;</span> Se déconnecter
+            </a>
           </div>
         </div>
       </div>

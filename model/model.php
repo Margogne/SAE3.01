@@ -177,6 +177,100 @@ function init_part_acc_page(string $rawSearch, array $session): ?array
     return compact('search', 'projects', 'userNom', 'userPrenom', 'userRole', 'initials');
 }
 
+function get_participation($id_sess, $id_util)
+{
+    $bdd = get_bdd();
+
+    $sql = 'SELECT * FROM PARTICIPER WHERE id_sess = ? AND id_util = ?';
+
+    $query = $bdd->prepare($sql);
+    $query->execute([$id_sess, $id_util]);
+    $participation = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $participation ?: null;
+}
+
+function compute_initials(string $prenom, string $nom): string
+{
+    $p = trim($prenom);
+    $n = trim($nom);
+
+    $first = function_exists('mb_substr') ? mb_substr($p, 0, 1, 'UTF-8') : substr($p, 0, 1);
+    $last = function_exists('mb_substr') ? mb_substr($n, 0, 1, 'UTF-8') : substr($n, 0, 1);
+
+    $initials = strtoupper($first . $last);
+
+    return $initials !== '' ? $initials : 'U';
+}
+
+function process_part_profil(array $post, array &$session): array
+{
+    $formData = [
+        'age' => isset($post['age']) && $post['age'] !== '' ? (int) $post['age'] : '',
+        'gender' => trim((string) ($post['gender'] ?? '')),
+        'details' => trim((string) ($post['details'] ?? '')),
+    ];
+
+    $nom = trim((string) ($post['lastName'] ?? ''));
+    $prenom = trim((string) ($post['firstName'] ?? ''));
+    $age = (int) ($post['age'] ?? 0);
+    $genre = $formData['gender'];
+
+    if ($nom === '' || $prenom === '' || $age < 1 || $age > 120 || $genre === '') {
+        return [
+            'submitted' => false,
+            'errorMessage' => 'Veuillez renseigner tous les champs obligatoires correctement.',
+            'formData' => $formData,
+        ];
+    }
+
+    $session['user_nom'] = $nom;
+    $session['user_prenom'] = $prenom;
+
+    return [
+        'submitted' => true,
+        'errorMessage' => '',
+        'formData' => $formData,
+    ];
+}
+
+function prepare_part_profil_page_data(array $session, string $method, array $post): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $submitted = false;
+    $errorMessage = '';
+    $formData = [
+        'age' => '',
+        'gender' => '',
+        'details' => '',
+    ];
+
+    if ($method === 'POST') {
+        $result = process_part_profil($post, $session);
+        $submitted = $result['submitted'];
+        $errorMessage = $result['errorMessage'];
+        $formData = $result['formData'];
+    }
+
+    $userNom = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole = (string) ($session['user_role'] ?? 'Participant');
+    $initiales = compute_initials($userPrenom, $userNom);
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initiales',
+        'submitted',
+        'errorMessage',
+        'formData'
+    );
+}
+
 function prepare_part_exp_sess_data(array $exp, array $get, array $session): array
 {
     $userNom = $session['user_nom'] ?? 'Utilisateur';
@@ -240,17 +334,4 @@ function prepare_part_exp_sess_data(array $exp, array $get, array $session): arr
         'inscriptionOk',
         'inscriptionErreur'
     );
-}
-
-function get_participation($id_sess, $id_util)
-{
-    $bdd = get_bdd();
-
-    $sql = 'SELECT * FROM PARTICIPER WHERE id_sess = ? AND id_util = ?';
-
-    $query = $bdd->prepare($sql);
-    $query->execute([$id_sess, $id_util]);
-    $participation = $query->fetch(PDO::FETCH_ASSOC);
-
-    return $participation ?: null;
 }

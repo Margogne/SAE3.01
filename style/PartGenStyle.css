@@ -1,0 +1,589 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   1. POLICES & BASE
+   ========================================================================== */
+
+@font-face {
+  font-family: "Font Awesome 5 Free:Solid";
+  src: url("https://static.figma.com/font/Font%20Awesome%205%20Free-Solid-900_1") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "Inter:Bold";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Inter:Medium";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Inter:Regular";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Roboto:Bold";
+  src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Roboto:Regular";
+  src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  color: #1d284f;
+  background: #fff;
+  font-family: "Roboto:Regular", Arial, sans-serif;
+  font-synthesis: none;
+}
+
+@layer base {
+  html,
+  body {
+    min-width: 320px;
+    min-height: 100dvh;
+    background: #fff;
+    margin: 0;
+    scroll-behavior: smooth;
+  }
+
+  button,
+  a,
+  input,
+  select {
+    outline-color: #c94a29;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  background: #fff;
+}
+
+.fa {
+  font-family: "Font Awesome 5 Free:Solid";
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ==========================================================================
+   2. EN-TÊTE, NAVIGATION & MENUS
+   ========================================================================== */
+
+.site-header {
+  position: relative;
+  z-index: 30;
+  display: grid;
+  min-height: 82px;
+  grid-template-columns: 250px 1fr auto;
+  align-items: center;
+  padding: 0 4.1vw;
+  border-bottom: 1px solid #dce3e9;
+  background: #1d284f;
+}
+
+.brand img {
+  display: block;
+  width: 181px;
+  height: 68px;
+  object-fit: contain;
+}
+
+.main-nav {
+  display: flex;
+  align-self: stretch;
+  justify-content: center;
+  gap: 4px;
+}
+
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 17px;
+  color: #fff;
+  font-family: "Inter:Bold";
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-link::after {
+  position: absolute;
+  right: 17px;
+  bottom: 20px;
+  left: 17px;
+  height: 3px;
+  border-radius: 999px;
+  background: #c94a29;
+  content: "";
+  opacity: 0;
+  transform: scaleX(0.5);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-anchor {
+  position: relative;
+}
+
+.menu-anchor:hover .dropdown,
+.menu-anchor:focus-within .dropdown {
+  display: block !important;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  width: 215px;
+  height: 52px;
+  gap: 10px;
+  padding: 0 10px;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 10px;
+  background: #1d284f;
+  color: #fff;
+  cursor: pointer;
+}
+
+.avatar {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  border-radius: 999px;
+  color: #fff;
+  font-family: "Inter:Bold";
+  font-size: 11px;
+}
+
+.avatar.dark {
+  background: #1d284f;
+}
+
+.profile-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-family: "Inter:Bold";
+}
+
+.profile-copy strong {
+  font-size: 13px;
+}
+
+.profile-copy small {
+  font-size: 10px;
+}
+
+.profile-chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 160ms ease;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 50;
+  overflow: hidden;
+  border: 1px solid #dce3e9;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 12px rgba(7, 29, 51, 0.14);
+  color: #152536;
+}
+
+.profile-menu {
+  width: 250px;
+  padding: 8px;
+}
+
+.profile-menu-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 10px 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dropdown-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #152536;
+  cursor: pointer;
+  font-family: "Inter:Medium";
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.dropdown-item.danger {
+  color: #b43f23;
+}
+
+/* ==========================================================================
+   3. CATALOGUE (PartAcc.php)
+   ========================================================================== */
+
+.page-heading {
+  display: flex;
+  min-height: 78px;
+  align-items: center;
+  padding: 20px 4.7vw;
+  background: #0f162e;
+  color: #fff;
+}
+
+.page-heading h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Roboto:Bold";
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.page-heading .fa {
+  color: #c94a29;
+}
+
+main {
+  width: 100%;
+  max-width: 1440px;
+  flex: 1;
+  margin: 0 auto;
+  padding: 32px 48px 48px;
+}
+
+/* --- Panneau de recherche --- */
+.filter-panel {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.filter-panel h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-family: "Roboto:Bold";
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.filter-panel h2 .fa {
+  color: #c94a29;
+}
+
+.filter-form-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-container-single {
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.search-container-single > span:first-child {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-family: "Roboto:Bold";
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.search-field {
+  position: relative;
+  display: block;
+}
+
+.search-field input[type="search"] {
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.filter-actions-single {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn-filter-submit {
+  padding: 10px 20px;
+  background-color: #c94a29;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: "Roboto:Bold";
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.btn-filter-submit:hover {
+  background-color: #a83b1e;
+}
+
+.btn-filter-reset {
+  padding: 10px 16px;
+  background-color: #64748b;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-family: "Roboto:Bold";
+  font-size: 13px;
+  transition: background 150ms ease;
+}
+
+.btn-filter-reset:hover {
+  background-color: #475569;
+}
+
+/* --- Grille des cartes --- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 378.67px));
+  gap: 24px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.project-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.project-card:hover {
+  box-shadow: 0 10px 24px rgba(15, 22, 46, 0.1);
+  transform: translateY(-2px);
+}
+
+.project-image {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.project-image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-content {
+  padding: 18px;
+}
+
+.project-category {
+  margin-bottom: 6px;
+  color: #c94a29;
+  font-family: "Roboto:Bold";
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.project-card h3 {
+  min-height: 29px;
+  color: #1d284f;
+  font-family: "Roboto:Bold";
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.project-description {
+  min-height: 52px;
+  padding-bottom: 16px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.project-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.view-details-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #1d284f;
+  color: #fff;
+  font-family: "Roboto:Bold";
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 150ms ease;
+}
+
+.view-details-btn:hover {
+  background: #c94a29;
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #64748b;
+  text-align: center;
+}
+
+.no-results > .fa {
+  color: #c94a29;
+  font-size: 26px;
+}
+
+.no-results strong {
+  color: #1d284f;
+  font-family: "Roboto:Bold";
+  font-size: 18px;
+}
+
+/* ==========================================================================
+   4. PIED DE PAGE
+   ========================================================================== */
+
+footer {
+  display: flex;
+  min-height: 60px;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 4.7vw;
+  background: #0f162e;
+  color: #9ba8bd;
+  font-size: 12px;
+}
+
+footer > .fa {
+  color: #c94a29;
+  font-size: 20px;
+}
+
+footer strong {
+  font-family: "Roboto:Bold";
+}
+
+/* ==========================================================================
+   5. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+  .site-header {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 24px;
+  }
+
+  .project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .site-header {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 6px 16px;
+  }
+
+  .main-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .profile-anchor {
+    display: none;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
