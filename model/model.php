@@ -177,6 +177,143 @@ function init_part_acc_page(string $rawSearch, array $session): ?array
     return compact('search', 'projects', 'userNom', 'userPrenom', 'userRole', 'initials');
 }
 
+function get_participation($id_sess, $id_util)
+{
+    $bdd = get_bdd();
+
+    $sql = 'SELECT * FROM PARTICIPER WHERE id_sess = ? AND id_util = ?';
+
+    $query = $bdd->prepare($sql);
+    $query->execute([$id_sess, $id_util]);
+    $participation = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $participation ?: null;
+}
+
+function compute_initials(string $prenom, string $nom): string
+{
+    $p = trim($prenom);
+    $n = trim($nom);
+
+    $first = function_exists('mb_substr') ? mb_substr($p, 0, 1, 'UTF-8') : substr($p, 0, 1);
+    $last = function_exists('mb_substr') ? mb_substr($n, 0, 1, 'UTF-8') : substr($n, 0, 1);
+
+    $initials = strtoupper($first . $last);
+
+    return $initials !== '' ? $initials : 'U';
+}
+
+function process_part_profil(array $post, array &$session): array
+{
+    $formData = [
+        'age' => isset($post['age']) && $post['age'] !== '' ? (int) $post['age'] : '',
+        'gender' => trim((string) ($post['gender'] ?? '')),
+        'details' => trim((string) ($post['details'] ?? '')),
+    ];
+
+    $nom = trim((string) ($post['lastName'] ?? ''));
+    $prenom = trim((string) ($post['firstName'] ?? ''));
+    $age = (int) ($post['age'] ?? 0);
+    $genre = $formData['gender'];
+
+    if ($nom === '' || $prenom === '' || $age < 1 || $age > 120 || $genre === '') {
+        return [
+            'submitted' => false,
+            'errorMessage' => 'Veuillez renseigner tous les champs obligatoires correctement.',
+            'formData' => $formData,
+        ];
+    }
+
+    $session['user_nom'] = $nom;
+    $session['user_prenom'] = $prenom;
+
+    return [
+        'submitted' => true,
+        'errorMessage' => '',
+        'formData' => $formData,
+    ];
+}
+
+/* ====================================
+    préparation du profil utilisateur
+   ==================================== */
+
+function prepare_part_profil_page_data(array $session, string $method, array $post): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $userId = (int) $session['user_id'];
+    $dbUser = get_user_profile($userId) ?? [];
+
+    $formData = [
+        'lastName' => (string) ($dbUser['nom_util'] ?? $session['user_nom'] ?? ''),
+        'firstName' => (string) ($dbUser['prenom_util'] ?? $session['user_prenom'] ?? ''),
+        'gender' => (string) ($dbUser['genre_util'] ?? ''),
+        'birthDate' => (string) ($dbUser['date_util'] ?? ''),
+        'details' => (string) ($dbUser['spec_util'] ?? ''),
+    ];
+
+    $submitted = false;
+    $errorMessage = '';
+
+    if ($method === 'POST') {
+        $formData['lastName'] = trim((string) ($post['lastName'] ?? ''));
+        $formData['firstName'] = trim((string) ($post['firstName'] ?? ''));
+        $formData['gender'] = trim((string) ($post['gender'] ?? ''));
+        $formData['birthDate'] = trim((string) ($post['birthDate'] ?? ''));
+        $formData['details'] = trim((string) ($post['details'] ?? ''));
+
+        $dateValide = $formData['birthDate'] === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $formData['birthDate']) === 1;
+
+        if ($formData['lastName'] === '' || $formData['firstName'] === '' || $formData['gender'] === '' || !$dateValide) {
+            $errorMessage = 'Veuillez renseigner tous les champs obligatoires correctement.';
+        } else {
+            $dateParam = $formData['birthDate'] !== '' ? $formData['birthDate'] : null;
+
+            try {
+                $ok = update_user_profile(
+                    $userId,
+                    $formData['lastName'],
+                    $formData['firstName'],
+                    $formData['gender'],
+                    $dateParam,
+                    $formData['details']
+                );
+
+                if ($ok) {
+                    $_SESSION['user_nom'] = $formData['lastName'];
+                    $_SESSION['user_prenom'] = $formData['firstName'];
+                    $submitted = true;
+                } else {
+                    $errorMessage = "La mise à jour du profil n'a pas pu aboutir.";
+                }
+            } catch (PDOException $e) {
+                $errorMessage = 'Erreur base de données lors de la mise à jour du profil.';
+            }
+        }
+    }
+
+    $userNom = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole = (string) ($session['user_role'] ?? $dbUser['type_util'] ?? 'Participant');
+
+    $prenomChar = function_exists('mb_substr') ? mb_substr($userPrenom, 0, 1, 'UTF-8') : substr($userPrenom, 0, 1);
+    $nomChar = function_exists('mb_substr') ? mb_substr($userNom, 0, 1, 'UTF-8') : substr($userNom, 0, 1);
+    $initiales = strtoupper($prenomChar . $nomChar) ?: 'U';
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initiales',
+        'submitted',
+        'errorMessage',
+        'formData'
+    );
+}
+
 function prepare_part_exp_sess_data(array $exp, array $get, array $session): array
 {
     $userNom = $session['user_nom'] ?? 'Utilisateur';
@@ -242,15 +379,42 @@ function prepare_part_exp_sess_data(array $exp, array $get, array $session): arr
     );
 }
 
-function get_participation($id_sess, $id_util)
+/* =================================================================
+   Gestion du profil utilisateur
+   ========================================================== */
+
+function get_user_profile(int $idUtil): ?array
 {
     $bdd = get_bdd();
+    $sql = 'SELECT id_util, nom_util, prenom_util, type_util, date_util, genre_util, langues_util, contr_util, spec_util
+            FROM UTILISATEUR
+            WHERE id_util = :id_util';
+    $stmt = $bdd->prepare($sql);
+    $stmt->execute([':id_util' => $idUtil]);
 
-    $sql = 'SELECT * FROM PARTICIPER WHERE id_sess = ? AND id_util = ?';
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $user ?: null;
+}
 
-    $query = $bdd->prepare($sql);
-    $query->execute([$id_sess, $id_util]);
-    $participation = $query->fetch(PDO::FETCH_ASSOC);
+function update_user_profile(int $idUtil, string $nom, string $prenom, string $genre, ?string $dateUtil, string $spec): bool
+{
+    $bdd = get_bdd();
+    $sql = 'UPDATE UTILISATEUR
+            SET nom_util = :nom,
+                prenom_util = :prenom,
+                genre_util = :genre,
+                date_util = :date_util,
+                spec_util = :spec
+            WHERE id_util = :id_util';
 
-    return $participation ?: null;
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':nom' => $nom,
+        ':prenom' => $prenom,
+        ':genre' => $genre,
+        ':date_util' => $dateUtil,
+        ':spec' => $spec,
+        ':id_util' => $idUtil,
+    ]);
 }

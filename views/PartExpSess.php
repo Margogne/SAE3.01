@@ -34,7 +34,8 @@ extract($pageData);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?= htmlspecialchars($exp['titre_exp']) ?> - Le Mans Université</title>
-    <link rel="stylesheet" href="../style/Partstyle.css" />
+    <link rel="stylesheet" href="../style/PartGenStyle.css" />
+    <link rel="stylesheet" href="../style/PartExpStyle.css" />
 </head>
 
 <body>
@@ -49,8 +50,8 @@ extract($pageData);
 
             <!-- Navigation principale -->
             <nav class="main-nav" aria-label="Navigation principale">
-                <a class="nav-link" href="#dashboard">Dashboard</a>
-                <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
+                <a class="nav-link" href="PartAcc.php">Accueil</a>
+                <a class="nav-link active" href="#Experimentation">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
                 <a class="nav-link" href="#messagerie">Messagerie</a>
             </nav>
@@ -109,8 +110,8 @@ extract($pageData);
                                 <small><?= htmlspecialchars($userRole) ?></small>
                             </span>
                         </div>
-                        <a href="#profil" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon
-                            profil</a>
+                        <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span>
+                            Mon profil</a>
                         <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span>
                             Paramètres</a>
                         <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
@@ -233,7 +234,7 @@ extract($pageData);
             </p>
         </footer>
 
-        <!-- INSCRIPTION EN 3 ÉTAPES /!\GENERER PAR IA/!\-->
+        <!-- INSCRIPTION EN 3 ÉTAPES /!\ GENERER PAR IA/!\-->
         <?php if ($step >= 1 && $step <= 3): ?>
             <div class="modal-backdrop" role="dialog" aria-modal="true">
                 <div class="consent-modal">
@@ -312,4 +313,5 @@ extract($pageData);
         <?php endif; ?>
     </div>
 </body>
+
 </html>
