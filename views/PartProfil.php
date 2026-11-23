@@ -109,46 +109,55 @@ extract($pageData);
             </h1>
         </section>
 
+        <!-- Menu de profil -->
         <main class="profil-main-content">
             <section class="form-panel" aria-label="modification du profil utilisateur">
                 <form method="POST" action="PartProfil.php" class="profile-form">
+                    <!-- champ Nom -->
                     <label>
                         <span class="sr-only">Nom</span>
-                        <input type="text" name="lastName" value="<?= htmlspecialchars($userNom) ?>" placeholder="Nom"
-                            required />
+                        <input type="text" name="lastName" value="<?= htmlspecialchars($formData['lastName']) ?>"
+                            placeholder="Nom" required />
                     </label>
 
+                    <!-- champ Prénom -->
                     <label>
                         <span class="sr-only">Prénom</span>
-                        <input type="text" name="firstName" value="<?= htmlspecialchars($userPrenom) ?>"
+                        <input type="text" name="firstName" value="<?= htmlspecialchars($formData['firstName']) ?>"
                             placeholder="Prénom" required />
                     </label>
 
+                    <!-- champ Âge -->
                     <label>
-                        <span class="sr-only">Âge</span>
-                        <input type="number" name="age" min="1" max="120"
-                            value="<?= htmlspecialchars((string) $formData['age']) ?>" placeholder="Âge" required />
+                        <span class="sr-only">Date de naissance</span>
+                        <input type="date" name="birthDate" value="<?= htmlspecialchars($formData['birthDate']) ?>" />
                     </label>
 
+                    <!-- champ Genre -->
                     <label>
                         <span class="sr-only">Genre</span>
                         <select name="gender" required>
                             <option value="" disabled <?= $formData['gender'] === '' ? 'selected' : '' ?>>Genre</option>
-                            <option value="femme" <?= $formData['gender'] === 'femme' ? 'selected' : '' ?>>Femme</option>
-                            <option value="homme" <?= $formData['gender'] === 'homme' ? 'selected' : '' ?>>Homme</option>
+                            <option value="F" <?= in_array($formData['gender'], ['F', 'femme'], true) ? 'selected' : '' ?>>Femme</option>
+                            <option value="M" <?= in_array($formData['gender'], ['M', 'homme'], true) ? 'selected' : '' ?>>Homme</option>
                             <option value="non-binaire" <?= $formData['gender'] === 'non-binaire' ? 'selected' : '' ?>>
-                                Non-binaire</option>
+                                Non-binaire
+                            </option>
                             <option value="non-precise" <?= $formData['gender'] === 'non-precise' ? 'selected' : '' ?>>Je
-                                préfère ne pas préciser</option>
+                                préfère ne pas préciser
+                            </option>
                         </select>
                     </label>
 
+                    <!-- champ Autres spécificités -->
                     <label>
                         <span class="sr-only">Autres spécificités</span>
                         <textarea name="details"
-                            placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?></textarea>
+                            placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?>
+                        </textarea>
                     </label>
 
+                    <!-- système -->
                     <button type="submit" class="submit-button">Valider</button>
 
                     <?php if ($errorMessage !== ''): ?>

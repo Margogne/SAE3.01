@@ -234,7 +234,7 @@ extract($pageData);
             </p>
         </footer>
 
-        <!-- INSCRIPTION EN 3 ÉTAPES /!\GENERER PAR IA/!\-->
+        <!-- INSCRIPTION EN 3 ÉTAPES /!\ GENERER PAR IA/!\-->
         <?php if ($step >= 1 && $step <= 3): ?>
             <div class="modal-backdrop" role="dialog" aria-modal="true">
                 <div class="consent-modal">
