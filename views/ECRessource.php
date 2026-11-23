@@ -1,4 +1,4 @@
-<?php include("../model/DirRessourceModel.php"); ?>
+<?php include("../model/ECRessourceModel.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +9,7 @@
   <title>Exported Figma Design</title>
   <link href="https://fonts.googleapis.com/css?family=Inter|Poppins|Roboto&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="../style/DirRessource.css">
+  <link rel="stylesheet" href="../style/ECRessource.css">
 </head>
 
 <body>
@@ -98,7 +98,7 @@
                 <p class="text-66"><span class="text-rgb-29-40-79"> Équipements &amp; Matériel</span></p>
               </div>
               <div class="button-67">
-                <p class="text-68"><span class="text-white">+ Nouveau matériel</span></p>
+                <p class="text-68"><span class="text-white">Ouvrir planning global</span></p>
               </div>
             </div>
 
@@ -111,7 +111,10 @@
                 <div class="container-71">
                   <div class="background-72">
                     <div class="container-73">
-                      <p class="text-74"><span class="text-rgb-29-40-79"></span></p>
+                      <p class="text-74"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+  <path d="M0 0h16v16H0z" fill="none" />
+  <path fill="currentColor" d="M11 1c.45 0 .882.076 1.286.213L10 3.5l.5 2l2 .5l2.286-2.287a4 4 0 0 1-5.365 4.962l-4.822 5.627A2 2 0 0 1 3.08 15H3a2 2 0 0 1-2-2v-.08a2 2 0 0 1 .698-1.519l5.626-4.823A4 4 0 0 1 11 1M3 12a1 1 0 1 0 0 2a1 1 0 0 0 0-2" />
+</svg></span></p>
                     </div>
                   </div>
                   <div class="container-75">
@@ -202,7 +205,10 @@
                 <div class="container-119">
                   <div class="background-120">
                     <div class="container-121">
-                      <p class="text-122"><span class="text-rgb-29-40-79"></span></p>
+                      <p class="text-122"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20">
+  <path d="M0 0h20v20H0z" fill="none" />
+  <path fill="currentColor" d="M9.186 2.113a.5.5 0 0 1 .419-.1l7 1.499a.5.5 0 0 1 .394.489v12a.5.5 0 0 1-.395.489l-7 1.5A.5.5 0 0 1 9 17.503v-15a.5.5 0 0 1 .186-.389m3.316 7.888a.75.75 0 1 0-1.5 0a.75.75 0 0 0 1.5 0m-4.5-6.998H3.5a.5.5 0 0 0-.5.5v12.995a.5.5 0 0 0 .5.5h4.502z" />
+</svg></span></p>
                     </div>
                   </div>
                   <div class="container-123">
@@ -285,9 +291,7 @@
                     enseignants-chercheurs pour leurs projets.</span></p>
               </div>
             </div>
-            <div class="button-169">
-              <p class="text-172"><span class="text-rgb-201-74-41">Déposer un nouveau modèle</span></p>
-            </div>
+            
           </div>
           <div class="container-173">
 

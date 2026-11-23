@@ -1,18 +1,11 @@
 <?php 
 
-session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ID.php");
-    exit();
-}
 
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Enseignant chercheur';
-$initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
+include("../controller/ECFicheProjController.php") ;
 
-include("../model/ECDashboardModel.php") ?>
+
+?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -39,7 +32,8 @@ include("../model/ECDashboardModel.php") ?>
               <span class="topic">Robotique &amp; Ergonomie</span>
               <span class="status"><span class="fa-solid" aria-hidden="true">&#xf111;</span> En cours de gestion</span>
             </div>
-            <h1>Robot Porteur Humanoïde — Assistance physique sans infrastructure</h1>
+            <h1><?php echo $projet['nom_proj'] ?>
+            </h1>
             <div class="project-meta">
               <span><span class="fa-solid" aria-hidden="true">&#xf4ff;</span> Responsable : Dr. L. Oubahssi</span>
               <span><span class="fa-solid" aria-hidden="true">&#xf133;</span> Fin estimée : Décembre 2026</span>
@@ -54,8 +48,7 @@ include("../model/ECDashboardModel.php") ?>
               <section class="panel description-panel">
                 <h2 class="panel-title"><span class="fa-solid" aria-hidden="true">&#xf036;</span>Description &amp; Objectifs Scientifiques</h2>
                 <div class="body-copy">
-                  <p>Ce projet étudie l'intégration de robots porteurs humanoïdes dans des environnements de travail industriels ou logistiques. L'objectif principal est de réduire les troubles musculosquelettiques (TMS) liés aux tâches répétitives de portage lourd, sans nécessiter la modification des infrastructures existantes.</p>
-                  <p>Les données biométriques et ergonomiques collectées lors des phases d'expérimentation permettront d'ajuster les algorithmes de suivi de trajectoire et de commande d'effort du robot.</p>
+                  <p><?php echo $projet['desc_proj'] ?></p>
                 </div>
               </section>
 
@@ -118,14 +111,18 @@ include("../model/ECDashboardModel.php") ?>
 
             <section class="experiments-card">
               <h2>Expérimentations récentes</h2>
+              <?php foreach ($exp as $experimentation) {?>
               <article class="experiment-row">
                 <span class="experiment-state" style="background: #d0d0d0"></span>
-                <span class="experiment-info"><strong>Analyse des interactions pédagogiques</strong><small>A venir</small></span>
-                <time>28-30 sept.</time>
-                <button>Voir la fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button>
+                <span class="experiment-info"><strong><?php echo $experimentation['titre_exp'] ?>
+              </strong><small><?php if($experimentation['datefin_exp']<= (new DateTimeImmutable())->format('Y-m-d')){echo "Terminée";}else{echo "En cours";} ?></small></span>
+                <time><?= $experimentation['datefin_exp']?></time>
+                <a href="ECFicheExp.php?id_exp=<?= urlencode((string) $experimentation['id_exp']) ?>"><button>Voir la fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button></a>
               </article>
+              
+              <?php } ?>
 
-              <article class="experiment-row">
+              <!--<article class="experiment-row">
                 <span class="experiment-state" style="background: #4761be"></span>
                 <span class="experiment-info"><strong>Assistant IA pour l’apprentissage</strong><small>En cours</small></span>
                 <time>25-28 sept.</time>
@@ -137,7 +134,7 @@ include("../model/ECDashboardModel.php") ?>
                 <span class="experiment-info"><strong>Corpus multimodal étudiant</strong><small>Terminée</small></span>
                 <time>23-25 sept.</time>
                 <button>Voir la fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button>
-              </article>
+              </article>-->
             </section>
           </div>
         </main>
