@@ -43,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit();
 }
 
+/*
 if (!isset($_SESSION['user_id'])) {
     // S'il n'est pas connecté, on le redirige vers la page d'identification
     header("Location: views/ID.php");
@@ -51,5 +52,5 @@ if (!isset($_SESSION['user_id'])) {
 
 // Récupération de l'ID de l'utilisateur connecté
 $current_user_id = $_SESSION['user_id'];
-
+*/
 ?>

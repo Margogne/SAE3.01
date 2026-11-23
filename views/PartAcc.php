@@ -81,7 +81,7 @@ extract($pageData);
                 <small><?= htmlspecialchars($userRole) ?></small>
               </span>
             </div>
-            <a href="#profil" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</a>
+            <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</a>
             <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span> Paramètres</a>
             <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
                 class="fa">&#xf2f5;</span> Se déconnecter</a>
