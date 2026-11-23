@@ -33,7 +33,7 @@ extract($pageData);
                 <a class="nav-link" href="PartAcc.php">Accueil</a>
                 <a class="nav-link" href="#Experimentation">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
-                <a class="nav-link" href="#messagerie">Messagerie</a>
+                <a class="nav-link" href="PartMess.php">Messagerie</a>
             </nav>
 
             <!-- language menu, notifications, and profile menu -->
@@ -152,8 +152,7 @@ extract($pageData);
                     <!-- champ Autres spécificités -->
                     <label>
                         <span class="sr-only">Autres spécificités</span>
-                        <textarea name="details"
-                            placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?>
+                        <textarea name="details" placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?>
                         </textarea>
                     </label>
 
@@ -183,5 +182,4 @@ extract($pageData);
 
     </div>
 </body>
-
 </html>

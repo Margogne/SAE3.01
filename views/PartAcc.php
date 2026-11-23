@@ -4,8 +4,8 @@ require_once '../model/model.php';
 
 $pageData = init_part_acc_page($_GET['search'] ?? '', $_SESSION);
 if ($pageData === null) {
-    header('Location: ID.php');
-    exit();
+  header('Location: ID.php');
+  exit();
 }
 
 extract($pageData);
@@ -32,7 +32,7 @@ extract($pageData);
         <a class="nav-link active" href="PartAcc.php">Accueil</a>
         <a class="nav-link" href="#Experimentation">Expérimentations</a>
         <a class="nav-link" href="#ressources">Ressources</a>
-        <a class="nav-link" href="#messagerie">Messagerie</a>
+        <a class="nav-link" href="PartMess.php">Messagerie</a>
       </nav>
 
       <div class="header-actions">
@@ -81,7 +81,8 @@ extract($pageData);
                 <small><?= htmlspecialchars($userRole) ?></small>
               </span>
             </div>
-            <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon profil</a>
+            <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon
+              profil</a>
             <a href="#parametres" class="dropdown-item" role="menuitem"><span class="fa">&#xf013;</span> Paramètres</a>
             <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
                 class="fa">&#xf2f5;</span> Se déconnecter
