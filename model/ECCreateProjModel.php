@@ -1,9 +1,7 @@
 <?php
 
-if (isset($_POST["nom_proj"]) && isset($_POST["desc_proj"]) && isset($_POST["datefin_proj"]) && isset($_POST["id_lab"])) {
-    insert_proj();
-}
-echo var_dump($_POST);
+
+
 function get_bdd()
 {
     $serveur = "localhost";
