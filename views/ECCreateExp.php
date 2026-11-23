@@ -83,15 +83,6 @@ $initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1))
                 />
               </label>
 
-              <label class="field">
-                <span>Description longue &amp; Objectifs scientifiques *</span>
-                <textarea
-                  name="description"
-                  required
-                  placeholder="Détaillez le contexte scientifique, la méthodologie générale et les objectifs visés pour ce projet..."
-                ></textarea>
-              </label>
-
               <div class="date-row">
                 <label class="field">
                   <span>Date de Début de l’experimentation *</span>
