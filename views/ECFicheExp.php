@@ -1,25 +1,15 @@
 <?php 
 
-session_start();
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ID.php");
-    exit();
-}
-
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Enseignant chercheur';
-$initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U';
-
-include("../model/ECDashboardModel.php") ?>
+ include("../controller/ECFicheExpController.php");
+ 
+ ?>
 <!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fiche détaillée expérimentation - Robot Porteur Humanoïde - Le Mans Université</title>
-    <link rel="stylesheet" href="../style/ECFicheExp.css.css" />
+    <link rel="stylesheet" href="../style/ECFicheExp.css" />
   </head>
   <body>
     <div class="app-shell">
@@ -85,7 +75,8 @@ include("../model/ECDashboardModel.php") ?>
                     Voir les rapports d’activités
                   </button>
                 </div>
-                <p>
+                <p><?php echo get_experimentation($_SESSION['id_exp']) ;?></p>
+                <!--<p>
                   Ce projet étudie l’intégration de robots porteurs humanoïdes dans des environnements de travail
                   industriels ou logistiques.<br />
                   L’objectif principal est de réduire les troubles musculosquelettiques (TMS) liés aux tâches
@@ -94,7 +85,7 @@ include("../model/ECDashboardModel.php") ?>
                 <p>
                   Les données biométriques et ergonomiques collectées lors des phases d’expérimentation permettront
                   d’ajuster les algorithmes de suivi de trajectoire et de commande d’effort du robot.
-                </p>
+                </p>-->
               </section>
 
               <section class="incidents">
