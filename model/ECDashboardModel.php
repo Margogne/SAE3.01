@@ -15,7 +15,8 @@ function get_bdd()
 
 function get_experimentations(){
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM experimentation ORDER BY datefin_exp DESC LIMIT 5') ;
+    $query = $bdd->query('SELECT * FROM experimentation JOIN travailler on experimentation.id_exp=travailler.id_exp 
+    WHERE id_util = '.$_SESSION['user_id'].' ORDER BY datefin_exp DESC LIMIT 5') ;
     //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;

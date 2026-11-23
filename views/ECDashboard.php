@@ -45,7 +45,7 @@ include("../model/ECDashboardModel.php") ?>
             <section class="overview-section" aria-labelledby="overview-heading">
                 <div class="section-heading">
                     <h2 id="overview-heading">Vue d’ensemble</h2>
-                    <p>Mis à jour aujourd’hui à 09:42</p>
+                    <p>Mis à jour aujourd’hui à <?php echo date('H:i'); ?></p>
                 </div>
 
                 <div class="overview-grid">
