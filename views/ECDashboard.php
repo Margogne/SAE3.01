@@ -33,8 +33,8 @@ include("../model/ECDashboardModel.php") ?>
             <section class="welcome-banner">
                 <div class="banner-orbit" aria-hidden="true"></div>
                 <div class="welcome-copy">
-                    <p class="eyebrow">Espace Enseignant-Chercheur · LIUM</p>
-                    <h1>Bonjour Dr. L. Oubahssi</h1>
+                    <p class="eyebrow">Espace Enseignant-Chercheur</p>
+                    <h1>Bonjour <?php echo mb_substr($userPrenom, 0, 1).'. '.$userNom ?></h1>
                     <p>
                         Pilotez vos expérimentations, suivez les projets de recherche et retrouvez les
                         ressources partagées du laboratoire.
@@ -45,7 +45,7 @@ include("../model/ECDashboardModel.php") ?>
             <section class="overview-section" aria-labelledby="overview-heading">
                 <div class="section-heading">
                     <h2 id="overview-heading">Vue d’ensemble</h2>
-                    <p>Mis à jour aujourd’hui à 09:42</p>
+                    <p>Mis à jour aujourd’hui à <?php echo date('H:i'); ?></p>
                 </div>
 
                 <div class="overview-grid">
@@ -54,10 +54,10 @@ include("../model/ECDashboardModel.php") ?>
                             <span class="card-icon">
                                 <img src="../assets/img/ProjetsActifs.svg" alt="" />
                             </span>
-                            <strong class="card-value">6</strong>
+                            <strong class="card-value"><?php echo get_nb_proj() ?></strong>
                         </div>
                         <h3>Projets actifs</h3>
-                        <p>2 échéances cette semaine</p>
+                        <!--<p>2 échéances cette semaine</p>-->
                         <div class="card-actions">
                             <a href="ECCreateProject.php"><button>Proposer un projet</button></a>
                             <button>Voir mes projets</button>
@@ -69,10 +69,10 @@ include("../model/ECDashboardModel.php") ?>
                             <span class="card-icon">
                                 <img src="../assets/img/Expérimentations.svg" alt="" />
                             </span>
-                            <strong class="card-value">12</strong>
+                            <strong class="card-value"><?php echo get_nb_experimentations() ?></strong>
                         </div>
                         <h3>Expérimentations</h3>
-                        <p>8 en cours · 4 à valider</p>
+                        <!--<p>8 en cours · 4 à valider</p>-->
                         <div class="card-actions">
                             <a href="ECCreateExp.php"><button>Créer une expérimentation</button></a>
                         </div>
@@ -83,10 +83,10 @@ include("../model/ECDashboardModel.php") ?>
                             <span class="card-icon">
                                 <img src="../assets/img/Participants.svg" alt="" />
                             </span>
-                            <strong class="card-value">24</strong>
+                            <strong class="card-value"><?php echo get_nb_participants() ?></strong>
                         </div>
                         <h3>Participants</h3>
-                        <p>+5 sur les 30 derniers jours</p>
+                        <!--<p>+5 sur les 30 derniers jours</p>-->
                     </article>
 
                     <article class="overview-card">
@@ -94,10 +94,10 @@ include("../model/ECDashboardModel.php") ?>
                             <span class="card-icon">
                                 <img src="../assets/img/RessourcesPartagées.svg" alt="" />
                             </span>
-                            <strong class="card-value">18</strong>
+                            <strong class="card-value"><?php echo get_nb_ressources() ?></strong>
                         </div>
                         <h3>Ressources partagées</h3>
-                        <p>3 nouveaux documents</p>
+                        <!--<p>3 nouveaux documents</p>-->
                     </article>
                 </div>
             </section>
@@ -132,10 +132,11 @@ include("../model/ECDashboardModel.php") ?>
                 <aside class="deadline-card">
                     <h2>Prochaine échéance</h2>
                     <div class="deadline-date">
-                        <strong>28</strong>
-                        <span>Septembre 2026</span>
+                        <!--<strong>28</strong>
+                        <span>Septembre 2026</span>-->
+                        <?php echo get_prochaine_echeance() ?>
                     </div>
-                    <p>Clôture de la collecte · Projet ORION</p>
+                    <!--<p>Clôture de la collecte · Projet ORION</p>-->
                 </aside>
             </section>
         </main>

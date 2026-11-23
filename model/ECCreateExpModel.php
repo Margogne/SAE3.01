@@ -1,10 +1,7 @@
 <?php
 
 if(isset($_POST["titre_exp"]) && isset( $_POST["desc_exp"]) && isset($_POST["id_proj"])){
-
     insert_exp();
-    echo var_dump($_POST);
-
 }
 function get_bdd()
 {
@@ -21,7 +18,7 @@ function get_bdd()
 
 function get_projets(){
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM projet') ; //va falloir rajouter le WHERE id_util = ...
+    $query = $bdd->query('SELECT * FROM projet JOIN referencer on referencer.id_proj=projet.id_proj WHERE referencer.id_util='.$_SESSION['user_id'].' ') ; //va falloir rajouter le WHERE id_util = ...
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -50,7 +47,7 @@ function insert_exp(){
     ':titre_exp'   => $_POST['titre_exp'] ?? '',
     ':desc_exp'    => $_POST['desc_exp'] ?? '',
     ':datefin_exp' => $_POST['datefin_exp'] ?? null,
-    ':dur_exp'     => $_POST['dur_exp'] ?? null,
+    ':dur_exp'     => $dur_exp = (new DateTimeImmutable($_POST['datedeb_exp']))->diff(new DateTimeImmutable($_POST['datefin_exp']))->m + ((new DateTimeImmutable($_POST['datedeb_exp']))->diff(new DateTimeImmutable($_POST['datefin_exp']))->y * 12).' mois',
     ':retrib_exp'  => $_POST['retrib_exp'] ?? null,
     ':datedeb_exp' => $_POST['datedeb_exp'] ?? null,
     ':id_proj'     =>$_POST['id_proj'] ?? 0 // correspond à ton <select name="project">
