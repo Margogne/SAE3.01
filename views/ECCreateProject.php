@@ -1,5 +1,5 @@
 <?php
-include("../controller/ECCreateProjectController");
+include("../controller/ECCreateProjectController.php");
 
 ?>
 <!doctype html>
