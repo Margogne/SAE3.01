@@ -63,7 +63,7 @@ extract($pageData);
             </div>
           </div>
         </div>
-
+        
         <div class="menu-anchor profile-anchor">
           <button type="button" class="profile-button" aria-haspopup="menu">
             <span class="avatar"><?= htmlspecialchars($initials) ?></span>
