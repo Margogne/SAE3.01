@@ -61,6 +61,7 @@
         min-height: 100dvh;
         background: #fff;
         margin: 0;
+        overflow-x: clip;
         scroll-behavior: smooth;
     }
 
@@ -78,6 +79,7 @@
     min-height: 100dvh;
     flex-direction: column;
     background: #fff;
+    overflow-x: clip;
 }
 
 .fa {
@@ -95,9 +97,10 @@
     z-index: 30;
     display: grid;
     min-height: 82px;
-    grid-template-columns: 250px 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    padding: 0 4.1vw;
+    gap: 16px;
+    padding: 8px 4.1vw;
     border-bottom: 1px solid #dce3e9;
     background: #1d284f;
 }
@@ -105,12 +108,15 @@
 .brand img {
     display: block;
     width: 181px;
+    max-width: 100%;
     height: 68px;
     object-fit: contain;
 }
 
 .main-nav {
     display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
     align-self: stretch;
     justify-content: center;
     gap: 4px;
@@ -120,19 +126,20 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0 17px;
+    padding: 8px 14px;
     color: #fff;
     font-family: "Inter:Bold";
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .nav-link::after {
     position: absolute;
-    right: 17px;
-    bottom: 20px;
-    left: 17px;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
     height: 3px;
     border-radius: 999px;
     background: #c94a29;
@@ -151,7 +158,8 @@
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .menu-anchor {
@@ -167,6 +175,7 @@
     display: flex;
     align-items: center;
     width: 215px;
+    max-width: 100%;
     height: 52px;
     gap: 10px;
     padding: 0 10px;
@@ -203,6 +212,14 @@
     font-family: "Inter:Bold";
 }
 
+.profile-copy strong,
+.profile-copy small {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .profile-copy strong {
     font-size: 13px;
 }
@@ -214,6 +231,7 @@
 .profile-chevron {
     width: 16px;
     height: 16px;
+    flex-shrink: 0;
     transition: transform 160ms ease;
 }
 
@@ -232,6 +250,7 @@
 
 .profile-menu {
     width: 250px;
+    max-width: 90vw;
     padding: 8px;
 }
 
@@ -297,9 +316,10 @@
 main {
     width: 100%;
     max-width: 1440px;
+    min-width: 0;
     flex: 1;
     margin: 0 auto;
-    padding: 32px 48px 48px;
+    padding: 32px 24px 48px;
 }
 
 /* --- Panneau de recherche --- */
@@ -378,6 +398,7 @@ main {
 
 .filter-actions-single {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 12px;
@@ -418,13 +439,13 @@ main {
 /* --- Grille des cartes --- */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 378.67px));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
-    justify-content: center;
     margin-top: 32px;
 }
 
 .project-card {
+    min-width: 0;
     overflow: hidden;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
@@ -469,6 +490,7 @@ main {
     font-family: "Roboto:Bold";
     font-size: 16px;
     font-weight: 700;
+    overflow-wrap: anywhere;
 }
 
 .project-description {
@@ -477,6 +499,7 @@ main {
     color: #64748b;
     font-size: 12px;
     line-height: 18px;
+    overflow-wrap: anywhere;
 }
 
 .project-footer {
@@ -487,7 +510,7 @@ main {
 }
 
 .view-details-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 8px 14px;
@@ -497,6 +520,7 @@ main {
     font-family: "Roboto:Bold";
     font-size: 12px;
     font-weight: 700;
+    white-space: nowrap;
     transition: background 150ms ease;
 }
 
@@ -533,6 +557,7 @@ main {
 
 footer {
     display: flex;
+    flex-wrap: wrap;
     min-height: 60px;
     align-items: center;
     gap: 14px;
@@ -555,33 +580,54 @@ footer strong {
    5. RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
     .site-header {
-        grid-template-columns: auto 1fr auto;
-        padding: 0 24px;
+        grid-template-columns: auto auto;
+        gap: 10px 16px;
+        padding: 10px 24px;
     }
 
+    .main-nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-content: flex-start;
+        padding-top: 4px;
+    }
+}
+
+@media (max-width: 1080px) {
     .project-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 780px) {
+    main {
+        padding: 24px 16px 36px;
+    }
+
     .site-header {
         grid-template-columns: 1fr auto;
         gap: 10px;
-        padding: 6px 16px;
+        padding: 8px 16px;
+    }
+
+    .brand img {
+        width: 150px;
+        height: 56px;
     }
 
     .main-nav {
         grid-column: 1 / -1;
         grid-row: 2;
+        flex-wrap: nowrap;
         overflow-x: auto;
         justify-content: flex-start;
     }
 
-    .profile-anchor {
-        display: none;
+    .profile-button {
+        width: auto;
+        max-width: 180px;
     }
 
     .project-grid {
