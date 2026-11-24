@@ -8,7 +8,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fiche détaillée expérimentation - Robot Porteur Humanoïde - Le Mans Université</title>
+    <title><?= $exp['titre_exp'] ?> - Le Mans Université</title>
     <link rel="stylesheet" href="../style/ECFicheExp.css" />
   </head>
   <body>
@@ -21,23 +21,23 @@
         <section class="hero">
           <div class="hero-content">
             <button class="back-link">
-              <span class="fa" aria-hidden="true"></span> Retour au projet
+              <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj']?>" style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span></a> Retour au projet
             </button>
-            <div class="tags">
+            <!--<div class="tags">
               <span class="tag subject">Robotique &amp; Ergonomie</span>
               <span class="tag status"><span class="fa" aria-hidden="true"></span> En cours</span>
-            </div>
-            <h1>Robot Porteur Humanoïde — Assistance physique sans infrastructure</h1>
+            </div>-->
+            <h1><?= $exp['titre_exp'] ?></h1>
             <div class="hero-meta">
-              <span><span class="fa" aria-hidden="true"></span> Responsable : Dr. L. Oubahssi</span>
-              <span><span class="fa" aria-hidden="true"></span> Début : 1 Septembre 2026</span>
-              <span><span class="fa" aria-hidden="true"></span> Fin : 24 Décembre 2026</span>
-              <span><span class="fa" aria-hidden="true"></span> Site : IUT Laval</span>
+              <!--<span><span class="fa" aria-hidden="true"></span> Responsable : Dr. L. Oubahssi</span>-->
+              <span><span class="fa" aria-hidden="true"></span> Début : <?= $exp['datedeb_exp'] ?></span>
+              <span><span class="fa" aria-hidden="true"></span> Fin : <?= $exp['datefin_exp'] ?></span>
+              <span><span class="fa" aria-hidden="true"></span> Laboratoire : <?= get_lab_from_exp($_GET['id_exp'])['nom_lab'] ?></span>
             </div>
           </div>
-          <button class="primary terracotta planning">
+          <!--<button class="primary terracotta planning">
             Ouvrir Planning Global
-          </button>
+          </button>-->
         </section>
 
         <main>
@@ -48,22 +48,36 @@
                 <dl>
                   <div>
                     <dt>Salle assignée :</dt>
-                    <dd>Halle Robotique Laval</dd>
+                    <div>
+                      <?php foreach(get_salle_from_exp($_GET['id_exp']) as $ress){ ?>
+                        <dd><?= $ress['nom_ress'] ?></dd>
+                        <!-- <dd>Halle Robotique Laval</dd> -->
+                      
+                      <?php } ?>
+                    </div>
+                    
                   </div>
                   <div>
                     <dt>Équipement réservé :</dt>
-                    <dd>Robot Porteur H1</dd>
+                    <div>
+                      <?php foreach(get_materiel_from_exp($_GET['id_exp']) as $ress){ ?>
+                        <dd><?= $ress['nom_ress'] ?></dd>
+                        <!-- <dd>Robot Porteur H1</dd> -->
+                      
+                      <?php } ?>
+                    </div>
+                    
                   </div>
-                  <div>
+                  <!--<div>
                     <dt>Chercheur assigné :</dt>
                     <dd class="researchers">
                       <span>Dr. L. Oubahssi</span>
                       <span>Dr. S. Georges</span>
                     </dd>
-                  </div>
+                  </div>-->
                   <div>
                     <dt>Nombre de participant</dt>
-                    <dd>12/14</dd>
+                    <dd><?= get_nb_participants() ?></dd>
                   </div>
                 </dl>
               </section>
@@ -75,7 +89,7 @@
                     Voir les rapports d’activités
                   </button>
                 </div>
-                <p><?php echo get_experimentation($_SESSION['id_exp']) ;?></p>
+                <p><?= $exp['desc_exp'] ; ?></p>
                 <!--<p>
                   Ce projet étudie l’intégration de robots porteurs humanoïdes dans des environnements de travail
                   industriels ou logistiques.<br />
@@ -90,10 +104,16 @@
 
               <section class="incidents">
                 <div class="incident-heading">
-                  <h2><span class="fa" aria-hidden="true"></span> Suivi des incidents (1 incident reporté)</h2>
+                  <h2><span class="fa" aria-hidden="true"></span> Suivi des incidents (<?= count(get_incidents_from_exp($_GET['id_exp'])) ?> incident(s) )</h2>
                   <button>Modifier</button>
                 </div>
-                <article class="incident-card">
+                <?php  foreach (get_incidents_from_exp($_GET['id_exp']) as $incident ) {?>
+                  <article class="incident-card">
+                  
+                  <h3><span class="fa" aria-hidden="true"></span> <?= $incident['titre_incid'] ?></h3>
+                  <p><?= $incident['desc_incid'] ?></p>
+                </article>
+                <!--<article class="incident-card">
                   <div class="date"><span class="fa" aria-hidden="true"></span> 28 sept.</div>
                   <h3><span class="fa" aria-hidden="true"></span> Recharge impossible du Robot Porteur H1</h3>
                   <p>
@@ -101,7 +121,8 @@
                     problème vient probablement du doc de charge donc plusieurs broche de contacts se seraient déplacées.
                   </p>
                   <p>Il faudrait une répération dans les 2 jours afin de ne pas prendre de retard sur les expérimentations</p>
-                </article>
+                </article>-->
+                <?php } ?>
               </section>
             </div>
 
@@ -117,7 +138,18 @@
                 <button>Publique</button>
               </div>
               <div class="file-list">
-                <div class="file-row">
+                <?php foreach (get_documents_from_exp($_GET['id_exp']) as $doc){ ?>
+                  <div class="file-row">
+                  <span class="fa fa-regular" aria-hidden="true"></span>
+                  <div class="file-copy">
+                    <strong><?= $doc['nom_doc'] ?></strong>
+                    <small><?= $doc['type_doc'] ?></small>
+                  </div>
+                  <button><span class="fa" aria-hidden="true"></span> Télécharger</button>
+                </div>
+
+                  <?php } ?>
+                <!--<div class="file-row">
                   <span class="fa fa-regular" aria-hidden="true"></span>
                   <div class="file-copy">
                     <strong>Protocole_Ergonomique_v2.pdf</strong>
@@ -125,6 +157,7 @@
                   </div>
                   <button><span class="fa" aria-hidden="true"></span> Télécharger</button>
                 </div>
+
                 <div class="file-row">
                   <span class="fa fa-regular" aria-hidden="true"></span>
                   <div class="file-copy">
@@ -132,7 +165,8 @@
                     <small>Ajouté le 02 Septembre 2026 • 512 Ko</small>
                   </div>
                   <button><span class="fa" aria-hidden="true"></span> Télécharger</button>
-                </div>
+                </div>-->
+
               </div>
               <button class="participants-button">
                 Voir la liste des Participants

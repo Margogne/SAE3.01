@@ -42,9 +42,9 @@ function get_nb_proj(){
 
 function get_nb_participants(){
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM utilisateur as u
-    JOIN travailler AS t on t.id_util=u.id_util JOIN experimentation as e ON e.id_exp=t.id_exp JOIN projet as p ON p.id_proj=e.id_proj JOIN referencer as r ON r.id_proj=p.id_proj
-    WHERE r.id_util = '.$_SESSION['user_id'] .' AND u.type_util=\'externe\'');
+    $query = $bdd->query('SELECT * FROM utilisateur as u '.
+    'JOIN travailler AS t on t.id_util=u.id_util JOIN experimentation as e ON e.id_exp=t.id_exp JOIN projet as p ON p.id_proj=e.id_proj JOIN referencer as r ON r.id_proj=p.id_proj '.
+    'WHERE r.id_util = '.$_SESSION['user_id'] .' AND u.type_util=\'externe\'');
     //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return count($result);
