@@ -480,7 +480,7 @@ function get_messages_for_user(int $userId, string &$dbError = ''): array
             ];
         }
     } catch (PDOException $e) {
-        $dbError = 'Impossible de charger les messages depuis la base de données.';
+        $dbError = 'Erreur SQL : ' . $e->getMessage();
     }
 
     return $messages;

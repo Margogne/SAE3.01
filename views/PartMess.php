@@ -119,6 +119,10 @@ extract($pageData);
                 </div>
             </section>
 
+            <?php if (!empty($dbError)): ?>
+                <p class="error-message" role="alert"><?= htmlspecialchars($dbError) ?></p>
+            <?php endif; ?>
+
             <!-- Résumé -->
             <section class="summary-grid" aria-label="Résumé des messages">
                 <div class="summary-card">
