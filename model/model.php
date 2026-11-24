@@ -418,3 +418,141 @@ function update_user_profile(int $idUtil, string $nom, string $prenom, string $g
         ':id_util' => $idUtil,
     ]);
 }
+
+/* =============================================================
+   Gestion des messages
+   ========================================================== */
+
+function get_messages_for_user(int $userId, string &$dbError = ''): array
+{
+    $messages = [];
+    $dbError = '';
+
+    try {
+        $bdd = get_bdd();
+
+        $sql = 'SELECT e.id_mess,
+                       e.id_util_receveur,
+                       e.`id_util_expéditeur` AS id_util_expediteur,
+                       e.date_envoi,
+                       e.contenu_mess,
+                       e.status_mess,
+                       u.nom_util,
+                       u.prenom_util
+                FROM ECHANGER e
+                LEFT JOIN UTILISATEUR u ON u.id_util = e.`id_util_expéditeur`
+                WHERE e.id_util_receveur = :user_id
+                ORDER BY e.date_envoi DESC, e.id_mess DESC';
+
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $todayStr = date('Y-m-d');
+        $yesterdayStr = date('Y-m-d', strtotime('-1 day'));
+
+        foreach ($rows as $row) {
+            $timestamp = !empty($row['date_envoi']) ? strtotime((string) $row['date_envoi']) : false;
+            $dayStr = $timestamp ? date('Y-m-d', $timestamp) : '';
+
+            if ($dayStr === $todayStr) {
+                $period = 'Aujourd’hui';
+            } elseif ($dayStr === $yesterdayStr) {
+                $period = 'Hier';
+            } else {
+                $period = 'Plus tôt';
+            }
+
+            $senderName = trim(($row['prenom_util'] ?? '') . ' ' . ($row['nom_util'] ?? ''));
+            if ($senderName === '') {
+                $senderName = 'Expéditeur #' . (int) ($row['id_util_expediteur'] ?? 0);
+            }
+
+            $messages[] = [
+                'id_mess' => (int) $row['id_mess'],
+                'id_util_receveur' => (int) $row['id_util_receveur'],
+                'id_util_expediteur' => (int) ($row['id_util_expediteur'] ?? 0),
+                'period' => $period,
+                'sender' => $senderName,
+                'contenu_mess' => (string) ($row['contenu_mess'] ?? ''),
+                'date_envoi' => $timestamp ? date('d/m/Y H:i', $timestamp) : (string) ($row['date_envoi'] ?? ''),
+                'status_mess' => $row['status_mess'] ?? 0,
+            ];
+        }
+    } catch (PDOException $e) {
+        $dbError = 'Impossible de charger les messages depuis la base de données.';
+    }
+
+    return $messages;
+}
+
+function is_message_unread(array $message): bool
+{
+    return empty($message['status_mess']);
+}
+
+function filter_messages(array $messages, string $status, string $query): array
+{
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $needle = trim($query);
+
+    return array_values(array_filter($messages, function ($item) use ($status, $needle) {
+        $unread = is_message_unread($item);
+        $matchesStatus = $status === 'all'
+            || ($status === 'unread' && $unread)
+            || ($status === 'read' && !$unread);
+
+        $haystack = ($item['sender'] ?? '') . ' ' . ($item['contenu_mess'] ?? '') . ' ' . ($item['date_envoi'] ?? '');
+        $matchesQuery = ($needle === '')
+            || (stripos($haystack, $needle) !== false);
+
+        return $matchesStatus && $matchesQuery;
+    }));
+}
+
+function prepare_part_mess_page_data(array $session, array $get): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $userId = (int) $session['user_id'];
+    $userNom = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole = (string) ($session['user_role'] ?? 'Participant');
+
+    $initials = compute_initials($userPrenom, $userNom);
+
+    $dbError = '';
+    $messages = get_messages_for_user($userId, $dbError);
+
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    $unreadCount = count(array_filter($messages, 'is_message_unread'));
+    $readCount = count($messages) - $unreadCount;
+    $filtered = filter_messages($messages, $status, $query);
+    $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initials',
+        'dbError',
+        'messages',
+        'status',
+        'query',
+        'unreadCount',
+        'readCount',
+        'filtered',
+        'periods'
+    );
+}

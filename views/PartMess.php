@@ -2,91 +2,13 @@
 session_start();
 require_once '../model/model.php';
 
-if (!isset($_SESSION['user_id'])) {
+$pageData = prepare_part_mess_page_data($_SESSION, $_GET);
+if ($pageData === null) {
     header('Location: ID.php');
     exit();
 }
 
-$userNom = (string) ($_SESSION['user_nom'] ?? 'Utilisateur');
-$userPrenom = (string) ($_SESSION['user_prenom'] ?? '');
-$userRole = (string) ($_SESSION['user_role'] ?? 'Participant');
-
-$initChar = function (string $value): string {
-    if ($value === '') {
-        return '';
-    }
-    return function_exists('mb_substr') ? mb_substr($value, 0, 1, 'UTF-8') : substr($value, 0, 1);
-};
-
-$initials = strtoupper($initChar($userPrenom) . $initChar($userNom)) ?: 'U';
-
-// Données d'exemple calquées sur ECHANGER (id_mess, id_util_expéditeur, id_util_receveur, date_envoi, contenu_mess)
-$messages = [
-    [
-        'id_mess' => 1,
-        'id_util_receveur' => (int) $_SESSION['user_id'],
-        'id_util_expéditeur' => 10,
-        'period' => 'Aujourd’hui',
-        'sender' => 'Expéditeur #10',
-        'contenu_mess' => 'La session du 28 septembre est déplacée à 14 h 30.',
-        'date_envoi' => 'Aujourd’hui, 08:42',
-        'unread' => true,
-    ],
-    [
-        'id_mess' => 2,
-        'id_util_receveur' => (int) $_SESSION['user_id'],
-        'id_util_expéditeur' => 12,
-        'period' => 'Aujourd’hui',
-        'sender' => 'Expéditeur #12',
-        'contenu_mess' => 'Le protocole de l’expérimentation a été mis à jour.',
-        'date_envoi' => 'Aujourd’hui, 07:15',
-        'unread' => true,
-    ],
-    [
-        'id_mess' => 3,
-        'id_util_receveur' => (int) $_SESSION['user_id'],
-        'id_util_expéditeur' => 15,
-        'period' => 'Hier',
-        'sender' => 'Expéditeur #15',
-        'contenu_mess' => 'Un membre de votre équipe a commenté vos résultats.',
-        'date_envoi' => 'Hier, 16:12',
-        'unread' => false,
-    ],
-    [
-        'id_mess' => 4,
-        'id_util_receveur' => (int) $_SESSION['user_id'],
-        'id_util_expéditeur' => 10,
-        'period' => 'Plus tôt',
-        'sender' => 'Expéditeur #10',
-        'contenu_mess' => 'Une nouvelle synthèse est disponible dans votre espace.',
-        'date_envoi' => '20 septembre, 11:20',
-        'unread' => false,
-    ],
-];
-
-$status = $_GET['status'] ?? 'all';
-if (!in_array($status, ['all', 'unread', 'read'], true)) {
-    $status = 'all';
-}
-
-$query = trim((string) ($_GET['q'] ?? ''));
-
-$unreadCount = count(array_filter($messages, fn($m) => $m['unread']));
-$readCount = count($messages) - $unreadCount;
-
-$filtered = array_values(array_filter($messages, function ($item) use ($status, $query) {
-    $matchesStatus = $status === 'all'
-        || ($status === 'unread' && $item['unread'])
-        || ($status === 'read' && !$item['unread']);
-
-    $haystack = $item['sender'] . ' ' . $item['contenu_mess'] . ' ' . $item['date_envoi'];
-    $matchesQuery = ($query === '')
-        || (stripos($haystack, $query) !== false);
-
-    return $matchesStatus && $matchesQuery;
-}));
-
-$periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
+extract($pageData);
 
 /* ==============================================
    SECTION : HTML DE LA PAGE
@@ -184,6 +106,7 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
                                 class="fa">&#xf2f5;</span>Se déconnecter</a>
                     </div>
                 </div>
+            </div>
         </header>
 
         <main class="mess-main">
@@ -219,7 +142,7 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
                 <div class="status-filter">
                     <a href="?status=all&amp;q=<?= urlencode($query) ?>"
                         class="<?= $status === 'all' ? 'active' : '' ?>">
-                        Tous · <?= count($messages) ?>
+                        Toutes · <?= count($messages) ?>
                     </a>
                     <a href="?status=unread&amp;q=<?= urlencode($query) ?>"
                         class="<?= $status === 'unread' ? 'active' : '' ?>">
@@ -232,7 +155,7 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
                 </div>
 
                 <!-- barre de recherche -->
-                <form method="GET" action="PartNotif.php" class="mess-filter-form">
+                <form method="GET" action="PartMess.php" class="mess-filter-form">
                     <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>" />
                     <label class="mess-search-box">
                         <span class="fa">&#xf002;</span>
@@ -263,8 +186,7 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
 
                         <div class="message-list">
                             <?php foreach ($items as $item): ?>
-                                <article class="message-row <?php if (!empty($item['unread'])) {
-                                    echo 'is-unread'; } ?>">
+                                <article class="message-row <?= is_message_unread($item) ? 'is-unread' : '' ?>">
 
                                     <!-- icône -->
                                     <div class="type-icon">
@@ -276,8 +198,7 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
                                         <div class="message-meta">
                                             <span>Message #<?= (int) $item['id_mess'] ?></span>
                                             <a href="?delete_mess=<?= (int) $item['id_mess'] ?>&amp;status=<?= htmlspecialchars($status) ?>&amp;q=<?= urlencode($query) ?>"
-                                                class="mess-delete-cross" aria-label="Supprimer le message"
-                                                title="Supprimer">
+                                                class="mess-delete-cross" aria-label="Supprimer le message" title="Supprimer">
                                                 <span class="fa" aria-hidden="true">&#xf00d;</span>
                                             </a>
                                         </div>
@@ -308,7 +229,6 @@ $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
                 <strong>Le Mans Université</strong> • <?= htmlspecialchars($userRole) ?> - Messages
             </p>
         </footer>
-
     </div>
 </body>
 

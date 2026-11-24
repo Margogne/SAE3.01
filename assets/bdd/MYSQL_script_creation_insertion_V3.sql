@@ -108,6 +108,7 @@ CREATE TABLE ECHANGER(
    date_envoi DATETIME,
    id_mess INT AUTO_INCREMENT,
    contenu_mess VARCHAR(5000),
+   status_mess  BOOLEAN NOT NULL DEFAULT FALSE,
    PRIMARY KEY(id_util_receveur, id_util_expéditeur, date_envoi),
    UNIQUE(id_mess),
    FOREIGN KEY(id_util_receveur) REFERENCES UTILISATEUR(id_util),
