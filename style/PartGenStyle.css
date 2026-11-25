@@ -371,20 +371,29 @@ main {
     text-transform: uppercase;
 }
 
+main,
+.filter-panel,
+.filter-form-centered,
+.search-container-single,
+.search-field,
+.filter-actions-single,
+.project-grid,
+.project-card {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+}
+
 .search-field {
     position: relative;
     display: block;
 }
 
 .search-field input[type="search"] {
+    box-sizing: border-box;
     width: 100%;
-    height: 42px;
-    padding: 8px 12px 8px 36px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background: #fff;
-    color: #1f2937;
-    font-size: 14px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .search-icon {
@@ -623,5 +632,25 @@ footer strong {
     .profile-button {
         width: auto;
         max-width: 180px;
+    }
+}
+
+@media (max-width: 450px) {
+    main {
+        padding: 20px 16px 32px;
+    }
+
+    .filter-panel {
+        width: 100%;
+        margin: 0;
+        padding: 16px;
+    }
+
+    .project-grid {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
+        justify-content: stretch;
+        gap: 16px;
+        margin-top: 24px;
     }
 }

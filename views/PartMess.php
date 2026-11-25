@@ -49,9 +49,7 @@ extract($pageData);
 
             <!-- Menu de navigation -->
             <nav class="main-nav" aria-label="Navigation principale">
-                <a class="nav-link" href="PartAcc.php">Accueil</a>
-                <a class="nav-link" href="#Experimentations">Expérimentations</a>
-                <a class="nav-link" href="#ressources">Ressources</a>
+                <a class="nav-link" href="PartAcc.php">Expérimentations</a>
                 <a class="nav-link active" href="PartMess.php">Messagerie</a>
             </nav>
 

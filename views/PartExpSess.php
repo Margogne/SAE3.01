@@ -50,9 +50,7 @@ extract($pageData);
 
             <!-- Navigation principale -->
             <nav class="main-nav" aria-label="Navigation principale">
-                <a class="nav-link" href="PartAcc.php">Accueil</a>
-                <a class="nav-link active" href="#Experimentation">Expérimentations</a>
-                <a class="nav-link" href="#ressources">Ressources</a>
+                <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
                 <a class="nav-link" href="PartMess.php">Messagerie</a>
             </nav>
 
