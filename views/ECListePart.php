@@ -1,37 +1,93 @@
+<?php
+session_start();
+
+$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
+$userPrenom = $_SESSION['user_prenom'] ?? '';
+$userRole = $_SESSION['user_role'] ?? 'Enseignant chercheur';
+$initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U'; ?>
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Gestion des participants — Le Mans Université" />
-    <title>Gestion des participants</title>
-    <link rel="stylesheet" href="../style/ECListePart.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <?php
-        include "../model/ECListePartModel.php";
-        include '../model/ECHeaderModel.php';
-      ?>
 
-      <section class="page-heading">
-        <a class="back-link" href="#">
-          <span class="fa"></span> Retour à l’expérimentation
-        </a>
-        <h1><span class="fa"></span> Gestion des participants</h1>
-        <p>Modifiez les restrictions et rétributions des participants et acceptez les demandes.</p>
-      </section>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestion des participants — Le Mans Université" />
+  <title>Gestion des participants</title>
+  <link rel="stylesheet" href="../style/ECListePart.css" />
+  <link rel="stylesheet" href="../style/ECheader.css" />
 
-      <main class="dashboard">
-        <div class="lists-toolbar">
-          <div></div>
-          <h2><img src="../assets/img/Profil.svg" alt="" />Inscrits</h2>
-          <!--<h2><img src="../assets/img/Profil.svg" alt="" />En attente</h2>
-          <button class="action-button orange"><span class="fa"></span>Créer une invitation</button>-->
+</head>
+
+<body>
+  <div class="app-shell">
+    <?php
+    include "../model/ECListePartModel.php";
+    ?>
+    <header class="site-header">
+
+      <button class="brand" aria-label="Retour au tableau de bord">
+        <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
+      </button>
+
+      <nav class="main-navigation" aria-label="Navigation principale">
+        <a href="ECDashboard.php"><button class="nav-link active">Dashboard</button></a>
+        <a href="ECListProjet.php"><button class="nav-link">Projets</button></a>
+        <a href="ECRessources.php"><button class="nav-link">Ressources</button></a>
+        <a href="ECMess.php"><button class="nav-link">Messagerie</button></a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="menu-anchor language-anchor">
+          <button class="language-trigger" aria-haspopup="menu" aria-expanded="false">
+            <img src="../assets/img/Globe.svg" alt="" />
+            <span>FR</span>
+            <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
+          </button>
         </div>
-        <?php if(count(get_participants_from_exp($_GET['id_exp']))==0){
-          echo 'Aucun participant';
-        } else{ echo count(get_participants_from_exp($_GET['id_exp'])).' Participant(s)'?>
+
+        <div class="menu-anchor">
+          <button class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false">
+            <img src="../assets/img/bell.svg" alt="" />
+          </button>
+        </div>
+
+        <div class="menu-anchor profile-anchor">
+          <button class="profile-trigger" aria-haspopup="menu" aria-expanded="false">
+            <span class="avatar">
+              <?= htmlspecialchars($initials) ?>
+            </span>
+            <span class="profile-copy">
+              <strong>
+                <?= htmlspecialchars($userNom . ' ' . $userPrenom) ?>
+              </strong>
+              <small>
+                <?= htmlspecialchars($userRole) ?>
+              </small>
+            </span>
+            <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
+          </button>
+        </div>
+      </div>
+    </header>
+    <section class="page-heading">
+      <a class="back-link" href="#">
+        <span class="fa"></span> Retour à l’expérimentation
+      </a>
+      <h1><span class="fa"></span> Gestion des participants</h1>
+      <p>Modifiez les restrictions et rétributions des participants et acceptez les demandes.</p>
+    </section>
+
+    <main class="dashboard">
+      <div class="lists-toolbar">
+        <div></div>
+        <h2><img src="../assets/img/Profil.svg" alt="" />Inscrits</h2>
+        <!--<h2><img src="../assets/img/Profil.svg" alt="" />En attente</h2>
+          <button class="action-button orange"><span class="fa"></span>Créer une invitation</button>-->
+      </div>
+      <?php if (count(get_participants_from_exp($_GET['id_exp'])) == 0) {
+        echo 'Aucun participant';
+      } else {
+        echo count(get_participants_from_exp($_GET['id_exp'])) . ' Participant(s)' ?>
         <div class="participant-grid">
           <section class="participant-column">
             <h2><img src="/assets/ea0ca.svg" alt="" />Inscrits</h2>
@@ -39,18 +95,20 @@
               <span>Nom</span><span>Prénom</span><span>Date d’inscription</span>
             </div>
             <div class="participant-list">
-              
-              
+
+
               <!-- Louka, prend juste lui comme modele -->
-               <?php foreach(get_participants_from_exp($_GET['id_exp']) as $part) {?>
-              <article class="participant-row registered">
-                <div class="participant-data"><strong><?= $part['nom_util'] ?></strong><span><?= $part['prenom_util'] ?></span><!--<span>10 septembre 2026</span>--></div>
-                <div class="row-actions">
-                  <button class="action-button orange">Voir le profil<img src="../assets/img/arrow.svg" alt="" /></button>
-                  <button class="action-button green">Rétribuer<img src="../assets/img/ticket.svg" alt="" /></button>
-                  <button class="action-button red">Retirer<img src="../assets/img/Cross.svg" alt="" /></button>
-                </div>
-              </article>
+              <?php foreach (get_participants_from_exp($_GET['id_exp']) as $part) { ?>
+                <article class="participant-row registered">
+                  <div class="participant-data">
+                    <strong><?= $part['nom_util'] ?></strong><span><?= $part['prenom_util'] ?></span><!--<span>10 septembre 2026</span>-->
+                  </div>
+                  <div class="row-actions">
+                    <button class="action-button orange">Voir le profil<img src="../assets/img/arrow.svg" alt="" /></button>
+                    <button class="action-button green">Rétribuer<img src="../assets/img/ticket.svg" alt="" /></button>
+                    <button class="action-button red">Retirer<img src="../assets/img/Cross.svg" alt="" /></button>
+                  </div>
+                </article>
               <?php } ?>
 
 
@@ -191,24 +249,24 @@
             </div>
           </section>-->
         </div>
-        <?php } ?>
+      <?php } ?>
 
-        <div class="settings-grid">
-          <section class="panel reward-panel">
-            <div class="panel-heading dark-rule">
-              <h2><img src="../assets/img/Wallet.svg" alt="" />Gestion des rétributions</h2>
-              <button class="action-button navy">Modifier</button>
-            </div>
-            <div class="reward-table">
-              <div><span>Somme</span><strong>10</strong></div>
-              <div><span>Devise</span><strong>€</strong></div>
-              <div><span>Type</span><strong>Code réduction</strong></div>
-              <div><span>Site commerçant</span><strong>Amazon : https://www.amazon.fr/</strong></div>
-            </div>
-            <button class="action-button navy">Ajouter</button>
-          </section>
+      <div class="settings-grid">
+        <section class="panel reward-panel">
+          <div class="panel-heading dark-rule">
+            <h2><img src="../assets/img/Wallet.svg" alt="" />Gestion des rétributions</h2>
+            <button class="action-button navy">Modifier</button>
+          </div>
+          <div class="reward-table">
+            <div><span>Somme</span><strong>10</strong></div>
+            <div><span>Devise</span><strong>€</strong></div>
+            <div><span>Type</span><strong>Code réduction</strong></div>
+            <div><span>Site commerçant</span><strong>Amazon : https://www.amazon.fr/</strong></div>
+          </div>
+          <button class="action-button navy">Ajouter</button>
+        </section>
 
-          <!--<section class="panel restrictions-panel">
+        <!--<section class="panel restrictions-panel">
             <div class="panel-heading">
               <h2><span class="fa pdf-icon"></span>Restrictions</h2>
               <button class="action-button orange">Ajouter<img src="../assets/img/Plus.svg" alt="" /></button>
@@ -232,14 +290,15 @@
               </div>
             </div>
           </section>-->
-        </div>
-      </main>
+      </div>
+    </main>
 
-      <footer>
-        <span class="fa"></span>
-        <strong>Le Mans Université</strong>
-        <span>• Liste des participants</span>
-      </footer>
-    </div>
-  </body>
+    <footer>
+      <span class="fa"></span>
+      <strong>Le Mans Université</strong>
+      <span>• Liste des participants</span>
+    </footer>
+  </div>
+</body>
+
 </html>
