@@ -29,9 +29,9 @@ include("../controller/ECFicheProjController.php");
 
         <nav class="main-navigation" aria-label="Navigation principale">
           <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-          <button class="nav-link active">Projets</button>
-          <button class="nav-link">Ressources</button>
-          <button class="nav-link">Messagerie</button>
+          <a href="ECListProjet.php"><button class="nav-link active">Projets</button></a>
+          <a href="ECRessources.php"><button class="nav-link">Ressources</button></a>
+          <a href="ECMess.php"><button class="nav-link">Messagerie</button></a>
         </nav>
 
         <div class="header-actions">
@@ -177,7 +177,9 @@ include("../controller/ECFicheProjController.php");
           <section class="experiments-card">
             <div style="display: flex; align-items: center; justify-content: space-between;">
               <h2 style="margin: 0;">Expérimentations</h2>
-              <a href="ECCreateExp.php?id_proj=<?= $_GET['id_proj']?>" style="color: inherit; text-decoration: none;"><button class="add-button"><img src="../assets/img/Plus.svg" alt="" /> Ajouter</button></a>
+              <a href="ECCreateExp.php?id_proj=<?= $_GET['id_proj'] ?>"
+                style="color: inherit; text-decoration: none;"><button class="add-button"><img
+                    src="../assets/img/Plus.svg" alt="" /> Ajouter</button></a>
             </div>
             <?php foreach ($exp as $experimentation) { ?>
               <article class="experiment-row">

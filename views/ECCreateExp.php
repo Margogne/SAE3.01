@@ -24,9 +24,9 @@ include "../controller/ECCreateExpController.php";
 
       <nav class="main-navigation" aria-label="Navigation principale">
         <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-        <button class="nav-link active">Projets</button>
-        <button class="nav-link">Ressources</button>
-        <button class="nav-link">Messagerie</button>
+        <a href="ECListProjet.php"><button class="nav-link active">Projets</button></a>
+        <a href="ECRessources.php"><button class="nav-link">Ressources</button></a>
+        <a href="ECMess.php"><button class="nav-link">Messagerie</button></a>
       </nav>
 
       <div class="header-actions">
@@ -96,7 +96,7 @@ include "../controller/ECCreateExpController.php";
                 <?php
                 $getParams = array_change_key_case($_GET, CASE_LOWER);
                 $idProjSelectionne = (int) ($getParams['id_proj'] ?? 0);
-                
+
                 foreach (get_projets() as $projet):
                   $idProj = (int) $projet['id_proj'];
                   $selected = ($idProjSelectionne > 0 && $idProj === $idProjSelectionne) ? 'selected' : '';
