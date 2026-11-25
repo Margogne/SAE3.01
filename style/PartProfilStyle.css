@@ -69,6 +69,17 @@
     opacity: 1;
 }
 
+.form-panel,
+.profile-form,
+.profile-form label,
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .submit-button {
     width: 200px;
     max-width: 100%;
@@ -143,5 +154,21 @@
 
     .workspace-photo {
         border-radius: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .profil-main-content {
+        padding: 16px 0 0;
+    }
+
+    .form-panel {
+        padding: 24px 20px 24px 16px;
+    }
+
+    .profile-form {
+        width: 100%;
+        max-width: 100%;
+        padding-right: 4px;
     }
 }
