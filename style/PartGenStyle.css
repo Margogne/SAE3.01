@@ -654,3 +654,13 @@ footer strong {
         margin-top: 24px;
     }
 }
+
+@media (min-width: 1001px) {
+  .filter-panel {
+    max-width: 950px; /* Ajuste cette valeur selon la largeur max souhaitée sur PC */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+  }
+}
