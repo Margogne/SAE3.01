@@ -145,7 +145,7 @@ include "../controller/ECDashboardController.php";
                                         echo "En cours";
                                     }
                                     ?></p>
-                                    <a href="ECFicheExp.php?id=<?= urlencode((string) ($exp['id_exp'] ?? '')) ?>"><button>
+                                    <a href="ECFicheExp.php?id_exp=<?= urlencode((string) ($exp['id_exp'] ?? '')) ?>" style="color: inherit; text-decoration: none;"><button>
                                         <span>Voir la fiche</span>
                                         <span class="font-awesome" aria-hidden="true">&#xf061;</span>
                                     </button></a>

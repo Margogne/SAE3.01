@@ -55,6 +55,7 @@ function get_nb_participants(){
     return count($result);
 }
 
+
 function get_lab_from_exp($id){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM experimentation as e 
