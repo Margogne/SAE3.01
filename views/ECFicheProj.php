@@ -168,7 +168,7 @@ include("../controller/ECFicheProjController.php");
           </aside>
 
           <section class="experiments-card">
-            <h2>Expérimentations récentes</h2>
+            <h2>Expérimentations</h2>
             <?php foreach ($exp as $experimentation) { ?>
               <article class="experiment-row">
                 <span class="experiment-state" style="background: #d0d0d0"></span>
