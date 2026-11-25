@@ -42,7 +42,7 @@ extract($pageData);
 
         <!-- HEADER -->
         <header class="site-header">
-            
+
             <button class="brand" aria-label="Retour au tableau de bord">
                 <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
             </button>
@@ -185,7 +185,7 @@ extract($pageData);
 
                                         <div class="message-context">
                                             <span><?= htmlspecialchars($item['date_envoi']) ?></span>
-                                            
+
                                             <?php if (is_message_unread($item)): ?>
                                                 <a href="?mark_read=<?= (int) $item['id_mess'] ?>&amp;status=<?= htmlspecialchars($status) ?>&amp;q=<?= urlencode($query) ?>"
                                                     class="btn-mark-read"
