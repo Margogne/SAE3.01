@@ -10,48 +10,11 @@
 }
 
 :root {
-  --font-family-inter: 'Inter', sans-serif;
-  --font-family-poppins: 'Poppins', sans-serif;
-  --font-family-font-awesome-5-free: 'Font Awesome 5 Free', sans-serif;
-  --font-family-roboto: 'Roboto', sans-serif;
-
-  /* Palette de couleurs */
-  --catskill-white-1: rgba(248, 250, 252, 1);
-  --catskill-white-2: rgba(241, 245, 249, 1);
-  --cloud-burst: rgba(29, 40, 79, 1);
-  --ebony: rgba(15, 22, 46, 1);
-  --ebony-clay: rgba(31, 41, 55, 1);
-  --electric-violet: rgba(147, 51, 234, 1);
-  --feta: rgba(240, 253, 244, 1);
-  --geyser: rgba(203, 213, 225, 1);
-  --gull-gray-1: rgba(155, 168, 189, 1);
-  --gull-gray-2: rgba(148, 163, 184, 1);
-  --jewel: rgba(22, 101, 52, 1);
-  --magnolia: rgba(250, 245, 255, 1);
-  --mystic: rgba(226, 232, 240, 1);
-  --persian-blue: rgba(30, 64, 175, 1);
-  --piper: rgba(201, 74, 41, 1);
-  --royal-blue: rgba(37, 99, 235, 1);
-  --salem: rgba(22, 163, 74, 1);
-  --seance: rgba(107, 33, 168, 1);
-  --serenade: rgba(255, 247, 237, 1);
-  --slate-gray: rgba(100, 116, 139, 1);
-  --tabasco: rgba(154, 52, 18, 1);
-
-  /* Couleurs de texte */
-  --text-white: rgba(255, 255, 255, 1);
-  --text-rgb-201-74-41: rgba(201, 74, 41, 1);
-  --text-rgb-155-168-189: rgba(155, 168, 189, 1);
-  --text-rgb-29-40-79: rgba(29, 40, 79, 1);
-  --text-rgb-31-41-55: rgba(31, 41, 55, 1);
-  --text-rgb-100-116-139: rgba(100, 116, 139, 1);
-  --text-rgb-180-83-9: rgba(180, 83, 9, 1);
-  --text-rgb-21-128-61: rgba(21, 128, 61, 1);
-  --text-rgb-220-38-38: rgba(220, 38, 38, 1);
-  --text-rgb-37-99-235: rgba(37, 99, 235, 1);
-  --text-rgb-148-163-184: rgba(148, 163, 184, 1);
-  --text-rgb-22-163-74: rgba(22, 163, 74, 1);
-  --text-rgb-147-51-234: rgba(147, 51, 234, 1);
+  color: #152536;
+  background: #f4f6f8;
+  font-family: "Inter:Regular", Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
 }
 
 /* ==========================================================================
