@@ -93,9 +93,23 @@ include "../controller/ECCreateExpController.php";
               <span>Projet associé *</span>
               <select name="id_proj" required>
                 <option value="" disabled selected>Choisir un projet</option>
+                <?php
+                $getParams = array_change_key_case($_GET, CASE_LOWER);
+                $idProjSelectionne = (int) ($getParams['id_proj'] ?? 0);
+                
+                foreach (get_projets() as $projet):
+                  $idProj = (int) $projet['id_proj'];
+                  $selected = ($idProjSelectionne > 0 && $idProj === $idProjSelectionne) ? 'selected' : '';
+                  ?>
+                  <option value="<?= $idProj ?>" <?= $selected ?>>
+                    <?= htmlspecialchars($projet['nom_proj'] ?? '') ?>
+                  </option>
+                <?php endforeach; ?>
+
+                <!--<option value="" disabled selected>Choisir un projet</option>
                 <?php foreach (get_projets() as $projet) { ?>
                   <option value="<?= (int) $projet['id_proj']; ?>"> <?php echo $projet['nom_proj']; ?></option>
-                <?php } ?>
+                <?php } ?>-->
               </select>
             </label>
 
