@@ -80,7 +80,7 @@
                 de salles et gérez les documents modèles pour les chercheurs.</span></p>
           </div>
         </div>
-        
+
       </div>
       <div class="node-60">
         <div class="node-61">
@@ -104,33 +104,35 @@
 
             <div class="list-69">
               <?php
-              foreach(get_equipements_materiels() as $materiel) {
-                
-              ?>
-              <div class="item-70">
-                <div class="container-71">
-                  <div class="background-72">
-                    <div class="container-73">
-                      <p class="text-74"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
-  <path d="M0 0h16v16H0z" fill="none" />
-  <path fill="currentColor" d="M11 1c.45 0 .882.076 1.286.213L10 3.5l.5 2l2 .5l2.286-2.287a4 4 0 0 1-5.365 4.962l-4.822 5.627A2 2 0 0 1 3.08 15H3a2 2 0 0 1-2-2v-.08a2 2 0 0 1 .698-1.519l5.626-4.823A4 4 0 0 1 11 1M3 12a1 1 0 1 0 0 2a1 1 0 0 0 0-2" />
-</svg></span></p>
+              foreach (get_equipements_materiels() as $materiel) {
+
+                ?>
+                <div class="item-70">
+                  <div class="container-71">
+                    <div class="background-72">
+                      <div class="container-73">
+                        <p class="text-74"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg"
+                              width="1em" height="1em" viewBox="0 0 16 16">
+                              <path d="M0 0h16v16H0z" fill="none" />
+                              <path fill="currentColor"
+                                d="M11 1c.45 0 .882.076 1.286.213L10 3.5l.5 2l2 .5l2.286-2.287a4 4 0 0 1-5.365 4.962l-4.822 5.627A2 2 0 0 1 3.08 15H3a2 2 0 0 1-2-2v-.08a2 2 0 0 1 .698-1.519l5.626-4.823A4 4 0 0 1 11 1M3 12a1 1 0 1 0 0 2a1 1 0 0 0 0-2" />
+                            </svg></span></p>
+                      </div>
+                    </div>
+                    <div class="container-75">
+                      <p class="text-76"><span class="text-rgb-31-41-55"><?php echo $materiel['nom_ress']; ?>
+
                     </div>
                   </div>
-                  <div class="container-75">
-                    <p class="text-76"><span class="text-rgb-31-41-55"><?php echo $materiel['nom_ress'] ;?>
-  
+                  <div class="container-77">
+                    <div class="background-78">
+                      <p class="text-79"><span class="text-rgb-180-83-9">Affecté (Projet VR-H1)</span></p>
+                    </div>
+                    <div class="button-80">
+                      <p class="text-81"><span class="text-white">Gérer</span></p>
+                    </div>
                   </div>
                 </div>
-                <div class="container-77">
-                  <div class="background-78">
-                    <p class="text-79"><span class="text-rgb-180-83-9">Affecté (Projet VR-H1)</span></p>
-                  </div>
-                  <div class="button-80">
-                    <p class="text-81"><span class="text-white">Gérer</span></p>
-                  </div>
-                </div>
-              </div>
               <?php } ?>
               <!--
               <div class="item-82">
@@ -199,35 +201,37 @@
               </div>
             </div>
             <div class="list-117">
-              <?php foreach(get_salles() as $salle) { ?>
+              <?php foreach (get_salles() as $salle) { ?>
 
-              <div class="item-118">
-                <div class="container-119">
-                  <div class="background-120">
-                    <div class="container-121">
-                      <p class="text-122"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20">
-  <path d="M0 0h20v20H0z" fill="none" />
-  <path fill="currentColor" d="M9.186 2.113a.5.5 0 0 1 .419-.1l7 1.499a.5.5 0 0 1 .394.489v12a.5.5 0 0 1-.395.489l-7 1.5A.5.5 0 0 1 9 17.503v-15a.5.5 0 0 1 .186-.389m3.316 7.888a.75.75 0 1 0-1.5 0a.75.75 0 0 0 1.5 0m-4.5-6.998H3.5a.5.5 0 0 0-.5.5v12.995a.5.5 0 0 0 .5.5h4.502z" />
-</svg></span></p>
+                <div class="item-118">
+                  <div class="container-119">
+                    <div class="background-120">
+                      <div class="container-121">
+                        <p class="text-122"><span class="text-rgb-29-40-79"><svg xmlns="http://www.w3.org/2000/svg"
+                              width="1em" height="1em" viewBox="0 0 20 20">
+                              <path d="M0 0h20v20H0z" fill="none" />
+                              <path fill="currentColor"
+                                d="M9.186 2.113a.5.5 0 0 1 .419-.1l7 1.499a.5.5 0 0 1 .394.489v12a.5.5 0 0 1-.395.489l-7 1.5A.5.5 0 0 1 9 17.503v-15a.5.5 0 0 1 .186-.389m3.316 7.888a.75.75 0 1 0-1.5 0a.75.75 0 0 0 1.5 0m-4.5-6.998H3.5a.5.5 0 0 0-.5.5v12.995a.5.5 0 0 0 .5.5h4.502z" />
+                            </svg></span></p>
+                      </div>
+                    </div>
+                    <div class="container-123">
+                      <p class="text-124"><span class="text-rgb-31-41-55"><?php echo $salle['nom_ress']; ?></span></p>
+                      <div class="container-125">
+                        <p class="text-126"><span class="text-rgb-100-116-139">Le Mans • Bat. Informatique</span></p>
+                      </div>
                     </div>
                   </div>
-                  <div class="container-123">
-                    <p class="text-124"><span class="text-rgb-31-41-55"><?php echo $salle['nom_ress']; ?></span></p>
-                    <div class="container-125">
-                      <p class="text-126"><span class="text-rgb-100-116-139">Le Mans • Bat. Informatique</span></p>
+                  <div class="container-127">
+                    <div class="background-128">
+                      <p class="text-129"><span class="text-rgb-180-83-9">3 Créneaux réservés</span></p>
+                    </div>
+                    <div class="button-130">
+                      <p class="text-131"><span class="text-white">Calendrier</span></p>
                     </div>
                   </div>
                 </div>
-                <div class="container-127">
-                  <div class="background-128">
-                    <p class="text-129"><span class="text-rgb-180-83-9">3 Créneaux réservés</span></p>
-                  </div>
-                  <div class="button-130">
-                    <p class="text-131"><span class="text-white">Calendrier</span></p>
-                  </div>
-                </div>
-              </div>
-                <?php } ?>
+              <?php } ?>
               <!--
               <div class="item-132">
                 <div class="container-133">
@@ -291,7 +295,7 @@
                     enseignants-chercheurs pour leurs projets.</span></p>
               </div>
             </div>
-            
+
           </div>
           <div class="container-173">
 
@@ -324,7 +328,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="doc-2-statistiques-191">
               <div class="container-192">
                 <div class="container-193">
