@@ -83,6 +83,9 @@ require("../controller/ECListProjetController.php");
             <button type="submit" class="btn-filter-submit">
               <span class="fa"></span> Rechercher
             </button>
+            <?php if ($search !== ''): ?>
+              <a href="ECListProjet.php" class="btn-filter-reset"><span>Réinitialiser</span></a>
+            <?php endif; ?>
           </div>
         </form>
       </section>
