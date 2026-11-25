@@ -61,7 +61,7 @@
         <section class="hero">
           <div class="hero-content">
             <button class="back-link">
-              <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj']?>" style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span></a> Retour au projet
+              <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj']?>" style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span> Retour au projet</a>
             </button>
             <!--<div class="tags">
               <span class="tag subject">Robotique &amp; Ergonomie</span>
@@ -173,10 +173,10 @@
                   <img src="../assets/img/Plus.svg" alt="" /> Ajouter
                 </button>
               </div>
-              <div class="visibility">
+              <!--<div class="visibility">
                 <span><span class="fa" aria-hidden="true"></span> Visibilité actuelle des livrables :</span>
                 <button>Publique</button>
-              </div>
+              </div>-->
               <div class="file-list">
                 <?php foreach (get_documents_from_exp($_GET['id_exp']) as $doc){ ?>
                   <div class="file-row">

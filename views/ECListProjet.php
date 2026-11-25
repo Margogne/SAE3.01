@@ -9,7 +9,7 @@ require("../controller/ECListProjetController.php");
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page participant - Le Mans Université</title>
-  <link rel="stylesheet" href="../poubelle/Partstyle.css" />
+  <link rel="stylesheet" href="../Style/ECListProjet.css" />
   <link rel="stylesheet" href="../style/ECheader.css" />
 
 </head>
@@ -117,7 +117,7 @@ require("../controller/ECListProjetController.php");
                 <h3><?= htmlspecialchars($project['nom_proj'] ?? '') ?></h3>
                 <p class="project-description"><?= htmlspecialchars($project['desc_proj'] ?? '') ?></p>
                 <div class="project-footer">
-                  <a href="PartExpSess.php?id=<?= urlencode((string) ($project['id_proj'] ?? '')) ?>"
+                  <a href="ECFicheProj.php?id_proj=<?= urlencode((string) ($project['id_proj'] ?? '')) ?>"
                     class="view-details-btn" style="text-decoration: none;">
                     Voir la fiche <span class="fa"></span>
                   </a>
