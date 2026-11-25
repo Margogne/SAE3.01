@@ -603,3 +603,50 @@ function gestion_message_delete(array $session, array $get, string $redirectPage
 
     return null;
 }
+
+function mark_message_as_read(int $messageId, int $userId): bool
+{
+    $bdd = get_bdd();
+    $sql = 'UPDATE ECHANGER
+            SET status_mess = 1
+            WHERE id_mess = :id_mess AND id_util_receveur = :user_id';
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':id_mess' => $messageId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function gestion_message_mark_read(array $session, array $get, string $redirectPage = 'PartMess.php'): ?string
+{
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    if (isset($get['mark_read'])) {
+        $messageId = (int) $get['mark_read'];
+        $userId = (int) ($session['user_id'] ?? 0);
+
+        if ($messageId > 0 && $userId > 0) {
+            mark_message_as_read($messageId, $userId);
+        }
+
+        $url = $redirectPage
+            . '?status=' . urlencode($status)
+            . '&q=' . urlencode($query)
+            . '&flash=read';
+
+        header('Location: ' . $url);
+        exit();
+    }
+
+    if (($get['flash'] ?? '') === 'read') {
+        return 'Le message a bien été marqué comme lu.';
+    }
+
+    return null;
+}

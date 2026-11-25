@@ -9,6 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 
 $flashMessage = gestion_message_delete($_SESSION, $_GET, 'PartMess.php');
 
+$flashDelete = gestion_message_delete($_SESSION, $_GET, 'PartMess.php');
+$flashRead = gestion_message_mark_read($_SESSION, $_GET, 'PartMess.php');
+$flashMessage = $flashDelete ?? $flashRead;
+
 $pageData = prepare_part_mess_page_data($_SESSION, $_GET);
 if ($pageData === null) {
     header('Location: ID.php');
@@ -215,8 +219,19 @@ extract($pageData);
                                         </div>
                                         <strong class="message-title"><?= htmlspecialchars($item['sender']) ?></strong>
                                         <p><?= htmlspecialchars($item['contenu_mess']) ?></p>
+
                                         <div class="message-context">
                                             <span><?= htmlspecialchars($item['date_envoi']) ?></span>
+                                            
+                                            <?php if (is_message_unread($item)): ?>
+                                                <a href="?mark_read=<?= (int) $item['id_mess'] ?>&amp;status=<?= htmlspecialchars($status) ?>&amp;q=<?= urlencode($query) ?>"
+                                                    class="btn-mark-read"
+                                                    aria-label="Marquer le message #<?= (int) $item['id_mess'] ?> comme lu"
+                                                    title="Marquer comme lu">
+                                                    <span class="fa" aria-hidden="true">&#xf00c;</span>
+                                                    <span>Marquer comme lu</span>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
 
