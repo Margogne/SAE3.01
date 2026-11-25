@@ -418,3 +418,235 @@ function update_user_profile(int $idUtil, string $nom, string $prenom, string $g
         ':id_util' => $idUtil,
     ]);
 }
+
+/* =============================================================
+   Gestion des messages
+   ========================================================== */
+
+function get_messages_for_user(int $userId, string &$dbError = ''): array
+{
+    $messages = [];
+    $dbError = '';
+
+    try {
+        $bdd = get_bdd();
+
+        $sql = 'SELECT e.id_mess,
+                       e.id_util_receveur,
+                       e.`id_util_expéditeur` AS id_util_expediteur,
+                       e.date_envoi,
+                       e.contenu_mess,
+                       e.status_mess,
+                       u.nom_util,
+                       u.prenom_util
+                FROM ECHANGER e
+                LEFT JOIN UTILISATEUR u ON u.id_util = e.`id_util_expéditeur`
+                WHERE e.id_util_receveur = :user_id
+                ORDER BY e.date_envoi DESC, e.id_mess DESC';
+
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $todayStr = date('Y-m-d');
+        $yesterdayStr = date('Y-m-d', strtotime('-1 day'));
+
+        foreach ($rows as $row) {
+            $timestamp = !empty($row['date_envoi']) ? strtotime((string) $row['date_envoi']) : false;
+            $dayStr = $timestamp ? date('Y-m-d', $timestamp) : '';
+
+            if ($dayStr === $todayStr) {
+                $period = 'Aujourd’hui';
+            } elseif ($dayStr === $yesterdayStr) {
+                $period = 'Hier';
+            } else {
+                $period = 'Plus tôt';
+            }
+
+            $senderName = trim(($row['prenom_util'] ?? '') . ' ' . ($row['nom_util'] ?? ''));
+            if ($senderName === '') {
+                $senderName = 'Expéditeur #' . (int) ($row['id_util_expediteur'] ?? 0);
+            }
+
+            $messages[] = [
+                'id_mess' => (int) $row['id_mess'],
+                'id_util_receveur' => (int) $row['id_util_receveur'],
+                'id_util_expediteur' => (int) ($row['id_util_expediteur'] ?? 0),
+                'period' => $period,
+                'sender' => $senderName,
+                'contenu_mess' => (string) ($row['contenu_mess'] ?? ''),
+                'date_envoi' => $timestamp ? date('d/m/Y H:i', $timestamp) : (string) ($row['date_envoi'] ?? ''),
+                'status_mess' => $row['status_mess'] ?? 0,
+            ];
+        }
+    } catch (PDOException $e) {
+        $dbError = 'Erreur SQL : ' . $e->getMessage();
+    }
+
+    return $messages;
+}
+
+function is_message_unread(array $message): bool
+{
+    return empty($message['status_mess']);
+}
+
+function filter_messages(array $messages, string $status, string $query): array
+{
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $needle = trim($query);
+
+    return array_values(array_filter($messages, function ($item) use ($status, $needle) {
+        $unread = is_message_unread($item);
+        $matchesStatus = $status === 'all'
+            || ($status === 'unread' && $unread)
+            || ($status === 'read' && !$unread);
+
+        $haystack = ($item['sender'] ?? '') . ' ' . ($item['contenu_mess'] ?? '') . ' ' . ($item['date_envoi'] ?? '');
+        $matchesQuery = ($needle === '')
+            || (stripos($haystack, $needle) !== false);
+
+        return $matchesStatus && $matchesQuery;
+    }));
+}
+
+function prepare_part_mess_page_data(array $session, array $get): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $userId = (int) $session['user_id'];
+    $userNom = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole = (string) ($session['user_role'] ?? 'Participant');
+
+    $initials = compute_initials($userPrenom, $userNom);
+
+    $dbError = '';
+    $messages = get_messages_for_user($userId, $dbError);
+
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    $unreadCount = count(array_filter($messages, 'is_message_unread'));
+    $readCount = count($messages) - $unreadCount;
+    $filtered = filter_messages($messages, $status, $query);
+    $periods = ['Aujourd’hui', 'Hier', 'Plus tôt'];
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initials',
+        'dbError',
+        'messages',
+        'status',
+        'query',
+        'unreadCount',
+        'readCount',
+        'filtered',
+        'periods'
+    );
+}
+
+function delete_message(int $messageId, int $userId): bool
+{
+    $bdd = get_bdd();
+    $sql = 'DELETE FROM ECHANGER WHERE id_mess = :id_mess AND id_util_receveur = :user_id';
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':id_mess' => $messageId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function gestion_message_delete(array $session, array $get, string $redirectPage = 'PartMess.php'): ?string
+{
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    // 1. Si l'utilisateur a cliqué sur la croix de suppression
+    if (isset($get['delete_mess'])) {
+        $messageId = (int) $get['delete_mess'];
+        $userId = (int) ($session['user_id'] ?? 0);
+
+        if ($messageId > 0 && $userId > 0) {
+            delete_message($messageId, $userId);
+        }
+
+        $url = $redirectPage
+            . '?status=' . urlencode($status)
+            . '&q=' . urlencode($query)
+            . '&flash=deleted';
+
+        header('Location: ' . $url);
+        exit();
+    }
+
+    // 2. Après redirection, on renvoie le message flash si demandé
+    if (($get['flash'] ?? '') === 'deleted') {
+        return 'Le message a bien été supprimé.';
+    }
+
+    return null;
+}
+
+function mark_message_as_read(int $messageId, int $userId): bool
+{
+    $bdd = get_bdd();
+    $sql = 'UPDATE ECHANGER
+            SET status_mess = 1
+            WHERE id_mess = :id_mess AND id_util_receveur = :user_id';
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':id_mess' => $messageId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function gestion_message_mark_read(array $session, array $get, string $redirectPage = 'PartMess.php'): ?string
+{
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    if (isset($get['mark_read'])) {
+        $messageId = (int) $get['mark_read'];
+        $userId = (int) ($session['user_id'] ?? 0);
+
+        if ($messageId > 0 && $userId > 0) {
+            mark_message_as_read($messageId, $userId);
+        }
+
+        $url = $redirectPage
+            . '?status=' . urlencode($status)
+            . '&q=' . urlencode($query)
+            . '&flash=read';
+
+        header('Location: ' . $url);
+        exit();
+    }
+
+    if (($get['flash'] ?? '') === 'read') {
+        return 'Le message a bien été marqué comme lu.';
+    }
+
+    return null;
+}

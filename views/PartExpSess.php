@@ -42,7 +42,7 @@ extract($pageData);
 
     <div class="app-shell">
 
-        <!-- EN-TÊTE IDENTIQUE  -->
+        <!-- EN-TÊTE -->
         <header class="site-header">
             <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
                 <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
@@ -53,7 +53,7 @@ extract($pageData);
                 <a class="nav-link" href="PartAcc.php">Accueil</a>
                 <a class="nav-link active" href="#Experimentation">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
-                <a class="nav-link" href="#messagerie">Messagerie</a>
+                <a class="nav-link" href="PartMess.php">Messagerie</a>
             </nav>
 
             <!-- Actions de l'en-tête (Langue, Notifications, Profil) -->

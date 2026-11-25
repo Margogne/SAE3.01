@@ -108,6 +108,7 @@ CREATE TABLE ECHANGER(
    date_envoi DATETIME,
    id_mess INT AUTO_INCREMENT,
    contenu_mess VARCHAR(5000),
+   status_mess  BOOLEAN NOT NULL DEFAULT FALSE,
    PRIMARY KEY(id_util_receveur, id_util_expéditeur, date_envoi),
    UNIQUE(id_mess),
    FOREIGN KEY(id_util_receveur) REFERENCES UTILISATEUR(id_util),
@@ -157,7 +158,8 @@ INSERT INTO UTILISATEUR (id_util, nom_util, prenom_util, type_util, date_util, g
 (7, 'Moreau', 'Alexandre', 'externe', '2022-05-20', 'M', 'Français', 'Prestataire Externe'),
 (8, 'Simon', 'Chloé', 'externe', '2023-02-01', 'F', 'Français, Anglais', 'Chercheur Invité Partenaire'),
 (9, 'Leroy', 'Antoine', 'externe', '2023-10-15', 'M', 'Français, Allemand', 'Consultant Industriel'),
-(10, 'Gauthier', 'Camille', 'externe', '2024-03-01', 'F', 'Français', 'Partenaire Académique Étranger');
+(10, 'Gauthier', 'Camille', 'externe', '2024-03-01', 'F', 'Français', 'Partenaire Académique Étranger'),
+(11, 'J', 'John', 'externe', '2007-04-02', 'M', 'Français', 'compte test maxime');
 
 INSERT INTO LABORATOIRE (id_lab, nom_lab, ville_lab, id_util) VALUES
 (1, 'ESO : Espaces et Sociétés', 'Le Mans', 1),
@@ -265,7 +267,9 @@ INSERT INTO ECHANGER (id_util_receveur, id_util_expéditeur, date_envoi, id_mess
 (10, 6, '2024-02-01 08:45:00', 7, 'Merci de transférer les derniers jeux de données.'),
 (6, 10, '2024-06-15 16:30:00', 8, 'Transfert effectué via la plateforme sécurisée.'),
 (8, 3, '2025-01-10 09:00:00', 9, 'Réunion technique reportée à vendredi.'),
-(7, 5, '2025-01-10 09:30:00', 10, 'Rapport intermédiaire disponible en téléchargement.');
+(7, 5, '2025-01-10 09:30:00', 10, 'Rapport intermédiaire disponible en téléchargement.'),
+(11, 3, '2020-10-10 09:00:00', 11, 'Test 1'),
+(11, 5, '2020-10-10 10:00:00', 12, 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since 1966 is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.');
 
 INSERT INTO REFERENCER (id_proj, id_util, id_role, nom_role) VALUES
 (1, 3, 1, 'responsable'),
