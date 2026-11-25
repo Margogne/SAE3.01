@@ -14,9 +14,9 @@ include "../controller/ECDashboardController.php";
 
 <body>
     <div class="app-shell">
-        
+
         <header class="site-header">
-            
+
             <button class="brand" aria-label="Retour au tableau de bord">
                 <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
             </button>
@@ -29,31 +29,62 @@ include "../controller/ECDashboardController.php";
             </nav>
 
             <div class="header-actions">
+                <!-- langue -->
                 <div class="menu-anchor language-anchor">
-                    <button class="language-trigger" aria-haspopup="menu" aria-expanded="false">
+                    <button type="button" class="language-trigger" aria-haspopup="menu">
                         <img src="../assets/img/Globe.svg" alt="" />
                         <span>FR</span>
-                        <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
+            <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
                     </button>
+                    <div class="dropdown language-menu" role="menu" style="display: none;">
+                        <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                                class="fa">&#xf00c;</span></a>
+                        <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                    </div>
                 </div>
 
+                <!-- notifications -->
                 <div class="menu-anchor">
-                    <button class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog"
-                        aria-expanded="false">
+                    <button type="button" class="icon-trigger" aria-label="Notifications"
+                        aria-haspopup="dialog">
                         <img src="../assets/img/bell.svg" alt="" />
                     </button>
+                    <div class="dropdown notification-menu" role="dialog" aria-label="Notifications"
+                        style="display: none;">
+                        <h2>Notifications</h2>
+                        <div class="empty-notifications">
+                            <span class="notification-illustration">
+                                <span class="fa" style="font-size: 24px; color: #9ba8bd;">&#xf0a2;</span>
+                            </span>
+                            <strong>Aucune notification</strong>
+                            <p>Vous êtes à jour. Les nouvelles activités apparaîtront ici.</p>
+                        </div>
+                    </div>
                 </div>
-
+                
                 <div class="menu-anchor profile-anchor">
-                    <button class="profile-trigger" aria-haspopup="menu" aria-expanded="false">
+                    <button type="button" class="profile-button" aria-haspopup="menu">
                         <span class="avatar"><?= htmlspecialchars($initials) ?></span>
                         <span class="profile-copy">
-                            <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
+                            <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
                             <small><?= htmlspecialchars($userRole) ?></small>
                         </span>
                         <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
                     </button>
+                    <div class="dropdown profile-menu" role="menu" style="display: none;">
+                        <div class="profile-menu-heading">
+                            <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
+                            <span>
+                                <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
+                                <small><?= htmlspecialchars($userRole) ?></small>
+                            </span>
+                        </div>
+                        <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
+                                class="fa">&#xf2f5;</span>Se déconnecter</a>
+                    </div>
                 </div>
+
             </div>
         </header>
         <main class="dashboard-content">
@@ -145,10 +176,11 @@ include "../controller/ECDashboardController.php";
                                         echo "En cours";
                                     }
                                     ?></p>
-                                    <a href="ECFicheExp.php?id_exp=<?= urlencode((string) ($exp['id_exp'] ?? '')) ?>" style="color: inherit; text-decoration: none;"><button>
-                                        <span>Voir la fiche</span>
-                                        <span class="font-awesome" aria-hidden="true">&#xf061;</span>
-                                    </button></a>
+                                    <a href="ECFicheExp.php?id_exp=<?= urlencode((string) ($exp['id_exp'] ?? '')) ?>"
+                                        style="color: inherit; text-decoration: none;"><button>
+                                            <span>Voir la fiche</span>
+                                            <span class="font-awesome" aria-hidden="true">&#xf061;</span>
+                                        </button></a>
                                 </div>
                                 <time><?php echo $exp['datefin_exp']; ?></time>
                             </div>
