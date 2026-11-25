@@ -158,7 +158,7 @@ INSERT INTO UTILISATEUR (id_util, nom_util, prenom_util, type_util, date_util, g
 (7, 'Moreau', 'Alexandre', 'externe', '2022-05-20', 'M', 'Français', 'Prestataire Externe'),
 (8, 'Simon', 'Chloé', 'externe', '2023-02-01', 'F', 'Français, Anglais', 'Chercheur Invité Partenaire'),
 (9, 'Leroy', 'Antoine', 'externe', '2023-10-15', 'M', 'Français, Allemand', 'Consultant Industriel'),
-(10, 'Gauthier', 'Camille', 'externe', '2024-03-01', 'F', 'Français', 'Partenaire Académique Étranger');
+(10, 'Gauthier', 'Camille', 'externe', '2024-03-01', 'F', 'Français', 'Partenaire Académique Étranger'),
 (11, 'J', 'John', 'externe', '2007-04-02', 'M', 'Français', 'compte test maxime');
 
 INSERT INTO LABORATOIRE (id_lab, nom_lab, ville_lab, id_util) VALUES

@@ -556,3 +556,50 @@ function prepare_part_mess_page_data(array $session, array $get): ?array
         'periods'
     );
 }
+
+function delete_message(int $messageId, int $userId): bool
+{
+    $bdd = get_bdd();
+    $sql = 'DELETE FROM ECHANGER WHERE id_mess = :id_mess AND id_util_receveur = :user_id';
+    $stmt = $bdd->prepare($sql);
+
+    return $stmt->execute([
+        ':id_mess' => $messageId,
+        ':user_id' => $userId,
+    ]);
+}
+
+function gestion_message_delete(array $session, array $get, string $redirectPage = 'PartMess.php'): ?string
+{
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+
+    $query = trim((string) ($get['q'] ?? ''));
+
+    // 1. Si l'utilisateur a cliqué sur la croix de suppression
+    if (isset($get['delete_mess'])) {
+        $messageId = (int) $get['delete_mess'];
+        $userId = (int) ($session['user_id'] ?? 0);
+
+        if ($messageId > 0 && $userId > 0) {
+            delete_message($messageId, $userId);
+        }
+
+        $url = $redirectPage
+            . '?status=' . urlencode($status)
+            . '&q=' . urlencode($query)
+            . '&flash=deleted';
+
+        header('Location: ' . $url);
+        exit();
+    }
+
+    // 2. Après redirection, on renvoie le message flash si demandé
+    if (($get['flash'] ?? '') === 'deleted') {
+        return 'Le message a bien été supprimé.';
+    }
+
+    return null;
+}

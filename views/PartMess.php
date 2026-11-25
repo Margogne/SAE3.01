@@ -2,6 +2,13 @@
 session_start();
 require_once '../model/model.php';
 
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ID.php');
+    exit();
+}
+
+$flashMessage = gestion_message_delete($_SESSION, $_GET, 'PartMess.php');
+
 $pageData = prepare_part_mess_page_data($_SESSION, $_GET);
 if ($pageData === null) {
     header('Location: ID.php');
@@ -41,7 +48,7 @@ extract($pageData);
                 <a class="nav-link" href="PartAcc.php">Accueil</a>
                 <a class="nav-link" href="#Experimentations">Expérimentations</a>
                 <a class="nav-link" href="#ressources">Ressources</a>
-                <a class="nav-link active" href="PartNotif.php">Notifications</a>
+                <a class="nav-link active" href="PartMess.php">Messagerie</a>
             </nav>
 
             <!-- Actions de l'en-tête (Langue, Notifications, Profil) -->
@@ -109,6 +116,7 @@ extract($pageData);
             </div>
         </header>
 
+        <!-- corp de page -->
         <main class="mess-main">
 
             <!-- TITRE -->
@@ -139,7 +147,7 @@ extract($pageData);
                 </div>
             </section>
 
-            <!-- barre de filtres -->
+            <!-- barre de recherche -->
             <section class="mess-filters" aria-label="Filtres">
 
                 <!-- filtre par état -->
@@ -176,9 +184,7 @@ extract($pageData);
             <section class="messages-section">
 
                 <div class="list-intro">
-                    <strong>
-                        <?= count($filtered) ?> message(s)
-                    </strong>
+                    <strong><?= count($filtered) ?> message(s)</strong>
                 </div>
 
                 <!-- listing des messages -->
@@ -192,7 +198,7 @@ extract($pageData);
                             <?php foreach ($items as $item): ?>
                                 <article class="message-row <?= is_message_unread($item) ? 'is-unread' : '' ?>">
 
-                                    <!-- icône -->
+                                    <!-- icône message -->
                                     <div class="type-icon">
                                         <span class="fa">&#xf0e0;</span>
                                     </div>
@@ -201,7 +207,8 @@ extract($pageData);
                                     <div class="message-copy">
                                         <div class="message-meta">
                                             <span>Message #<?= (int) $item['id_mess'] ?></span>
-                                            <a href="?delete_mess=<?= (int) $item['id_mess'] ?>&amp;status=<?= htmlspecialchars($status) ?>&amp;q=<?= urlencode($query) ?>"
+                                            <a href="?delete_mess=<?= (int) $item['id_mess'] ?>&amp;
+                                                status=<?= htmlspecialchars($status) ?>&amp;q=<?= urlencode($query) ?>"
                                                 class="mess-delete-cross" aria-label="Supprimer le message" title="Supprimer">
                                                 <span class="fa" aria-hidden="true">&#xf00d;</span>
                                             </a>
@@ -212,6 +219,7 @@ extract($pageData);
                                             <span><?= htmlspecialchars($item['date_envoi']) ?></span>
                                         </div>
                                     </div>
+
                                 </article>
                             <?php endforeach; ?>
                         </div>
