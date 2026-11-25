@@ -10,6 +10,7 @@
   <body>
     <div class="app-shell">
       <?php
+        include "../model/ECListePartModel.php";
         include '../model/ECHeaderModel.php';
       ?>
 
@@ -25,10 +26,12 @@
         <div class="lists-toolbar">
           <div></div>
           <h2><img src="../assets/img/Profil.svg" alt="" />Inscrits</h2>
-          <h2><img src="../assets/img/Profil.svg" alt="" />En attente</h2>
-          <button class="action-button orange"><span class="fa"></span>Créer une invitation</button>
+          <!--<h2><img src="../assets/img/Profil.svg" alt="" />En attente</h2>
+          <button class="action-button orange"><span class="fa"></span>Créer une invitation</button>-->
         </div>
-
+        <?php if(count(get_participants_from_exp($_GET['id_exp']))==0){
+          echo 'Aucun participant';
+        } else{ echo count(get_participants_from_exp($_GET['id_exp'])).' Participant(s)'?>
         <div class="participant-grid">
           <section class="participant-column">
             <h2><img src="/assets/ea0ca.svg" alt="" />Inscrits</h2>
@@ -39,18 +42,20 @@
               
               
               <!-- Louka, prend juste lui comme modele -->
+               <?php foreach(get_participants_from_exp($_GET['id_exp']) as $part) {?>
               <article class="participant-row registered">
-                <div class="participant-data"><strong>Dubois</strong><span>Thomas</span><span>10 septembre 2026</span></div>
+                <div class="participant-data"><strong><?= $part['nom_util'] ?></strong><span><?= $part['prenom_util'] ?></span><!--<span>10 septembre 2026</span>--></div>
                 <div class="row-actions">
                   <button class="action-button orange">Voir le profil<img src="../assets/img/arrow.svg" alt="" /></button>
                   <button class="action-button green">Rétribuer<img src="../assets/img/ticket.svg" alt="" /></button>
                   <button class="action-button red">Retirer<img src="../assets/img/Cross.svg" alt="" /></button>
                 </div>
               </article>
+              <?php } ?>
 
 
 
-              <article class="participant-row registered">
+              <!--<article class="participant-row registered">
                 <div class="participant-data"><strong>Dubois</strong><span>Thomas</span><span>10 septembre 2026</span></div>
                 <div class="row-actions">
                   <button class="action-button orange">Voir le profil<img src="../assets/img/arrow.svg" alt="" /></button>
@@ -105,11 +110,11 @@
                   <button class="action-button green">Rétribuer<img src="/assets/63eaa.svg" alt="" /></button>
                   <button class="action-button red">Retirer<img src="/assets/a70f2.svg" alt="" /></button>
                 </div>
-              </article>
+              </article>-->
             </div>
           </section>
 
-          <section class="participant-column">
+          <!--<section class="participant-column">
             <h2><img src="/assets/ea0ca.svg" alt="" />En attente</h2>
             <div class="table-head pending"><span>Nom</span><span>Prénom</span></div>
             <div class="participant-list">
@@ -184,8 +189,9 @@
                 </div>
               </article>
             </div>
-          </section>
+          </section>-->
         </div>
+        <?php } ?>
 
         <div class="settings-grid">
           <section class="panel reward-panel">
@@ -202,7 +208,7 @@
             <button class="action-button navy">Ajouter</button>
           </section>
 
-          <section class="panel restrictions-panel">
+          <!--<section class="panel restrictions-panel">
             <div class="panel-heading">
               <h2><span class="fa pdf-icon"></span>Restrictions</h2>
               <button class="action-button orange">Ajouter<img src="../assets/img/Plus.svg" alt="" /></button>
@@ -225,7 +231,7 @@
                 <button><img src="../assets/img/Gear.svg" alt="" />Modifier</button>
               </div>
             </div>
-          </section>
+          </section>-->
         </div>
       </main>
 

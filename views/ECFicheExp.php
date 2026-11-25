@@ -208,9 +208,9 @@
                 </div>-->
 
               </div>
-              <button class="participants-button">
+              <a href="ECListePart.php?id_exp=<?= $_GET['id_exp'] ?>" style="color: inherit; text-decoration: none;"><button class="participants-button">
                 Voir la liste des Participants
-              </button>
+              </button></a>
             </aside>
           </div>
         </main>
