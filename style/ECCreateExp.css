@@ -165,13 +165,7 @@
   opacity: 1;
 }
 
-.header-actions {
-  margin-left: auto;
-  display: flex;
-  height: 55px;
-  align-items: center;
-  gap: 12px;
-}
+
 
 .menu-anchor {
   position: relative;
@@ -878,9 +872,7 @@ footer b {
     width: 125px;
   }
 
-  .header-actions {
-    gap: 7px;
-  }
+
 
   .language-button {
     width: 40px;
