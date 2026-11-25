@@ -23,7 +23,7 @@ include "../controller/ECDashboardController.php";
 
             <nav class="main-navigation" aria-label="Navigation principale">
                 <button class="nav-link active">Dashboard</button>
-                <button class="nav-link">Projets</button>
+                <a href="ECListProjet.php"><button class="nav-link">Projets</button></a>
                 <button class="nav-link">Ressources</button>
                 <button class="nav-link">Messagerie</button>
             </nav>
@@ -72,7 +72,7 @@ include "../controller/ECDashboardController.php";
             <section class="overview-section" aria-labelledby="overview-heading">
                 <div class="section-heading">
                     <h2 id="overview-heading">Vue d’ensemble</h2>
-                    <p>Mis à jour aujourd’hui à <?php echo date('H:i'); ?></p>
+                    <!--<p>Mis à jour aujourd’hui à <?php echo date('H:i'); ?></p>-->
                 </div>
 
                 <div class="overview-grid">
@@ -87,7 +87,7 @@ include "../controller/ECDashboardController.php";
                         <!--<p>2 échéances cette semaine</p>-->
                         <div class="card-actions">
                             <a href="ECCreateProject.php"><button>Proposer un projet</button></a>
-                            <button>Voir mes projets</button>
+                            <a href="ECListProjet.php"><button>Voir mes projets</button></a>
                         </div>
                     </article>
 
@@ -145,10 +145,10 @@ include "../controller/ECDashboardController.php";
                                         echo "En cours";
                                     }
                                     ?></p>
-                                    <button>
+                                    <a href="ECFicheExp.php?id=<?= urlencode((string) ($exp['id_exp'] ?? '')) ?>"><button>
                                         <span>Voir la fiche</span>
                                         <span class="font-awesome" aria-hidden="true">&#xf061;</span>
-                                    </button>
+                                    </button></a>
                                 </div>
                                 <time><?php echo $exp['datefin_exp']; ?></time>
                             </div>

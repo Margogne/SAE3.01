@@ -9,7 +9,7 @@ require("../controller/ECListProjetController.php");
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page participant - Le Mans Université</title>
-  <link rel="stylesheet" href="../style/Partstyle.css" />
+  <link rel="stylesheet" href="../poubelle/Partstyle.css" />
   <link rel="stylesheet" href="../style/ECheader.css" />
 
 </head>
@@ -19,12 +19,12 @@ require("../controller/ECListProjetController.php");
     <header class="site-header">
 
       <button class="brand" aria-label="Retour au tableau de bord">
-        <img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" />
+        <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
       </button>
 
       <nav class="main-navigation" aria-label="Navigation principale">
-        <button class="nav-link active">Dashboard</button>
-        <button class="nav-link">Projets</button>
+        <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
+        <button class="nav-link active">Projets</button>
         <button class="nav-link">Ressources</button>
         <button class="nav-link">Messagerie</button>
       </nav>
