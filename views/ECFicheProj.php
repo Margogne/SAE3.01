@@ -22,46 +22,45 @@ include("../controller/ECFicheProjController.php");
   <div class="app-shell">
     <div class="page">
       <header class="site-header">
-            
-            <button class="brand" aria-label="Retour au tableau de bord">
-              <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
+
+        <button class="brand" aria-label="Retour au tableau de bord">
+          <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
+        </button>
+
+        <nav class="main-navigation" aria-label="Navigation principale">
+          <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
+          <button class="nav-link active">Projets</button>
+          <button class="nav-link">Ressources</button>
+          <button class="nav-link">Messagerie</button>
+        </nav>
+
+        <div class="header-actions">
+          <div class="menu-anchor language-anchor">
+            <button class="language-trigger" aria-haspopup="menu" aria-expanded="false">
+              <img src="../assets/img/Globe.svg" alt="" />
+              <span>FR</span>
+              <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
+          </div>
 
-            <nav class="main-navigation" aria-label="Navigation principale">
-                <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-                <button class="nav-link active">Projets</button>
-                <button class="nav-link">Ressources</button>
-                <button class="nav-link">Messagerie</button>
-            </nav>
+          <div class="menu-anchor">
+            <button class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false">
+              <img src="../assets/img/bell.svg" alt="" />
+            </button>
+          </div>
 
-            <div class="header-actions">
-                <div class="menu-anchor language-anchor">
-                    <button class="language-trigger" aria-haspopup="menu" aria-expanded="false">
-                        <img src="../assets/img/Globe.svg" alt="" />
-                        <span>FR</span>
-                        <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
-                    </button>
-                </div>
-
-                <div class="menu-anchor">
-                    <button class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog"
-                        aria-expanded="false">
-                        <img src="../assets/img/bell.svg" alt="" />
-                    </button>
-                </div>
-
-                <div class="menu-anchor profile-anchor">
-                    <button class="profile-trigger" aria-haspopup="menu" aria-expanded="false">
-                        <span class="avatar"><?= htmlspecialchars($initials) ?></span>
-                        <span class="profile-copy">
-                            <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
-                            <small><?= htmlspecialchars($userRole) ?></small>
-                        </span>
-                        <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
-                    </button>
-                </div>
-            </div>
-        </header>
+          <div class="menu-anchor profile-anchor">
+            <button class="profile-trigger" aria-haspopup="menu" aria-expanded="false">
+              <span class="avatar"><?= htmlspecialchars($initials) ?></span>
+              <span class="profile-copy">
+                <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
+                <small><?= htmlspecialchars($userRole) ?></small>
+              </span>
+              <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
+            </button>
+          </div>
+        </div>
+      </header>
 
       <section class="project-hero">
         <div class="hero-image"></div>
@@ -78,8 +77,10 @@ include("../controller/ECFicheProjController.php");
           </h1>
           <div class="project-meta">
             <!--<span><span class="fa-solid" aria-hidden="true">&#xf4ff;</span> Responsable : Dr. L. Oubahssi</span>-->
-            <span><span class="fa-solid" aria-hidden="true">&#xf133;</span> Fin estimée : <?= get_projet($_GET['id_proj'])['datefin_proj'] ?></span>
-            <span><span class="fa-solid" aria-hidden="true">&#xf1ad;</span> Laboratoire : <?= get_lab_from_projet($_GET['id_proj'])['nom_lab'] ?></span>
+            <span><span class="fa-solid" aria-hidden="true">&#xf133;</span> Fin estimée :
+              <?= get_projet($_GET['id_proj'])['datefin_proj'] ?></span>
+            <span><span class="fa-solid" aria-hidden="true">&#xf1ad;</span> Laboratoire :
+              <?= get_lab_from_projet($_GET['id_proj'])['nom_lab'] ?></span>
           </div>
         </div>
       </section>
@@ -88,7 +89,8 @@ include("../controller/ECFicheProjController.php");
         <div class="content-grid">
           <div class="primary-column">
             <section class="panel description-panel">
-              <h2 class="panel-title"><span class="fa-solid" aria-hidden="true">&#xf036;</span>Description &amp; Objectifs Scientifiques</h2>
+              <h2 class="panel-title"><span class="fa-solid" aria-hidden="true">&#xf036;</span>Description &amp;
+                Objectifs Scientifiques</h2>
               <div class="body-copy">
                 <p><?php echo $projet['desc_proj'] ?></p>
               </div>
@@ -106,7 +108,8 @@ include("../controller/ECFicheProjController.php");
                       <span class="fa-regular file-icon" aria-hidden="true">&#xf1c1;</span>
                       <span><strong><?= $doc['nom_doc'] ?></strong><small><?= $doc['type_doc'] ?></small></span>
                     </div>
-                    <a href="data:text/plain;charset=utf-8,Document%20LIUM%20-%20Protocole_Ergonomique_v2.pdf" download="Protocole_Ergonomique_v2.pdf">
+                    <a href="data:text/plain;charset=utf-8,Document%20LIUM%20-%20Protocole_Ergonomique_v2.pdf"
+                      download="Protocole_Ergonomique_v2.pdf">
                       <span class="fa-solid" aria-hidden="true">&#xf019;</span> Télécharger
                     </a>
                   </article>
@@ -143,16 +146,19 @@ include("../controller/ECFicheProjController.php");
 
                 <p>
                   <span style="white-space: nowrap;">Salle assignée :</span>
-                    <?php foreach (get_salles_from_proj($_GET['id_proj']) as $salle) { ?>
-                        <strong><?= htmlspecialchars($salle['nom_ress'] ?? '') ?></strong>
-                    <?php }; ?>
+                  <?php foreach (get_salles_from_proj($_GET['id_proj']) as $salle) { ?>
+                    <strong><?= htmlspecialchars($salle['nom_ress'] ?? '') ?></strong>
+                  <?php }
+                  ; ?>
                 </p>
 
                 <p><span style="white-space: nowrap;">Équipement réservé :</span>
-                    <?php foreach (get_materiels_from_proj($_GET['id_proj']) as $mat) { ?>
-                        <strong><?= htmlspecialchars($mat['nom_ress'] ?? '') ?></strong>
-                    <?php }; ?>
-                  </strong></p>
+                  <?php foreach (get_materiels_from_proj($_GET['id_proj']) as $mat) { ?>
+                    <strong><?= htmlspecialchars($mat['nom_ress'] ?? '') ?></strong>
+                  <?php }
+                  ; ?>
+                  </strong>
+                </p>
 
               </div>
             </section>
@@ -162,24 +168,29 @@ include("../controller/ECFicheProjController.php");
               <div>
                 <p><span>Chercheur Référent :</span><strong>Dr. L. Oubahssi</strong></p>
                 <p><span>Ingénieur Référent :</span><strong>M. Marc Dupont</strong></p>
-                <p><span>Directeur Labo avisé :</span><strong class="yes"><span class="fa-solid" aria-hidden="true">&#xf00c;</span>Oui</strong></p>
+                <p><span>Directeur Labo avisé :</span><strong class="yes"><span class="fa-solid"
+                      aria-hidden="true">&#xf00c;</span>Oui</strong></p>
               </div>
             </section>
           </aside>
 
           <section class="experiments-card">
-            <h2>Expérimentations</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h2 style="margin: 0;">Expérimentations</h2>
+              <a href="ECCreateExp.php?id_proj=<?= $_GET['id_proj']?>" style="color: inherit; text-decoration: none;"><button class="add-button"><img src="../assets/img/Plus.svg" alt="" /> Ajouter</button></a>
+            </div>
             <?php foreach ($exp as $experimentation) { ?>
               <article class="experiment-row">
                 <span class="experiment-state" style="background: #d0d0d0"></span>
                 <span class="experiment-info"><strong><?php echo $experimentation['titre_exp'] ?>
                   </strong><small><?php if ($experimentation['datefin_exp'] <= (new DateTimeImmutable())->format('Y-m-d')) {
-                                    echo "Terminée";
-                                  } else {
-                                    echo "En cours";
-                                  } ?></small></span>
+                    echo "Terminée";
+                  } else {
+                    echo "En cours";
+                  } ?></small></span>
                 <time><?= $experimentation['datefin_exp'] ?></time>
-                <a href="ECFicheExp.php?id_exp=<?= urlencode((string) $experimentation['id_exp']) ?>"><button>Voir la fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button></a>
+                <a href="ECFicheExp.php?id_exp=<?= urlencode((string) $experimentation['id_exp']) ?>"><button>Voir la
+                    fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button></a>
               </article>
 
             <?php } ?>
@@ -202,7 +213,8 @@ include("../controller/ECFicheProjController.php");
       </main>
     </div>
 
-    <footer><span class="fa-solid" aria-hidden="true">&#xf19c;</span><strong>Le Mans Université</strong><span>• Fiche détaillée projet</span></footer>
+    <footer><span class="fa-solid" aria-hidden="true">&#xf19c;</span><strong>Le Mans Université</strong><span>• Fiche
+        détaillée projet</span></footer>
   </div>
 </body>
 
