@@ -16,7 +16,7 @@
   gap: 16px 24px;
 }
 
-.mess-heading > div {
+.mess-heading>div {
   min-width: 0;
   flex: 1 1 260px;
 }
@@ -66,16 +66,20 @@
 }
 
 .summary-grid {
-  max-width: 1100px; /* celle la ou celle du dessous gere la largeur max, ptet meme les deux */
+  box-sizing: border-box;
+  max-width: 1100px;
+  width: 100%;
+  min-width: 0;
   margin: 28px auto 0;
-  margin-top: 28px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
 }
 
 .summary-card {
+  box-sizing: border-box;
   min-width: 0;
+  max-width: 100%;
   min-height: 94px;
   padding: 18px;
   display: flex;
@@ -165,6 +169,9 @@
 .type-filter,
 .mess-search-box {
   height: 42px;
+  max-height: 42px; /* <-- Ligne à rajouter pour limiter strictement la hauteur */
+  box-sizing: border-box;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -232,7 +239,7 @@
   font-family: "Inter:Bold";
 }
 
-.period + .period {
+.period+.period {
   margin-top: 24px;
 }
 
@@ -404,6 +411,8 @@
   .mess-heading {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
+    max-height: 50px;
   }
 
   .mess-primary-action {
@@ -411,7 +420,9 @@
   }
 
   .summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 450px);
+    /* <-- Modifie 320px selon la largeur max souhaitée */
+    justify-content: center;
   }
 
   .mess-filter-form {
@@ -425,6 +436,12 @@
 }
 
 @media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: minmax(0, 450px);
+    /* <-- Modifie 320px selon la largeur max souhaitée */
+    justify-content: center;
+  }
+
   .message-context {
     flex-direction: column;
     align-items: flex-start;

@@ -29,9 +29,7 @@ extract($pageData);
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
-        <a class="nav-link active" href="PartAcc.php">Accueil</a>
-        <a class="nav-link" href="#Experimentation">Expérimentations</a>
-        <a class="nav-link" href="#ressources">Ressources</a>
+        <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
         <a class="nav-link" href="PartMess.php">Messagerie</a>
       </nav>
 
@@ -110,7 +108,6 @@ extract($pageData);
           <label class="field search-container-single">
             <span>Mot-clé / Titre</span>
             <span class="search-field">
-              <span class="fa search-icon">&#xf002;</span>
               <input type="search" name="search" value="<?= htmlspecialchars($search) ?>"
                 placeholder="Rechercher un projet, un mot-clé..." />
             </span>

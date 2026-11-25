@@ -30,9 +30,7 @@ extract($pageData);
             </a>
 
             <nav class="main-nav" aria-label="Navigation principale">
-                <a class="nav-link" href="PartAcc.php">Accueil</a>
-                <a class="nav-link" href="#Experimentation">Expérimentations</a>
-                <a class="nav-link" href="#ressources">Ressources</a>
+                <a class="nav-link" href="PartAcc.php">Expérimentations</a>
                 <a class="nav-link" href="PartMess.php">Messagerie</a>
             </nav>
 
@@ -152,8 +150,8 @@ extract($pageData);
                     <!-- champ Autres spécificités -->
                     <label>
                         <span class="sr-only">Autres spécificités</span>
-                        <textarea name="details" placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?>
-                        </textarea>
+                        <textarea name="details"
+                            placeholder="Autres Spécificités"><?= htmlspecialchars($formData['details']) ?></textarea>
                     </label>
 
                     <!-- système -->
@@ -182,4 +180,5 @@ extract($pageData);
 
     </div>
 </body>
+
 </html>
