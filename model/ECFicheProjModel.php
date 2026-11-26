@@ -69,4 +69,14 @@ function get_salles_from_proj($id){
     $result = $query->fetchALL(PDO::FETCH_ASSOC);
     return $result;
 }
+
+function get_EC_from_proj($id){
+    $bdd = get_bdd();
+    $query = $bdd->query('SELECT * FROM utilisateur as u JOIN referencer as r on r.id_util=u.id_util WHERE r.id_proj=\''.$id.'\'');
+    //$query = $bdd->query('SELECT * FROM ressource');
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $result;
+}
+
 ?>

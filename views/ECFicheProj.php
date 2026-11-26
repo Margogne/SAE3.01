@@ -195,10 +195,10 @@ include("../controller/ECFicheProjController.php");
             <section class="info-card">
               <h2><span class="fa-solid" aria-hidden="true">&#xf0c0;</span>Équipe &amp; Direction</h2>
               <div>
-                <p><span>Chercheur Référent :</span><strong>Dr. L. Oubahssi</strong></p>
-                <p><span>Ingénieur Référent :</span><strong>M. Marc Dupont</strong></p>
+                <p><span>Chercheur Référent :</span><strong><?= get_EC_from_proj($_GET['id_proj'])['nom_util'] .' '. get_EC_from_proj($_GET['id_proj'])['prenom_util'] ?></strong></p>
+                <!--<p><span>Ingénieur Référent :</span><strong>M. Marc Dupont</strong></p>
                 <p><span>Directeur Labo avisé :</span><strong class="yes"><span class="fa-solid"
-                      aria-hidden="true">&#xf00c;</span>Oui</strong></p>
+                      aria-hidden="true">&#xf00c;</span>Oui</strong></p>-->
               </div>
             </section>
           </aside>
