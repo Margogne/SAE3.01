@@ -33,7 +33,7 @@ include("../controller/ECFicheProjController.php");
           <!--<div class="badges">
             <span class="topic">Robotique &amp; Ergonomie</span>
             <span class="status"><span class="fa-solid" aria-hidden="true">&#xf111;</span> En cours de gestion</span>
-          </div>-->
+          </div>-->git 
           <h1><?php echo $projet['nom_proj'] ?>
           </h1>
           <div class="project-meta">
