@@ -1,5 +1,5 @@
 <?php
-require("../controller/ECListProjetController.php");
+require("../controller/ECController.php");
 
 ?>
 <!DOCTYPE html>
@@ -38,10 +38,9 @@ require("../controller/ECListProjetController.php");
             <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
           </button>
           <div class="dropdown language-menu" role="menu" style="display: none;">
-            <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                class="fa">&#xf00c;</span></a>
-            <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-            <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+            <a href="?&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
+            <a href="?&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+            <a href="?&lang=ES" class="dropdown-item" role="menuitem">ES</a>
           </div>
         </div>
 
@@ -79,8 +78,7 @@ require("../controller/ECListProjetController.php");
                 <small><?= htmlspecialchars($userRole) ?></small>
               </span>
             </div>
-            <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                class="fa">&#xf2f5;</span>Se déconnecter</a>
+            <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span>Se déconnecter</a>
           </div>
         </div>
 
@@ -114,7 +112,7 @@ require("../controller/ECListProjetController.php");
             <button type="submit" class="btn-filter-submit">
               <span class="fa"></span> Rechercher
             </button>
-            <?php if ($search !== ''): ?>
+            <?php if (trim($_GET["search"] ?? '') !== '') : ?>
               <a href="ECListProjet.php" class="btn-filter-reset"><span>Réinitialiser</span></a>
             <?php endif; ?>
           </div>
@@ -122,22 +120,23 @@ require("../controller/ECListProjetController.php");
       </section>
 
       <section class="project-grid" id="projectGrid" aria-live="polite">
-        <?php if (empty($projects)): ?>
+        <!--<?php if (empty(get_projets_from_util($_SESSION['user_id']))) : ?>
           <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ba8bd;">
             <span class="fa" style="font-size: 32px; margin-bottom: 12px; display: block;"></span>
             <strong>Aucun projet trouvé</strong>
             <p>Vous n'êtes rattaché à aucun projet pour le moment.</p>
           </div>
-        <?php else: ?>
-          <?php foreach ($projects as $project): ?>
+        <?php else : ?>
+          <?php if (isset($_Get['search'])) {
+                foreach (get_projets_with_search($_GET['search']) as $project) : ?>
             <article class="project-card">
 
               <div class="project-image"
                 style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px;">
-                <?php if (!empty($project['image'])): ?>
+                <?php if (!empty($project['image'])) : ?>
                   <img src="<?= htmlspecialchars($project['image']) ?>"
                     alt="<?= htmlspecialchars($project['nom_proj'] ?? '') ?>" />
-                <?php else: ?>
+                <?php else : ?>
                   <img
                     src="<?= htmlspecialchars(!empty($project['image']) ? $project['image'] : '../assets/img/imageProjetPlaceHolder.webp') ?>"
                     alt="<?= htmlspecialchars($project['nom_proj'] ?? 'Projet') ?>" />
@@ -145,7 +144,7 @@ require("../controller/ECListProjetController.php");
               <?php endif; ?>
 
               <div class="project-content">
-                <?php if (!empty($project['category'])): ?>
+                <?php if (!empty($project['category'])) : ?>
                   <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
                 <?php endif; ?>
                 <h3><?= htmlspecialchars($project['nom_proj'] ?? '') ?></h3>
@@ -157,6 +156,75 @@ require("../controller/ECListProjetController.php");
                   </a>
                 </div>
               </div>
+            </article>
+          <?php endforeach;
+              } else {
+          ?>
+            <?php foreach (get_projets_from_util($_SESSION['user_id']) as $project) : ?>
+            <article class="project-card">
+
+              <div class="project-image"
+                style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px;">
+                <?php if (!empty($project['image'])) : ?>
+                  <img src="<?= htmlspecialchars($project['image']) ?>"
+                    alt="<?= htmlspecialchars($project['nom_proj'] ?? '') ?>" />
+                <?php else : ?>
+                  <img
+                    src="<?= htmlspecialchars(!empty($project['image']) ? $project['image'] : '../assets/img/imageProjetPlaceHolder.webp') ?>"
+                    alt="<?= htmlspecialchars($project['nom_proj'] ?? 'Projet') ?>" />
+                </div>
+              <?php endif; ?>
+
+              <div class="project-content">
+                <?php if (!empty($project['category'])) : ?>
+                  <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
+                <?php endif; ?>
+                <h3><?= htmlspecialchars($project['nom_proj'] ?? '') ?></h3>
+                <p class="project-description"><?= htmlspecialchars($project['desc_proj'] ?? '') ?></p>
+                <div class="project-footer">
+                  <a href="ECFicheProj.php?id_proj=<?= urlencode((string) ($project['id_proj'] ?? '')) ?>"
+                    class="view-details-btn" style="text-decoration: none;">
+                    Voir la fiche <span class="fa"></span>
+                  </a>
+                </div>
+              </div>
+            </article>
+            <?php endforeach; ?>
+        <?php }
+            endif; ?>-->
+        <?php
+        $projets = !empty($_GET['search'])
+          ? get_projets_with_search(trim($_GET['search']))
+          : get_projets_from_util((int) ($_SESSION['user_id'] ?? 0));
+        ?>
+
+        <?php if (empty($projets)) : ?>
+          <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ba8bd;">
+            <span class="fa" style="font-size: 32px; margin-bottom: 12px; display: block;"></span>
+            <strong>Aucun projet trouvé</strong>
+            <p>Vous n'êtes rattaché à aucun projet pour le moment.</p>
+          </div>
+        <?php else : ?>
+          <?php foreach ($projets as $project) : ?>
+            <article class="project-card">
+
+              <div class="project-image" style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px;">
+                <img src="<?= htmlspecialchars(!empty($project['image']) ? $project['image'] : '../assets/img/imageProjetPlaceHolder.webp') ?>" alt="<?= htmlspecialchars($project['nom_proj'] ?? 'Projet') ?>" />
+              </div>
+
+              <div class="project-content">
+                <?php if (!empty($project['category'])) : ?>
+                  <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
+                <?php endif; ?>
+                <h3><?= htmlspecialchars($project['nom_proj'] ?? '') ?></h3>
+                <p class="project-description"><?= htmlspecialchars($project['desc_proj'] ?? '') ?></p>
+                <div class="project-footer">
+                  <a href="ECFicheProj.php?id_proj=<?= urlencode((string) ($project['id_proj'] ?? '')) ?>" class="view-details-btn" style="text-decoration: none;">
+                    Voir la fiche <span class="fa"></span>
+                  </a>
+                </div>
+              </div>
+
             </article>
           <?php endforeach; ?>
         <?php endif; ?>
