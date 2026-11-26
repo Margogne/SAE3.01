@@ -23,7 +23,10 @@ extract($pageData);
 <body>
   <div class="app-shell" data-node-id="281:2782">
 
+    <!-- HEADER DE LA PAGE -->
     <header class="site-header" id="siteHeader" data-node-id="281:2908">
+
+      <!-- LOGO LEMANS // retour page 1 -->
       <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
         <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
       </a>
