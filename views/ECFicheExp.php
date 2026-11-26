@@ -39,8 +39,7 @@ include("../controller/ECFicheExpController.php");
               <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
             <div class="dropdown language-menu" role="menu" style="display: none;">
-              <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                  class="fa">&#xf00c;</span></a>
+              <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
               <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
               <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
             </div>
@@ -80,8 +79,7 @@ include("../controller/ECFicheExpController.php");
                   <small><?= htmlspecialchars($userRole) ?></small>
                 </span>
               </div>
-              <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                  class="fa">&#xf2f5;</span>Se déconnecter</a>
+              <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span>Se déconnecter</a>
             </div>
           </div>
 
@@ -91,8 +89,7 @@ include("../controller/ECFicheExpController.php");
       <section class="hero">
         <div class="hero-content">
           <button class="back-link">
-            <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj'] ?>"
-              style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span> Retour au
+            <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj'] ?>" style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span> Retour au
               projet</a>
           </button>
           <!--<div class="tags">
@@ -197,6 +194,10 @@ include("../controller/ECFicheExpController.php");
                   <p>Il faudrait une répération dans les 2 jours afin de ne pas prendre de retard sur les expérimentations</p>
                 </article>-->
               <?php } ?>
+              <label class="field"><input name="titre_exp" required type="text" placeholder="Titre de l'incident" /></label>
+              <label class="field"><input name="titre_exp" required type="text" placeholder="Détails de l'incident" /></label>
+              <button class="add">Ajouter</button>
+              
             </section>
           </div>
 
@@ -242,8 +243,7 @@ include("../controller/ECFicheExpController.php");
                 </div>-->
 
             </div>
-            <a href="ECListePart.php?id_exp=<?= $_GET['id_exp'] ?>"
-              style="color: inherit; text-decoration: none;"><button class="participants-button">
+            <a href="ECListePart.php?id_exp=<?= $_GET['id_exp'] ?>" style="color: inherit; text-decoration: none;"><button class="participants-button">
                 Voir la liste des Participants
               </button></a>
           </aside>
