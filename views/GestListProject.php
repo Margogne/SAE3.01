@@ -118,119 +118,101 @@ $resetUrl = strtok($_SERVER['REQUEST_URI'], '?') ?: 'GestListProject.php';
         </div>
     </section>
 
-    <!-- Corp de Page -->
+    <!-- Corps de Page -->
     <main class="main-content">
 
-        <?php if ($messageSucces !== ''): ?>
-            <div class="alert-success">
-                <i class="fas fa-check-circle" style="margin-right:6px;"></i>
-                <?= $messageSucces ?>
-            </div>
-        <?php endif; ?>
+      <!-- debugage BDD #csurementlafautesalouka -->
+      <?php if ($dbError !== ''): ?>
+        <div class="empty-state">
+          <?= htmlspecialchars($dbError) ?>
+        </div>
+      <?php else: ?>
 
         <!-- Zone de recherche et filtres (GET) -->
-        <section class="filter-box">
-            <h2 class="filter-box-title">
-                <i class="fas fa-filter"></i>
-                Filtrer &amp; Rechercher
-            </h2>
+        <section class="filter-box" aria-label="Filtres des projets">
 
-            <form method="GET" action="">
-                <div class="filter-grid">
-                    <label class="filter-field">
-                        <span>Mot-clé / Titre</span>
-                        <span class="input-icon-wrapper">
-                            <i class="fas fa-search"></i>
-                            <input
-                                type="text"
-                                name="search"
-                                value="<?= htmlspecialchars($query) ?>"
-                                placeholder="Rechercher un projet, un mot-clé..."
-                                class="with-icon"
-                            />
-                        </span>
-                    </label>
+          <h2 class="filter-box-title">
+            <i class="fas fa-filter"></i>
+            Filtrer &amp; Rechercher
+          </h2>
 
-                    <label class="filter-field">
-                        <span>Domaine de recherche</span>
-                        <select name="domain">
-                            <?php foreach (['Tous les domaines', 'Robotique', 'Réalité virtuelle', 'Langage'] as $optDomain): ?>
-                                <option value="<?= htmlspecialchars($optDomain) ?>" <?= $domain === $optDomain ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($optDomain) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+          <form method="GET" action="">
+            <div class="filter-grid">
+              <label class="filter-field">
+                <span>Mot-clé / Titre</span>
+                <span class="input-icon-wrapper">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    name="search"
+                    value="<?= htmlspecialchars($query) ?>"
+                    placeholder="Rechercher un projet, un mot-clé..."
+                    class="with-icon"
+                  />
+                </span>
+              </label>
 
-                    <label class="filter-field">
-                        <span>Statut</span>
-                        <select name="status">
-                            <?php foreach (['Tous les statuts', 'En gestion', 'Tests actifs'] as $optStatus): ?>
-                                <option value="<?= htmlspecialchars($optStatus) ?>" <?= $status === $optStatus ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($optStatus) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+              <label class="filter-field">
+                <span>Mes projets</span>
+                <span class="checkbox-box">
+                  <input type="checkbox" name="mine" value="1" <?= $mineOnly ? 'checked' : '' ?> />
+                  Afficher uniquement les miens
+                </span>
+              </label>
 
-                    <label class="filter-field">
-                        <span>Mes projets</span>
-                        <span class="checkbox-box">
-                            <input type="checkbox" name="mine" value="1" <?= $mineOnly ? 'checked' : '' ?> />
-                            Afficher uniquement les miens
-                        </span>
-                    </label>
-                </div>
+            </div>
 
-                <div class="filter-actions">
-                    <a href="<?= htmlspecialchars(strtok($_SERVER['REQUEST_URI'], '?')) ?>" class="btn-filter-reset">
-                        Réinitialiser
-                    </a>
-                    <button type="submit" class="btn-filter-submit">
-                        Appliquer les filtres
-                    </button>
-                </div>
-            </form>
+            <div class="filter-actions">
+              <a href="<?= htmlspecialchars($resetUrl) ?>" class="btn-filter-reset">
+                Réinitialiser
+              </a>
+              <button type="submit" class="btn-filter-submit">
+                Appliquer les filtres
+              </button>
+            </div>
+          </form>
+
         </section>
 
-        <!-- Liste des projets filtrés -->
-        <?php if (!empty($filteredProjects)): ?>
-            <section class="projects-grid" aria-live="polite">
-                <?php foreach ($filteredProjects as $project): ?>
-                    <article class="project-card">
-                        <div
-                            class="project-cover"
-                            style="background-image: url('<?= htmlspecialchars($project['image']) ?>'); background-position: <?= htmlspecialchars($project['imagePosition']) ?>;"
-                        >
-                            <span class="status-badge">
-                                <span class="status-dot" style="color: <?= htmlspecialchars($project['statusColor']) ?>;">●</span>
-                                <?= htmlspecialchars($project['status']) ?>
-                            </span>
-                        </div>
-
-                        <div class="project-body">
-                            <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
-                            <h3 class="project-title"><?= htmlspecialchars($project['title']) ?></h3>
-                            <p class="project-desc"><?= htmlspecialchars($project['description']) ?></p>
-
-                            <div class="project-footer">
-                                <span class="project-owner">
-                                    <i class="fas fa-user-tie"></i>
-                                    <?= htmlspecialchars($project['owner']) ?>
-                                </span>
-                                <a  href="" class="btn-card">
-                                    Voir la fiche <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </section>
+        <!-- Liste des projets -->
+        <?php if (!empty($projects)): ?>
+          <section class="projects-grid" aria-live="polite">
+            <?php foreach ($projects as $project): ?>
+              <article class="project-card">
+                <div class="project-cover" style="background-image: url('../assets/img/FondProjet.png'); background-position: center center;"></div>
+                <div class="project-body">
+                  <?php if (!empty($project['lab'])): ?>
+                    <p class="project-category"><?= htmlspecialchars($project['lab']) ?></p>
+                  <?php endif; ?>
+                  <h3 class="project-title"><?= htmlspecialchars($project['title']) ?></h3>
+                  <p class="project-desc"><?= htmlspecialchars($project['description']) ?></p>
+                  <div class="project-footer">
+                    <?php if (!empty($project['owner'])): ?>
+                      <span class="project-owner">
+                        <i class="fas fa-user-tie"></i>
+                        <?= htmlspecialchars($project['owner']) ?>
+                      </span>
+                    <?php else: ?>
+                      <span class="project-owner">
+                        <p>Aucun responsable désigné</p>
+                      </span>
+                    <?php endif; ?>
+                    <a href="GestProjetDetail.php?id=<?= (int) $project['id'] ?>" class="btn-card">
+                      Voir la fiche 
+                      <i class="fas fa-arrow-right"></i>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            <?php endforeach; ?>
+          </section>
         <?php else: ?>
-            <div class="empty-state">
-                Aucun projet ne correspond à ces critères.
-            </div>
+          <div class="empty-state">
+            Aucun projet ne correspond à ces critères.
+          </div>
         <?php endif; ?>
+
+      <?php endif; ?>
 
     </main>
 
