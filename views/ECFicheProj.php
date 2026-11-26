@@ -41,7 +41,7 @@ include("../controller/ECFicheProjController.php");
             <span><span class="fa-solid" aria-hidden="true">&#xf133;</span> Fin estimée : <?= get_projet($_GET['id_proj'])['datefin_proj'] ?></span>
             <span><span class="fa-solid" aria-hidden="true">&#xf1ad;</span> Laboratoire : <?= get_lab_from_projet($_GET['id_proj'])['nom_lab'] ?></span>
           </div>
-        </div>
+        </div> 
       </section>
 
       <main class="main-content">
