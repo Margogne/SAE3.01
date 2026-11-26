@@ -1,5 +1,5 @@
 <?php
-include "../controller/ECDashboardController.php";
+include "../controller/ECController.php";
 ?>
 <!doctype html>
 <html lang="fr">
@@ -37,10 +37,10 @@ include "../controller/ECDashboardController.php";
             <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
                     </button>
                     <div class="dropdown language-menu" role="menu" style="display: none;">
-                        <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+                        <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                                 class="fa">&#xf00c;</span></a>
-                        <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-                        <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+                        <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
+                        <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
                     </div>
                 </div>
 
@@ -112,7 +112,7 @@ include "../controller/ECDashboardController.php";
                             <span class="card-icon">
                                 <img src="../assets/img/ProjetsActifs.svg" alt="" />
                             </span>
-                            <strong class="card-value"><?php echo get_nb_proj() ?></strong>
+                            <strong class="card-value"><?php echo get_projets_from_util($_SESSION['id_util']) ?></strong>
                         </div>
                         <h3>Projets actifs</h3>
                         <!--<p>2 échéances cette semaine</p>-->
