@@ -2,13 +2,14 @@
 session_start();
 require_once '../model/model.php';
 
-$pageData = init_part_acc_page($_GET['search'] ?? '', $_SESSION);
+$pageData = init_gest_list_project_page($_GET, $_SESSION);
 if ($pageData === null) {
-  header('Location: ID.php');
-  exit();
+    header('Location: ID.php');
+    exit();
 }
 
 extract($pageData);
+$resetUrl = strtok($_SERVER['REQUEST_URI'], '?') ?: 'GestListProject.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -18,46 +19,48 @@ extract($pageData);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page participant - Le Mans Université</title>
   <link rel="stylesheet" href="../style/PartGenStyle.css" />
+  <link rel="stylesheet" href="../style/GestProject.css" />
 </head>
 
 <body>
   <div class="app-shell">
 
     <!-- HEADER DE LA PAGE -->
-    <header class="site-header">
+    <header class="site-header" id="siteHeader">
 
+      <!-- LOGO LEMANS // retour page 1 -->
+      <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
+        <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
+      </a>
 
-      <button class="brand" aria-label="Retour au tableau de bord">
-        <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
-      </button>
-
-      <nav class="main-navigation" aria-label="Navigation principale">
-        <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-        <a href="ECListProjet.php"><button class="nav-link active">Projets</button></a>
-        <a href="ECRessources.php"><button class="nav-link">Ressources</button></a>
-        <a href="ECMess.php"><button class="nav-link">Messagerie</button></a>
+      <!-- Menu de Navigation -->
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a class="nav-link active" href="GestListProject.php">Projets</a>
+        <a class="nav-link" href="GestDashboard.php">Dashboard</a>
+        <a class="nav-link" href="GestDashboard.php">Ressources</a>
+        <a class="nav-link" href="PartMess.php">Messagerie</a>
       </nav>
 
+      <!-- zone utilisateur -->
       <div class="header-actions">
-        <!-- langue -->
+
+        <!-- Langues -->
         <div class="menu-anchor language-anchor">
-          <button type="button" class="language-trigger" aria-haspopup="menu">
-            <img src="../assets/img/Globe.svg" alt="" />
+          <button type="button" class="header-button language-button" aria-haspopup="menu">
             <span>FR</span>
-            <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
+            <span class="fa" style="font-size: 9px;">&#xf078;</span>
           </button>
           <div class="dropdown language-menu" role="menu" style="display: none;">
-            <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                class="fa">&#xf00c;</span></a>
-            <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-            <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+            <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
+            <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
+            <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
           </div>
         </div>
 
-        <!-- notifications -->
+        <!-- Notification -->
         <div class="menu-anchor">
-          <button type="button" class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog">
-            <img src="../assets/img/bell.svg" alt="" />
+          <button type="button" class="header-button icon-button" aria-label="Notifications" aria-haspopup="dialog">
+            <span class="fa">&#xf0f3;</span>
           </button>
           <div class="dropdown notification-menu" role="dialog" aria-label="Notifications" style="display: none;">
             <h2>Notifications</h2>
@@ -67,19 +70,25 @@ extract($pageData);
               </span>
               <strong>Aucune notification</strong>
               <p>Vous êtes à jour. Les nouvelles activités apparaîtront ici.</p>
+              <p><strong>#CE MENU EST FACTICE</strong></p>
             </div>
           </div>
         </div>
 
+        <!-- Bloc USER -->
         <div class="menu-anchor profile-anchor">
+
+          <!-- affichage User -->
           <button type="button" class="profile-button" aria-haspopup="menu">
             <span class="avatar"><?= htmlspecialchars($initials) ?></span>
             <span class="profile-copy">
               <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
               <small><?= htmlspecialchars($userRole) ?></small>
             </span>
-            <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
+            <span class="fa profile-chevron">&#xf078;</span>
           </button>
+
+          <!-- affichage User In List -->
           <div class="dropdown profile-menu" role="menu" style="display: none;">
             <div class="profile-menu-heading">
               <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
@@ -88,95 +97,149 @@ extract($pageData);
                 <small><?= htmlspecialchars($userRole) ?></small>
               </span>
             </div>
+
+            <!-- Bouton de deconnexion -->
             <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                class="fa">&#xf2f5;</span>Se déconnecter</a>
+                class="fa">&#xf2f5;</span> Se déconnecter
+            </a>
+            
           </div>
         </div>
-
       </div>
     </header>
 
+    <!-- Bandeau Bleu, Haut de page -->
     <section class="page-heading" id="projets">
-      <h1>
-        <img src="../assets/img/SymbolFichier.png" alt="" />
-        Projet
-      </h1>
+        <div>
+            <h1 class="page-title">
+              <img src="../assets/img/SymbolFichier.png" alt="" />
+              Projets du Laboratoire
+            </h1>
+        </div>
     </section>
 
-    <main>
-      <section class="filter-panel" aria-label="Recherche de projets">
-        <h2>
-          <span class="fa"></span>
-          Filtrer & Rechercher
-        </h2>
+    <!-- Corp de Page -->
+    <main class="main-content">
 
-        <form method="GET" action="" class="filter-form-centered">
-          <label class="field search-container-single">
-            <span>Mot-clé / Titre</span>
-            <span class="search-field">
-              <span class="fa search-icon"></span>
-              <input type="search" name="search" value="" placeholder="Rechercher un projet, un mot-clé..." />
-            </span>
-          </label>
-
-          <div class="filter-actions-single">
-            <button type="submit" class="btn-filter-submit">
-              <span class="fa"></span> Rechercher
-            </button>
-            <?php if ($search !== ''): ?>
-              <a href="ECListProjet.php" class="btn-filter-reset"><span>Réinitialiser</span></a>
-            <?php endif; ?>
-          </div>
-        </form>
-      </section>
-
-      <section class="project-grid" id="projectGrid" aria-live="polite">
-        <?php if (empty($projects)): ?>
-          <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ba8bd;">
-            <span class="fa" style="font-size: 32px; margin-bottom: 12px; display: block;"></span>
-            <strong>Aucun projet trouvé</strong>
-            <p>Vous n'êtes rattaché à aucun projet pour le moment.</p>
-          </div>
-        <?php else: ?>
-          <?php foreach ($projects as $project): ?>
-            <article class="project-card">
-
-              <div class="project-image"
-                style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px;">
-                <?php if (!empty($project['image'])): ?>
-                  <img src="<?= htmlspecialchars($project['image']) ?>"
-                    alt="<?= htmlspecialchars($project['nom_proj'] ?? '') ?>" />
-                <?php else: ?>
-                  <img
-                    src="<?= htmlspecialchars(!empty($project['image']) ? $project['image'] : '../assets/img/imageProjetPlaceHolder.webp') ?>"
-                    alt="<?= htmlspecialchars($project['nom_proj'] ?? 'Projet') ?>" />
-                </div>
-              <?php endif; ?>
-
-              <div class="project-content">
-                <?php if (!empty($project['category'])): ?>
-                  <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
-                <?php endif; ?>
-                <h3><?= htmlspecialchars($project['nom_proj'] ?? '') ?></h3>
-                <p class="project-description"><?= htmlspecialchars($project['desc_proj'] ?? '') ?></p>
-                <div class="project-footer">
-                  <a href="ECFicheProj.php?id_proj=<?= urlencode((string) ($project['id_proj'] ?? '')) ?>"
-                    class="view-details-btn" style="text-decoration: none;">
-                    Voir la fiche <span class="fa"></span>
-                  </a>
-                </div>
-              </div>
-            </article>
-          <?php endforeach; ?>
+        <?php if ($messageSucces !== ''): ?>
+            <div class="alert-success">
+                <i class="fas fa-check-circle" style="margin-right:6px;"></i>
+                <?= $messageSucces ?>
+            </div>
         <?php endif; ?>
-      </section>
+
+        <!-- Zone de recherche et filtres (GET) -->
+        <section class="filter-box">
+            <h2 class="filter-box-title">
+                <i class="fas fa-filter"></i>
+                Filtrer &amp; Rechercher
+            </h2>
+
+            <form method="GET" action="">
+                <div class="filter-grid">
+                    <label class="filter-field">
+                        <span>Mot-clé / Titre</span>
+                        <span class="input-icon-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input
+                                type="text"
+                                name="search"
+                                value="<?= htmlspecialchars($query) ?>"
+                                placeholder="Rechercher un projet, un mot-clé..."
+                                class="with-icon"
+                            />
+                        </span>
+                    </label>
+
+                    <label class="filter-field">
+                        <span>Domaine de recherche</span>
+                        <select name="domain">
+                            <?php foreach (['Tous les domaines', 'Robotique', 'Réalité virtuelle', 'Langage'] as $optDomain): ?>
+                                <option value="<?= htmlspecialchars($optDomain) ?>" <?= $domain === $optDomain ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($optDomain) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+
+                    <label class="filter-field">
+                        <span>Statut</span>
+                        <select name="status">
+                            <?php foreach (['Tous les statuts', 'En gestion', 'Tests actifs'] as $optStatus): ?>
+                                <option value="<?= htmlspecialchars($optStatus) ?>" <?= $status === $optStatus ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($optStatus) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+
+                    <label class="filter-field">
+                        <span>Mes projets</span>
+                        <span class="checkbox-box">
+                            <input type="checkbox" name="mine" value="1" <?= $mineOnly ? 'checked' : '' ?> />
+                            Afficher uniquement les miens
+                        </span>
+                    </label>
+                </div>
+
+                <div class="filter-actions">
+                    <a href="<?= htmlspecialchars(strtok($_SERVER['REQUEST_URI'], '?')) ?>" class="btn-filter-reset">
+                        Réinitialiser
+                    </a>
+                    <button type="submit" class="btn-filter-submit">
+                        Appliquer les filtres
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Liste des projets filtrés -->
+        <?php if (!empty($filteredProjects)): ?>
+            <section class="projects-grid" aria-live="polite">
+                <?php foreach ($filteredProjects as $project): ?>
+                    <article class="project-card">
+                        <div
+                            class="project-cover"
+                            style="background-image: url('<?= htmlspecialchars($project['image']) ?>'); background-position: <?= htmlspecialchars($project['imagePosition']) ?>;"
+                        >
+                            <span class="status-badge">
+                                <span class="status-dot" style="color: <?= htmlspecialchars($project['statusColor']) ?>;">●</span>
+                                <?= htmlspecialchars($project['status']) ?>
+                            </span>
+                        </div>
+
+                        <div class="project-body">
+                            <p class="project-category"><?= htmlspecialchars($project['category']) ?></p>
+                            <h3 class="project-title"><?= htmlspecialchars($project['title']) ?></h3>
+                            <p class="project-desc"><?= htmlspecialchars($project['description']) ?></p>
+
+                            <div class="project-footer">
+                                <span class="project-owner">
+                                    <i class="fas fa-user-tie"></i>
+                                    <?= htmlspecialchars($project['owner']) ?>
+                                </span>
+                                <a  href="" class="btn-card">
+                                    Voir la fiche <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php else: ?>
+            <div class="empty-state">
+                Aucun projet ne correspond à ces critères.
+            </div>
+        <?php endif; ?>
+
     </main>
 
+    <!-- Pied de page -->
     <footer>
       <span class="fa"></span>
       <p>
-        <strong>Le Mans Université</strong> • <?= htmlspecialchars($userRole ?? 'Utilisateur') ?> - Catalogue des
-        expérimentations
+        <strong>Le Mans Université</strong> • <?= htmlspecialchars($userRole ?? 'Utilisateur') ?>
+        - Listing des projets
       </p>
     </footer>
   </div>
