@@ -1,6 +1,6 @@
 <?php
 
-include("../controller/ECFicheExpController.php");
+include("../controller/ECController.php");
 
 ?>
 <!doctype html>
@@ -9,7 +9,7 @@ include("../controller/ECFicheExpController.php");
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><?= $exp['titre_exp'] ?> - Le Mans Université</title>
+  <title><?= get_experimentation($_GET['id_exp'])['titre_exp'] ?> - Le Mans Université</title>
   <link rel="stylesheet" href="../style/ECFicheExp.css" />
   <link rel="stylesheet" href="../style/ECheader.css" />
 
@@ -39,9 +39,9 @@ include("../controller/ECFicheExpController.php");
               <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
             <div class="dropdown language-menu" role="menu" style="display: none;">
-              <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
-              <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-              <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+              <a href="?id=<?= $_GET['id_exp'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
+              <a href="?id=<?= $_GET['id_exp'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+              <a href="?id=<?= $_GET['id_exp'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
             </div>
           </div>
 
@@ -96,13 +96,13 @@ include("../controller/ECFicheExpController.php");
               <span class="tag subject">Robotique &amp; Ergonomie</span>
               <span class="tag status"><span class="fa" aria-hidden="true"></span> En cours</span>
             </div>-->
-          <h1><?= $exp['titre_exp'] ?></h1>
+          <h1><?= get_experimentation($_GET['id_exp'])['titre_exp'] ?></h1>
           <div class="hero-meta">
             <!--<span><span class="fa" aria-hidden="true"></span> Responsable : Dr. L. Oubahssi</span>-->
-            <span><span class="fa" aria-hidden="true"></span> Début : <?= $exp['datedeb_exp'] ?></span>
-            <span><span class="fa" aria-hidden="true"></span> Fin : <?= $exp['datefin_exp'] ?></span>
+            <span><span class="fa" aria-hidden="true"></span> Début : <?= get_experimentation($_GET['id_exp'])['datedeb_exp'] ?></span>
+            <span><span class="fa" aria-hidden="true"></span> Fin : <?= get_experimentation($_GET['id_exp'])['datefin_exp'] ?></span>
             <span><span class="fa" aria-hidden="true"></span> Laboratoire :
-              <?= get_lab_from_exp($_GET['id_exp'])['nom_lab'] ?></span>
+              <?= htmlspecialchars(get_lab_from_exp($_GET['id_exp'])['nom_lab']) ?></span>
           </div>
         </div>
         <!--<button class="primary terracotta planning">
@@ -120,7 +120,7 @@ include("../controller/ECFicheExpController.php");
                   <dt>Salle assignée :</dt>
                   <div>
                     <?php foreach (get_salle_from_exp($_GET['id_exp']) as $ress) { ?>
-                      <dd><?= $ress['nom_ress'] ?></dd>
+                      <dd><?= htmlspecialchars($ress['nom_ress']) ?></dd>
                       <!-- <dd>Halle Robotique Laval</dd> -->
 
                     <?php } ?>
@@ -131,7 +131,7 @@ include("../controller/ECFicheExpController.php");
                   <dt>Équipement réservé :</dt>
                   <div>
                     <?php foreach (get_materiel_from_exp($_GET['id_exp']) as $ress) { ?>
-                      <dd><?= $ress['nom_ress'] ?></dd>
+                      <dd><?= htmlspecialchars($ress['nom_ress']) ?></dd>
                       <!-- <dd>Robot Porteur H1</dd> -->
 
                     <?php } ?>
@@ -147,7 +147,7 @@ include("../controller/ECFicheExpController.php");
                   </div>-->
                 <div>
                   <dt>Nombre de participant</dt>
-                  <dd><?= get_nb_participants() ?></dd>
+                  <dd><?= htmlspecialchars(count(get_participants_from_exp($_GET['id_exp']))) ?></dd>
                 </div>
               </dl>
             </section>
@@ -159,7 +159,7 @@ include("../controller/ECFicheExpController.php");
                   Voir les rapports d’activités
                 </button>
               </div>
-              <p><?= $exp['desc_exp']; ?></p>
+              <p><?= htmlspecialchars(get_experimentation($_GET['id_exp'])['desc_exp']) ?></p>
               <!--<p>
                   Ce projet étudie l’intégration de robots porteurs humanoïdes dans des environnements de travail
                   industriels ou logistiques.<br />
@@ -175,14 +175,14 @@ include("../controller/ECFicheExpController.php");
             <section class="incidents">
               <div class="incident-heading">
                 <h2><span class="fa" aria-hidden="true"></span> Suivi des incidents
-                  (<?= count(get_incidents_from_exp($_GET['id_exp'])) ?> incident(s) )</h2>
+                  (<?= htmlspecialchars(count(get_incidents_from_exp($_GET['id_exp']))) ?> incident(s) )</h2>
                 <button>Modifier</button>
               </div>
               <?php foreach (get_incidents_from_exp($_GET['id_exp']) as $incident) { ?>
                 <article class="incident-card">
 
-                  <h3><span class="fa" aria-hidden="true"></span> <?= $incident['titre_incid'] ?></h3>
-                  <p><?= $incident['desc_incid'] ?></p>
+                  <h3><span class="fa" aria-hidden="true"></span> <?= htmlspecialchars($incident['titre_incid']) ?></h3>
+                  <p><?= htmlspecialchars($incident['desc_incid']) ?></p>
                 </article>
                 <!--<article class="incident-card">
                   <div class="date"><span class="fa" aria-hidden="true"></span> 28 sept.</div>
@@ -194,10 +194,12 @@ include("../controller/ECFicheExpController.php");
                   <p>Il faudrait une répération dans les 2 jours afin de ne pas prendre de retard sur les expérimentations</p>
                 </article>-->
               <?php } ?>
-              <label class="field"><input name="titre_exp" required type="text" placeholder="Titre de l'incident" /></label>
-              <label class="field"><input name="titre_exp" required type="text" placeholder="Détails de l'incident" /></label>
-              <button class="add">Ajouter</button>
-              
+              <form method="POST">
+                <label class="field"><input name="titre_incid" required type="text" placeholder="Titre de l'incident" /></label>
+                <label class="field"><input name="desc_incid" required type="text" placeholder="Détails de l'incident" /></label>
+                <button class="add" type="submit">Ajouter</button>
+              </form>
+
             </section>
           </div>
 
@@ -217,8 +219,8 @@ include("../controller/ECFicheExpController.php");
                 <div class="file-row">
                   <span class="fa fa-regular" aria-hidden="true"></span>
                   <div class="file-copy">
-                    <strong><?= $doc['nom_doc'] ?></strong>
-                    <small><?= $doc['type_doc'] ?></small>
+                    <strong><?= htmlspecialchars($doc['nom_doc']) ?></strong>
+                    <small><?= htmlspecialchars($doc['type_doc']) ?></small>
                   </div>
                   <button><span class="fa" aria-hidden="true"></span> Télécharger</button>
                 </div>

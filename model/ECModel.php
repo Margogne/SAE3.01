@@ -28,7 +28,7 @@ function get_projet($id){
 
 function get_projets(){
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM projet JOIN referencer on referencer.id_proj=projet.id_proj WHERE referencer.id_util='.$_SESSION['user_id'].' ') ;
+    $query = $bdd->query('SELECT * FROM projet') ;
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -44,7 +44,6 @@ function get_projets_with_search(string $search=''): array
     $params = [
         ':id_util' => $idUtil
     ];
-    // Si la barre de recherche n'est pas vide, on ajoute le filtre LIKE
     if ($search !== '') {
         $sql .= " AND (p.nom_proj LIKE :search OR p.desc_proj LIKE :search)";
         $params[':search'] = '%' . $search . '%';
@@ -54,9 +53,9 @@ function get_projets_with_search(string $search=''): array
     $result= $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
-function get_projets_from_util($id){
+function get_projets_from_util($id) : array{
     $bdd = get_bdd();
-    $query = $bdd->query('SELECT * FROM projet JOIN referencer on referencer.id_proj=projet.id_proj WHERE id_util = '.$id.'\'') ;
+    $query = $bdd->query('SELECT * FROM projet JOIN referencer on referencer.id_proj=projet.id_proj WHERE id_util = \''.$id.'\'') ;
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -102,7 +101,6 @@ function get_experimentations_from_util($id){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM experimentation JOIN travailler on experimentation.id_exp=travailler.id_exp 
     WHERE id_util = '.$id.' ORDER BY datefin_exp DESC LIMIT 5') ;
-    //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -141,7 +139,6 @@ function get_prochaine_echeance_exp_from_util($id): string
     if (!$prochaine || empty($prochaine['datefin_exp'])) {
         return 'Aucune échéance à venir';
     }
-    // Formatage en JJ/MM/AAAA pour l'affichage
     $date = new DateTimeImmutable($prochaine['datefin_exp']);
     return $date->format('d/m/Y');
 }
@@ -150,7 +147,6 @@ function get_prochaine_echeance_exp_from_util($id): string
 function get_materiels(){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM ressource WHERE desc_ress LIKE \'Matériel%\'');
-    //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -174,7 +170,6 @@ function get_materiels_from_proj($id){
 function get_salles(){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM ressource WHERE desc_ress LIKE \'Salle%\'');
-    //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
@@ -241,7 +236,6 @@ function get_participants_from_exp($id): array
 function get_EC_from_proj($id){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM utilisateur as u JOIN referencer as r on r.id_util=u.id_util WHERE r.id_proj=\''.$id.'\'');
-    //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetch(PDO::FETCH_ASSOC);
 
     return $result;
@@ -330,6 +324,32 @@ function insert_proj()
         ':datedeb_proj' => (new DateTimeImmutable())->format('Y-m-d'),
         ':datefin_proj' => !empty($_POST['datefin_proj']) ? $_POST['datefin_proj'] : null,
         ':id_lab'       => (int) ($_POST['id_lab'] ?? 0),
+    ]);
+}
+
+function insert_incident()
+{
+    // 1. Récupération et nettoyage des données du POST
+    $titreIncid = trim((string) ($post['titre_incid'] ?? ''));
+    $descIncid  = trim((string) ($post['desc_incid'] ?? ''));
+    $idSess     = ($post['id_sess'] ?? 0);
+
+    // 2. Vérification des champs obligatoires (id_sess est NOT NULL et FK)
+    if ($titreIncid === '' || $idSess <= 0) {
+        return false;
+    }
+
+    // 3. Requête préparée d'insertion (id_incid est géré par AUTO_INCREMENT)
+    $bdd = get_bdd();
+    $sql = "INSERT INTO incident (titre_incid, desc_incid, id_sess)
+            VALUES (:titre_incid, :desc_incid, :id_sess)";
+
+    $stmt = $bdd->prepare($sql);
+
+    $stmt->execute([
+        ':titre_incid' => $titreIncid,
+        ':desc_incid'  => $descIncid,
+        ':id_sess'     => $idSess
     ]);
 }
 ?>
