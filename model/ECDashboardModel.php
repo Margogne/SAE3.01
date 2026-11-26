@@ -13,15 +13,15 @@ function get_bdd()
     return $pdo;
 }
 
-function get_experimentations(){
+function get_experimentations($id){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM experimentation JOIN travailler on experimentation.id_exp=travailler.id_exp 
-    WHERE id_util = '.$_SESSION['user_id'].' ORDER BY datefin_exp DESC LIMIT 5') ;
+    WHERE id_util = '.$id.' ORDER BY datefin_exp DESC LIMIT 5') ;
     //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
-
+/*
 function get_nb_experimentations(){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM experimentation JOIN travailler on experimentation.id_exp=travailler.id_exp 
@@ -29,7 +29,7 @@ function get_nb_experimentations(){
     //$query = $bdd->query('SELECT * FROM ressource');
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return count($result);
-}
+}*/
 
 function get_nb_proj(){
     $bdd = get_bdd();
