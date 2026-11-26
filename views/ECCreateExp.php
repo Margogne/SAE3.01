@@ -38,10 +38,10 @@ include "../controller/ECController.php";
             <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
           </button>
           <div class="dropdown language-menu" role="menu" style="display: none;">
-            <a href="?id=<?= $_GET['id_exp'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                 class="fa">&#xf00c;</span></a>
-            <a href="?id=<?= $_GET['id_exp'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-            <a href="?id=<?= $_GET['id_exp'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
           </div>
         </div>
 

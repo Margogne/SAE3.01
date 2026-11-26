@@ -1,10 +1,3 @@
-<?php
-session_start();
-
-$userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
-$userPrenom = $_SESSION['user_prenom'] ?? '';
-$userRole = $_SESSION['user_role'] ?? 'Enseignant chercheur';
-$initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1)) ?: 'U'; ?>
 <!doctype html>
 <html lang="fr">
 
@@ -21,7 +14,7 @@ $initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1))
 <body>
   <div class="app-shell">
     <?php
-    include "../model/ECListePartModel.php";
+    include "../controller/ECController.php";
     ?>
     <header class="site-header">
 
@@ -45,10 +38,10 @@ $initials = strtoupper(mb_substr($userPrenom, 0, 1) . mb_substr($userNom, 0, 1))
             <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
           </button>
           <div class="dropdown language-menu" role="menu" style="display: none;">
-            <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
+            <a href="?id_exp=<?= $_GET['id_exp'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
                 class="fa">&#xf00c;</span></a>
-            <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-            <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
+            <a href="?id_exp=<?= $_GET['id_exp'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
+            <a href="?id_exp=<?= $_GET['id_exp'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
           </div>
         </div>
 
