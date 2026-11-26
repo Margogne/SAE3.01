@@ -42,8 +42,7 @@ include("../controller/ECFicheProjController.php");
               <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
             </button>
             <div class="dropdown language-menu" role="menu" style="display: none;">
-              <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                  class="fa">&#xf00c;</span></a>
+              <a href="?id=<?= $idExp ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
               <a href="?id=<?= $idExp ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
               <a href="?id=<?= $idExp ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
             </div>
@@ -83,8 +82,7 @@ include("../controller/ECFicheProjController.php");
                   <small><?= htmlspecialchars($userRole) ?></small>
                 </span>
               </div>
-              <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                  class="fa">&#xf2f5;</span>Se déconnecter</a>
+              <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span>Se déconnecter</a>
             </div>
           </div>
 
@@ -137,8 +135,7 @@ include("../controller/ECFicheProjController.php");
                       <span class="fa-regular file-icon" aria-hidden="true">&#xf1c1;</span>
                       <span><strong><?= $doc['nom_doc'] ?></strong><small><?= $doc['type_doc'] ?></small></span>
                     </div>
-                    <a href="data:text/plain;charset=utf-8,Document%20LIUM%20-%20Protocole_Ergonomique_v2.pdf"
-                      download="Protocole_Ergonomique_v2.pdf">
+                    <a href="data:text/plain;charset=utf-8,Document%20LIUM%20-%20Protocole_Ergonomique_v2.pdf" download="Protocole_Ergonomique_v2.pdf">
                       <span class="fa-solid" aria-hidden="true">&#xf019;</span> Télécharger
                     </a>
                   </article>
@@ -177,15 +174,13 @@ include("../controller/ECFicheProjController.php");
                   <span style="white-space: nowrap;">Salle assignée :</span>
                   <?php foreach (get_salles_from_proj($_GET['id_proj']) as $salle) { ?>
                     <strong><?= htmlspecialchars($salle['nom_ress'] ?? '') ?></strong>
-                  <?php }
-                  ; ?>
+                  <?php }; ?>
                 </p>
 
                 <p><span style="white-space: nowrap;">Équipement réservé :</span>
                   <?php foreach (get_materiels_from_proj($_GET['id_proj']) as $mat) { ?>
                     <strong><?= htmlspecialchars($mat['nom_ress'] ?? '') ?></strong>
-                  <?php }
-                  ; ?>
+                  <?php }; ?>
                   </strong>
                 </p>
 
@@ -195,7 +190,7 @@ include("../controller/ECFicheProjController.php");
             <section class="info-card">
               <h2><span class="fa-solid" aria-hidden="true">&#xf0c0;</span>Équipe &amp; Direction</h2>
               <div>
-                <p><span>Chercheur Référent :</span><strong><?= get_EC_from_proj($_GET['id_proj'])['nom_util'] .' '. get_EC_from_proj($_GET['id_proj'])['prenom_util'] ?></strong></p>
+                <p><span>Chercheur Référent :</span><strong><?= get_EC_from_proj($_GET['id_proj'])['nom_util'] . ' ' . get_EC_from_proj($_GET['id_proj'])['prenom_util'] ?></strong></p>
                 <!--<p><span>Ingénieur Référent :</span><strong>M. Marc Dupont</strong></p>
                 <p><span>Directeur Labo avisé :</span><strong class="yes"><span class="fa-solid"
                       aria-hidden="true">&#xf00c;</span>Oui</strong></p>-->
@@ -206,19 +201,17 @@ include("../controller/ECFicheProjController.php");
           <section class="experiments-card">
             <div style="display: flex; align-items: center; justify-content: space-between;">
               <h2 style="margin: 0;">Expérimentations</h2>
-              <a href="ECCreateExp.php?id_proj=<?= $_GET['id_proj'] ?>"
-                style="color: inherit; text-decoration: none;"><button class="add-button"><img
-                    src="../assets/img/Plus.svg" alt="" /> Ajouter</button></a>
+              <a href="ECCreateExp.php?id_proj=<?= $_GET['id_proj'] ?>" style="color: inherit; text-decoration: none;"><button class="add-button"><img src="../assets/img/Plus.svg" alt="" /> Ajouter</button></a>
             </div>
             <?php foreach ($exp as $experimentation) { ?>
               <article class="experiment-row">
                 <span class="experiment-state" style="background: #d0d0d0"></span>
                 <span class="experiment-info"><strong><?php echo $experimentation['titre_exp'] ?>
                   </strong><small><?php if ($experimentation['datefin_exp'] <= (new DateTimeImmutable())->format('Y-m-d')) {
-                    echo "Terminée";
-                  } else {
-                    echo "En cours";
-                  } ?></small></span>
+                                    echo "Terminée";
+                                  } else {
+                                    echo "En cours";
+                                  } ?></small></span>
                 <time><?= $experimentation['datefin_exp'] ?></time>
                 <a href="ECFicheExp.php?id_exp=<?= urlencode((string) $experimentation['id_exp']) ?>"><button>Voir la
                     fiche <span class="fa-solid" aria-hidden="true">&#xf061;</span></button></a>

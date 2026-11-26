@@ -16,9 +16,7 @@ function get_bdd()
 
 function get_participants_from_exp($idExp): array
 {
-
     $bdd = get_bdd();
-
     $sql = "SELECT u.*, t.num_ordre, r.nom_role
             FROM utilisateur AS u
             INNER JOIN travailler AS t ON t.id_util = u.id_util
@@ -31,7 +29,6 @@ function get_participants_from_exp($idExp): array
     $stmt->execute([
         ':id_exp' => $idExp
     ]);
-
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
