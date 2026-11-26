@@ -128,7 +128,7 @@ include "../controller/ECController.php";
                 $getParams = array_change_key_case($_GET, CASE_LOWER);
                 $idProjSelectionne = (int) ($getParams['id_proj'] ?? 0);
 
-                foreach (get_projets() as $projet):
+                foreach (get_projets_from_util($_SESSION['user_id']) as $projet):
                   $idProj = (int) $projet['id_proj'];
                   $selected = ($idProjSelectionne > 0 && $idProj === $idProjSelectionne) ? 'selected' : '';
                   ?>
@@ -138,7 +138,7 @@ include "../controller/ECController.php";
                 <?php endforeach; ?>
 
                 <!--<option value="" disabled selected>Choisir un projet</option>
-                <?php foreach (get_projets() as $projet) { ?>
+                <?php foreach (get_projets_from_util($_SESSION['user_id']) as $projet) { ?>
                   <option value="<?= (int) $projet['id_proj']; ?>"> <?php echo $projet['nom_proj']; ?></option>
                 <?php } ?>-->
               </select>

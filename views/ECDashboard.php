@@ -108,11 +108,13 @@ include "../controller/ECController.php";
 
                 <div class="overview-grid">
                     <article class="overview-card">
+
+
                         <div class="card-top">
                             <span class="card-icon">
                                 <img src="../assets/img/ProjetsActifs.svg" alt="" />
                             </span>
-                            <strong class="card-value"><?php echo get_projets_from_util($_SESSION['id_util']) ?></strong>
+                            <strong class="card-value"><?= count(get_projets_from_util($_SESSION['user_id'])) ?></strong>
                         </div>
                         <h3>Projets actifs</h3>
                         <!--<p>2 échéances cette semaine</p>-->
@@ -127,7 +129,7 @@ include "../controller/ECController.php";
                             <span class="card-icon">
                                 <img src="../assets/img/Expérimentations.svg" alt="" />
                             </span>
-                            <strong class="card-value"><?php echo get_nb_experimentations() ?></strong>
+                            <strong class="card-value"><?php echo count(get_experimentations_from_util($_SESSION['user_id'])) ?></strong>
                         </div>
                         <h3>Expérimentations</h3>
                         <!--<p>8 en cours · 4 à valider</p>-->
@@ -141,7 +143,7 @@ include "../controller/ECController.php";
                             <span class="card-icon">
                                 <img src="../assets/img/Participants.svg" alt="" />
                             </span>
-                            <strong class="card-value"><?php echo get_nb_participants() ?></strong>
+                            <strong class="card-value"><?= count(get_participants_from_util($_SESSION['user_id'])) ?></strong>
                         </div>
                         <h3>Participants</h3>
                         <!--<p>+5 sur les 30 derniers jours</p>-->
@@ -152,7 +154,7 @@ include "../controller/ECController.php";
                             <span class="card-icon">
                                 <img src="../assets/img/RessourcesPartagées.svg" alt="" />
                             </span>
-                            <strong class="card-value"><?php echo get_nb_ressources() ?></strong>
+                            <strong class="card-value"><?= get_ressources_from_util($_SESSION['user_id']) ?></strong>
                         </div>
                         <h3>Ressources partagées</h3>
                         <!--<p>3 nouveaux documents</p>-->
@@ -164,7 +166,7 @@ include "../controller/ECController.php";
                 <article class="recent-card">
                     <h2>Expérimentations récentes</h2>
                     <div class="experiment-list">
-                        <?php foreach (get_experimentations() as $exp) { ?>
+                        <?php foreach (get_experimentations_from_util($_SESSION['user_id']) as $exp) { ?>
                             <div class="experiment-row">
                                 <span class="status-marker green" aria-hidden="true"></span>
                                 <div class="experiment-info">
@@ -193,7 +195,7 @@ include "../controller/ECController.php";
                     <div class="deadline-date">
                         <!--<strong>28</strong>
                         <span>Septembre 2026</span>-->
-                        <?php echo get_prochaine_echeance() ?>
+                        <?php echo get_prochaine_echeance_exp_from_util($_SESSION['user_id']) ?>
                     </div>
                     <!--<p>Clôture de la collecte · Projet ORION</p>-->
                 </aside>
