@@ -23,17 +23,24 @@ extract($pageData);
 <body>
   <div class="app-shell" data-node-id="281:2782">
 
+    <!-- HEADER DE LA PAGE -->
     <header class="site-header" id="siteHeader" data-node-id="281:2908">
+
+      <!-- LOGO LEMANS // retour page 1 -->
       <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
         <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
       </a>
 
+      <!-- Menu de Navigation -->
       <nav class="main-nav" aria-label="Navigation principale">
         <a class="nav-link active" href="PartAcc.php">Expérimentations</a>
         <a class="nav-link" href="PartMess.php">Messagerie</a>
       </nav>
 
+      <!-- zone utilisateur -->
       <div class="header-actions">
+
+        <!-- Langues -->
         <div class="menu-anchor language-anchor">
           <button type="button" class="header-button language-button" aria-haspopup="menu">
             <span>FR</span>
@@ -46,6 +53,7 @@ extract($pageData);
           </div>
         </div>
 
+        <!-- Notification -->
         <div class="menu-anchor">
           <button type="button" class="header-button icon-button" aria-label="Notifications" aria-haspopup="dialog">
             <span class="fa">&#xf0f3;</span>
@@ -61,8 +69,11 @@ extract($pageData);
             </div>
           </div>
         </div>
-        
+
+        <!-- Bloc USER -->
         <div class="menu-anchor profile-anchor">
+
+          <!-- affichage User -->
           <button type="button" class="profile-button" aria-haspopup="menu">
             <span class="avatar"><?= htmlspecialchars($initials) ?></span>
             <span class="profile-copy">
@@ -71,6 +82,8 @@ extract($pageData);
             </span>
             <span class="fa profile-chevron">&#xf078;</span>
           </button>
+
+          <!-- affichage User In List -->
           <div class="dropdown profile-menu" role="menu" style="display: none;">
             <div class="profile-menu-heading">
               <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
@@ -79,11 +92,16 @@ extract($pageData);
                 <small><?= htmlspecialchars($userRole) ?></small>
               </span>
             </div>
+
+            <!-- Acces page profil -->
             <a href="PartProfil.php" class="dropdown-item" role="menuitem"><span class="fa">&#xf007;</span> Mon
               profil</a>
+
+            <!-- Bouton de deconnexion -->
             <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
                 class="fa">&#xf2f5;</span> Se déconnecter
             </a>
+            
           </div>
         </div>
       </div>

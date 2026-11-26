@@ -650,3 +650,125 @@ function gestion_message_mark_read(array $session, array $get, string $redirectP
 
     return null;
 }
+
+/*  ===========================================
+    GESTIONNAIRE - Gestion des projet
+    =========================================== */
+
+function get_projects_for_listing(int $userId): array
+{
+    $bdd = get_bdd();
+
+    $sql = 'SELECT p.id_proj,
+                    p.nom_proj,
+                    p.desc_proj,
+                    p.datedeb_proj,
+                    p.datefin_proj,
+                    p.id_lab,
+                    l.nom_lab,
+                    l.ville_lab,
+                    EXISTS (
+                        SELECT 1
+                        FROM REFERENCER r_mine
+                        WHERE r_mine.id_proj = p.id_proj
+                            AND r_mine.id_util = :user_id
+                    ) AS is_mine
+            FROM PROJET p
+            LEFT JOIN LABORATOIRE l ON l.id_lab = p.id_lab
+            ORDER BY p.id_proj ASC';
+
+    $stmt = $bdd->prepare($sql);
+    $stmt->execute([':user_id' => $userId]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sqlRef = 'SELECT r.id_proj, r.nom_role, u.prenom_util, u.nom_util
+                FROM REFERENCER r
+                JOIN UTILISATEUR u ON u.id_util = r.id_util
+                WHERE r.nom_role IN (\'responsable\', \'gestionnaire\')
+                ORDER BY r.id_role ASC';
+    $refRows = $bdd->query($sqlRef)->fetchAll(PDO::FETCH_ASSOC);
+
+    $ownersByProject = [];
+    foreach ($refRows as $ref) {
+        $pid = (int) $ref['id_proj'];
+        if (!isset($ownersByProject[$pid])) {
+            $fullName = trim(($ref['prenom_util'] ?? '') . ' ' . ($ref['nom_util'] ?? ''));
+            $ownersByProject[$pid] = $fullName;
+        }
+    }
+
+    $projects = [];
+    foreach ($rows as $row) {
+        $pid = (int) $row['id_proj'];
+        $projects[] = [
+            'id'          => $pid,
+            'title'       => (string) ($row['nom_proj'] ?? ''),
+            'description' => (string) ($row['desc_proj'] ?? ''),
+            'datedeb'     => (string) ($row['datedeb_proj'] ?? ''),
+            'datefin'     => (string) ($row['datefin_proj'] ?? ''),
+            'lab'         => (string) ($row['nom_lab'] ?? ''),
+            'city'        => (string) ($row['ville_lab'] ?? ''),
+            'owner'       => $ownersByProject[$pid] ?? '',
+            'mine'        => !empty($row['is_mine']),
+        ];
+    }
+
+    return $projects;
+}
+
+function filter_projects_listing(array $projects, string $query, bool $mineOnly): array
+{
+    $needle = mb_strtolower(trim($query), 'UTF-8');
+
+    return array_values(array_filter($projects, function ($project) use ($needle, $mineOnly) {
+        $haystack = mb_strtolower(
+            ($project['title'] ?? '') . ' ' .
+            ($project['description'] ?? '') . ' ' .
+            ($project['lab'] ?? '') . ' ' .
+            ($project['owner'] ?? ''),
+            'UTF-8'
+        );
+
+        $matchesQuery = ($needle === '') || (mb_strpos($haystack, $needle) !== false);
+        $matchesMine  = (!$mineOnly) || !empty($project['mine']);
+
+        return $matchesQuery && $matchesMine;
+    }));
+}
+
+function init_gest_list_project_page(array $get, array $session): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $userId     = (int) $session['user_id'];
+    $userNom    = (string) ($session['user_nom'] ?? '');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole   = (string) ($session['user_role'] ?? '');
+    $initials   = compute_initials($userPrenom, $userNom);
+
+    $query    = trim((string) ($get['search'] ?? ''));
+    $mineOnly = isset($get['mine']) && (string) $get['mine'] === '1';
+
+    $dbError  = '';
+    $projects = [];
+
+    try {
+        $allProjects = get_projects_for_listing($userId);
+        $projects = filter_projects_listing($allProjects, $query, $mineOnly);
+    } catch (PDOException $e) {
+        $dbError = $e->getMessage();
+    }
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initials',
+        'query',
+        'mineOnly',
+        'projects',
+        'dbError'
+    );
+}
