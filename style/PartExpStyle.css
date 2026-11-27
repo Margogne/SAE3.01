@@ -567,3 +567,17 @@
     padding: 16px;
   }
 }
+
+@media (min-width: 801px) {
+  .content-column {
+    max-width: 875px; /* <-- Modifie cette valeur pour changer la taille max */
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .logistics-card,
+  .description-card {
+    max-width: 100%;
+    width: 100%;
+  }
+}
