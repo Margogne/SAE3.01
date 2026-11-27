@@ -1,3 +1,7 @@
+<?php
+include("../controller/ECController.php");
+?>
+
 <!doctype html>
 <html lang="fr">
 
@@ -88,7 +92,7 @@
 
     <section class="page-heading" aria-labelledby="page-title">
       <div>
-        <a class="back-link" href="#projects">
+        <a class="back-link" href="ECFicheExp.php?id_exp=<?=$_GET['id_exp']?>">
           <span aria-hidden="true">←</span>
           Retour à l’expérimentation
         </a>
@@ -98,8 +102,7 @@
         </h1>
 
         <p>
-          Modifiez les restrictions et rétributions des participants et
-          acceptez les demandes.
+          Visionnez les rapports d'activités et générez-en de nouveaux.
         </p>
       </div>
     </section>
@@ -107,17 +110,17 @@
     <main>
       <section class="reports" aria-label="Rapports d’activités">
         <div class="toolbar">
-          <label for="project">
+          <!--<label for="project">
             Projet associé
             <select id="project" name="project">
               <option value="">Choisir un projet</option>
               <option>Robot Porteur Humanoïde</option>
               <option>Assistance physique sans infrastructure</option>
             </select>
-          </label>
+          </label>-->
           <a class="primary-button" href="#report-form">
             <span aria-hidden="true">+</span>
-            Ajouter un rapport
+            Génerer un rapport
           </a>
         </div>
 
@@ -131,26 +134,26 @@
                 <th>Titre de l’experimentation</th>
                 <th>Titre du Projet</th>
                 <th>Date de Création</th>
-                <th>Nom du Créateur</th>
+                <!--<th>Nom du Créateur</th>-->
                 <th><span class="visually-hidden">Actions</span></th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td data-label="Titre">Rapport-01</td>
-                <td data-label="Expérimentation">
-                  Robot Porteur Humanoïde — Assistance physique sans
-                  infrastructure
-                </td>
-                <td data-label="Projet">
-                  Robot Porteur Humanoïde — Assistance physique sans
-                  infrastructure
-                </td>
-                <td data-label="Créé le">28 septembre 2026</td>
-                <td data-label="Créateur">DR. L. Oubahssi</td>
-                <td><a class="view-button" href="#report-detail">Voir</a></td>
-              </tr>
-              <tr>
+              <?php foreach (get_rapport_from_exp($_GET['id_exp']) as $rapp): ?>
+                <tr>
+                  <td data-label="Titre"><?= $rapp['titre_rap'] ?></td>
+                  <td data-label="Expérimentation">
+                    <?= htmlspecialchars(get_experimentation($_GET['id_exp'])['titre_exp']) ?>
+                  </td>
+                  <td data-label="Projet">
+                    <?= htmlspecialchars(get_projet_from_exp($_GET['id_exp'])['nom_proj']) ?>
+                  </td>
+                  <td data-label="Créé le"><?= $rapp['date_rap'] ?></td>
+                  <!--<td data-label="Créateur">DR. L. Oubahssi</td>-->
+                  <td><a class="view-button" href="#report-detail-<?= (int) $rapp['id_rap'] ?>">Voir</a></td>
+                </tr>
+              <?php endforeach; ?>
+              <!--<tr>
                 <td data-label="Titre">Rapport-01</td>
                 <td data-label="Expérimentation">
                   Robot Porteur Humanoïde — Assistance physique sans
@@ -210,7 +213,7 @@
                 <td colspan="6">
                   <a href="#report-form">Ajouter</a>
                 </td>
-              </tr>
+              </tr>-->
             </tbody>
           </table>
         </div>
@@ -225,58 +228,71 @@
   </div>
 
   <section class="modal" id="report-form" aria-labelledby="form-title">
-    <a class="modal-backdrop" href="#top" aria-label="Fermer"></a>
+    <a class="modal-backdrop" href="" aria-label="Fermer"></a>
     <div class="modal-card">
-      <a class="modal-close" href="#top" aria-label="Fermer">×</a>
+      <a class="modal-close" href="" aria-label="Fermer">×</a>
       <p class="eyebrow">Nouveau rapport</p>
       <h2 id="form-title">Ajouter un rapport d’activité</h2>
-      <form action="#top">
+      <form action="" method="POST">
         <label>
           Titre du rapport
-          <input type="text" placeholder="Rapport-01" required />
+          <input type="text" placeholder="Rapport-01" required name="titre_rap"/>
         </label>
-        <label>
+        <!--<label>
           Projet
           <select required>
             <option value="">Choisir un projet</option>
             <option>Robot Porteur Humanoïde</option>
           </select>
-        </label>
+        </label>-->
         <label>
-          Résumé
-          <textarea rows="4" placeholder="Décrivez l’activité réalisée…"></textarea>
+          Description
+          <textarea rows="4" placeholder="Décrivez l’activité réalisée…" name="desc_rap"></textarea>
         </label>
         <div class="form-actions">
-          <a href="#top">Annuler</a>
-          <button type="submit">Ajouter le rapport</button>
+          <a href="">Annuler</a>
+          <button type="submit">Générer le rapport</button>
         </div>
       </form>
     </div>
   </section>
 
-  <section class="modal" id="report-detail" aria-labelledby="detail-title">
-    <a class="modal-backdrop" href="#top" aria-label="Fermer"></a>
-    <article class="modal-card detail-card">
-      <a class="modal-close" href="#top" aria-label="Fermer">×</a>
-      <p class="eyebrow">Rapport d’activité</p>
-      <h2 id="detail-title">Rapport-01</h2>
-      <dl>
-        <div>
-          <dt>Expérimentation</dt>
-          <dd>Robot Porteur Humanoïde</dd>
-        </div>
-        <div>
-          <dt>Date de création</dt>
-          <dd>28 septembre 2026</dd>
-        </div>
-        <div>
-          <dt>Créateur</dt>
-          <dd>DR. L. Oubahssi</dd>
-        </div>
-      </dl>
-      <a class="primary-button detail-close" href="#top">Fermer</a>
-    </article>
-  </section>
+  <?php
+  $expInfo = get_experimentation($_GET['id_exp']);
+  foreach (get_rapport_from_exp($_GET['id_exp']) as $rapp): ?>
+    <? php// echo  "report-detail-".$rapp['id_rap'] ?>
+    <section class="modal" id="report-detail-<?= (int) $rapp['id_rap'] ?>"
+      aria-labelledby="detail-title-<?= (int) $rapp['id_rap'] ?>">
+      <a class="modal-backdrop" href="" aria-label="Fermer"></a>
+      <article class="modal-card detail-card">
+        <a class="modal-close" href="" aria-label="Fermer">×</a>
+        <p class="eyebrow">Rapport d’activité</p>
+        <h2 id="detail-title-<?= (int) $rapp['id_rap'] ?>">
+          Rapport du <?= htmlspecialchars($rapp['date_rap']) ?>
+        </h2>
+        <dl>
+          <div>
+            <dt>Expérimentation</dt>
+            <dd><?= htmlspecialchars($expInfo['titre_exp'] ?? '') ?></dd>
+          </div>
+          <div>
+            <dt>Date de création</dt>
+            <dd><?= htmlspecialchars($rapp['date_rap']) ?></dd>
+          </div>
+          <div>
+            <dt>Participants / Incidents</dt>
+            <dd><?= (int) $rapp['nbparticipant_rap'] ?> participant(s) • <?= (int) $rapp['nbincid_rap'] ?> incident(s)
+            </dd>
+          </div>
+          <div>
+            <dt>Description</dt>
+            <dd><?= nl2br(htmlspecialchars($rapp['desc_rap'] ?? '')) ?></dd>
+          </div>
+        </dl>
+        <a class="primary-button detail-close" href="">Fermer</a>
+      </article>
+    </section>
+  <?php endforeach; ?>
 </body>
 
 </html>
