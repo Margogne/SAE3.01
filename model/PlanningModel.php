@@ -1,4 +1,106 @@
 <?php
+/**
+ * Initialise toutes les données nécessaires à la page planning.php.
+ */
+
+function init_planning_page(array $get, array $session): ?array
+{
+    if (!isset($session['user_id'])) {
+        return null;
+    }
+
+    $userNom    = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userPrenom = (string) ($session['user_prenom'] ?? '');
+    $userRole   = (string) ($session['user_role'] ?? 'Gestionnaire');
+    $initials   = compute_initials($userPrenom, $userNom);
+
+    $searchQuery = trim((string) ($get['q'] ?? ''));
+
+    $requestedDate  = (string) ($get['week_start'] ?? date('Y-m-d'));
+    $currentMonday  = get_monday_of_date($requestedDate);
+    $activeMonday   = $currentMonday->format('Y-m-d');
+    $prevWeekStart  = $currentMonday->modify('-7 days')->format('Y-m-d');
+    $nextWeekStart  = $currentMonday->modify('+7 days')->format('Y-m-d');
+    $todayWeekStart = get_monday_of_date(date('Y-m-d'))->format('Y-m-d');
+
+    $weeks = build_surrounding_weeks($currentMonday, 6, 8);
+    $days  = get_week_days($activeMonday);
+
+    $dbError = '';
+    $allResources = [];
+    $filteredResources = [];
+    $selectedRessourceId = isset($get['ress_id']) ? (int) $get['ress_id'] : 0;
+    $selectedRessource = null;
+    $bookings = [];
+
+    try {
+        $allResources = get_all_resources();
+        $filteredResources = filter_resources_by_query($allResources, $searchQuery);
+
+        if (!empty($filteredResources)) {
+            $matchIds = array_column($filteredResources, 'id_ress');
+            if (!in_array($selectedRessourceId, $matchIds, true)) {
+                $selectedRessourceId = (int) $filteredResources[0]['id_ress'];
+            }
+
+            foreach ($filteredResources as $res) {
+                if ((int) $res['id_ress'] === $selectedRessourceId) {
+                    $selectedRessource = $res;
+                    break;
+                }
+            }
+
+            $bookings = get_resource_reservations_for_week($selectedRessourceId, $activeMonday);
+        } else {
+            $selectedRessourceId = 0;
+        }
+    } catch (PDOException $e) {
+        $dbError = 'Erreur lors du chargement des ressources ou des réservations.';
+    }
+
+    $resetUrl = build_planning_url([
+        'week_start' => $activeMonday,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+    ]);
+
+    $todayUrl = build_planning_url([
+        'week_start' => $todayWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
+    $prevWeekUrl = build_planning_url([
+        'week_start' => $prevWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
+    $nextWeekUrl = build_planning_url([
+        'week_start' => $nextWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
+    return compact(
+        'userNom',
+        'userPrenom',
+        'userRole',
+        'initials',
+        'searchQuery',
+        'activeMonday',
+        'prevWeekUrl',
+        'nextWeekUrl',
+        'todayUrl',
+        'resetUrl',
+        'weeks',
+        'days',
+        'filteredResources',
+        'selectedRessourceId',
+        'selectedRessource',
+        'bookings',
+        'dbError'
+    );
+}
 
 /**
  * Détecte la catégorie d'une ressource à partir de desc_ress ("Salle" ou "Matériel").
@@ -231,106 +333,4 @@ function get_resource_reservations_for_week(int $ressourceId, string $weekStartD
     }
 
     return $bookings;
-}
-
-/**
- * Initialise toutes les données nécessaires à la page planning.php.
- */
-function init_planning_page(array $get, array $session): ?array
-{
-    if (!isset($session['user_id'])) {
-        return null;
-    }
-
-    $userNom    = (string) ($session['user_nom'] ?? 'Utilisateur');
-    $userPrenom = (string) ($session['user_prenom'] ?? '');
-    $userRole   = (string) ($session['user_role'] ?? 'Gestionnaire');
-    $initials   = compute_initials($userPrenom, $userNom);
-
-    $searchQuery = trim((string) ($get['q'] ?? ''));
-
-    $requestedDate  = (string) ($get['week_start'] ?? date('Y-m-d'));
-    $currentMonday  = get_monday_of_date($requestedDate);
-    $activeMonday   = $currentMonday->format('Y-m-d');
-    $prevWeekStart  = $currentMonday->modify('-7 days')->format('Y-m-d');
-    $nextWeekStart  = $currentMonday->modify('+7 days')->format('Y-m-d');
-    $todayWeekStart = get_monday_of_date(date('Y-m-d'))->format('Y-m-d');
-
-    $weeks = build_surrounding_weeks($currentMonday, 6, 8);
-    $days  = get_week_days($activeMonday);
-
-    $dbError = '';
-    $allResources = [];
-    $filteredResources = [];
-    $selectedRessourceId = isset($get['ress_id']) ? (int) $get['ress_id'] : 0;
-    $selectedRessource = null;
-    $bookings = [];
-
-    try {
-        $allResources = get_all_resources();
-        $filteredResources = filter_resources_by_query($allResources, $searchQuery);
-
-        if (!empty($filteredResources)) {
-            $matchIds = array_column($filteredResources, 'id_ress');
-            if (!in_array($selectedRessourceId, $matchIds, true)) {
-                $selectedRessourceId = (int) $filteredResources[0]['id_ress'];
-            }
-
-            foreach ($filteredResources as $res) {
-                if ((int) $res['id_ress'] === $selectedRessourceId) {
-                    $selectedRessource = $res;
-                    break;
-                }
-            }
-
-            $bookings = get_resource_reservations_for_week($selectedRessourceId, $activeMonday);
-        } else {
-            $selectedRessourceId = 0;
-        }
-    } catch (PDOException $e) {
-        $dbError = 'Erreur lors du chargement des ressources ou des réservations.';
-    }
-
-    $resetUrl = build_planning_url([
-        'week_start' => $activeMonday,
-        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
-    ]);
-
-    $todayUrl = build_planning_url([
-        'week_start' => $todayWeekStart,
-        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
-        'q'          => $searchQuery !== '' ? $searchQuery : null,
-    ]);
-
-    $prevWeekUrl = build_planning_url([
-        'week_start' => $prevWeekStart,
-        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
-        'q'          => $searchQuery !== '' ? $searchQuery : null,
-    ]);
-
-    $nextWeekUrl = build_planning_url([
-        'week_start' => $nextWeekStart,
-        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
-        'q'          => $searchQuery !== '' ? $searchQuery : null,
-    ]);
-
-    return compact(
-        'userNom',
-        'userPrenom',
-        'userRole',
-        'initials',
-        'searchQuery',
-        'activeMonday',
-        'prevWeekUrl',
-        'nextWeekUrl',
-        'todayUrl',
-        'resetUrl',
-        'weeks',
-        'days',
-        'filteredResources',
-        'selectedRessourceId',
-        'selectedRessource',
-        'bookings',
-        'dbError'
-    );
 }
