@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../model/PlanningModel.php';
 require_once '../model/model.php';
+require_once '../model/PlanningModel.php';
 
 $pageData = init_planning_page($_GET, $_SESSION);
 if ($pageData === null) {
@@ -10,6 +10,7 @@ if ($pageData === null) {
 }
 
 extract($pageData);
+$activeMondayStr = $currentMonday->format('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -18,12 +19,13 @@ extract($pageData);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planning des Salles &amp; Équipements - Le Mans Université</title>
-  <link rel="stylesheet" href="../style/PartGenstyle.css" />
+  <link rel="stylesheet" href="../style/PartGenStyle.css" />
   <link rel="stylesheet" href="../style/PlanningStyle.css" />
 </head>
 
 <body>
   <div class="app-shell">
+    <!-- Header conservé tel quel -->
     <header class="site-header" id="siteHeader">
       <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
         <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
@@ -52,7 +54,7 @@ extract($pageData);
     <section class="title-strip">
       <div>
         <h1><span class="fa">&#xf073;</span> Planning des Salles &amp; Équipements</h1>
-        <p>Consultez la disponibilité des ressources et suivez les créneaux planifiés.</p>
+        <p>Consultez les horaires d'usage réservés et naviguez librement entre les semaines.</p>
       </div>
     </section>
 
@@ -65,7 +67,7 @@ extract($pageData);
 
       <section class="planning-filters" aria-label="Recherche de ressources">
         <form method="GET" action="planning.php" class="resource-search-form" id="resourceSearchForm">
-          <input type="hidden" name="week" id="weekInput" value="<?= (int) $activeWeek ?>" />
+          <input type="hidden" name="week_start" id="weekStartInput" value="<?= htmlspecialchars($activeMondayStr) ?>" />
           <input type="hidden" name="ress_id" id="selectedRessId" value="<?= (int) $selectedRessourceId ?>" />
 
           <label class="resource-search-label" for="resourceSearchInput">
@@ -83,7 +85,7 @@ extract($pageData);
 
           <button type="submit" class="btn-search-submit">Rechercher</button>
           <?php if ($searchQuery !== ''): ?>
-            <a href="planning.php?week=<?= (int) $activeWeek ?>" class="btn-search-reset">Réinitialiser</a>
+            <a href="planning.php?week_start=<?= urlencode($activeMondayStr) ?>" class="btn-search-reset">Réinitialiser</a>
           <?php endif; ?>
         </form>
 
@@ -130,6 +132,21 @@ extract($pageData);
               <small id="activeResourceDesc"><?= htmlspecialchars($selectedRessource['desc_ress']) ?></small>
             <?php endif; ?>
           </div>
+
+          <div class="week-jump-controls">
+            <a
+              class="btn-week-jump"
+              href="planning.php?week_start=<?= urlencode($todayWeekStart) ?>&amp;ress_id=<?= (int) $selectedRessourceId ?>&amp;q=<?= urlencode($searchQuery) ?>"
+            >Aujourd'hui</a>
+            <label class="date-jump-label" for="dateJumpInput">
+              <span>Aller à une date :</span>
+              <input
+                type="date"
+                id="dateJumpInput"
+                value="<?= htmlspecialchars($activeMondayStr) ?>"
+              />
+            </label>
+          </div>
         </div>
 
         <div class="calendar-scroll">
@@ -145,7 +162,7 @@ extract($pageData);
 
           <div class="calendar-body">
             <div class="hours-column">
-              <?php for ($h = 8; $h < 16; $h++): ?>
+              <?php for ($h = 7; $h < 20; $h++): ?>
                 <div><?= sprintf('%02d:00', $h) ?></div>
               <?php endfor; ?>
             </div>
@@ -158,6 +175,7 @@ extract($pageData);
                       <div
                         class="booking <?= htmlspecialchars($booking['tone']) ?>"
                         style="top: <?= (float) $booking['top_px'] ?>px; height: <?= (float) $booking['height_px'] ?>px;"
+                        title="<?= htmlspecialchars($booking['title'] . ' (' . $booking['time_label'] . ')') ?>"
                       >
                         <div>
                           <b><?= htmlspecialchars($booking['title']) ?></b>
@@ -173,7 +191,7 @@ extract($pageData);
               <?php endforeach; ?>
 
               <?php if (empty($bookings)): ?>
-                <p class="empty-week">Aucun créneau planifié pour cette ressource sur cette semaine.</p>
+                <p class="empty-week">Aucun créneau réservé pour cette ressource sur cette semaine.</p>
               <?php endif; ?>
             </div>
           </div>
@@ -184,16 +202,17 @@ extract($pageData);
             type="button"
             class="week-arrow fa"
             id="prevWeekBtn"
+            data-target-week="<?= htmlspecialchars($prevWeekStart) ?>"
             aria-label="Semaine précédente"
-            <?= $activeWeek <= 0 ? 'disabled' : '' ?>
           >&#xf053;</button>
 
           <div class="week-list">
-            <?php foreach ($weeks as $idx => $week): ?>
+            <?php foreach ($weeks as $week): ?>
+              <?php $isActive = ($week['start_date'] === $activeMondayStr); ?>
               <button
                 type="button"
-                class="week-item <?= ((int) $activeWeek === $idx) ? 'active' : '' ?>"
-                data-week-index="<?= (int) $idx ?>"
+                class="week-item <?= $isActive ? 'active' : '' ?>"
+                data-week-start="<?= htmlspecialchars($week['start_date']) ?>"
               >
                 <span><?= htmlspecialchars($week['code']) ?> —</span>
                 <b><?= htmlspecialchars($week['label']) ?></b>
@@ -205,8 +224,8 @@ extract($pageData);
             type="button"
             class="week-arrow fa"
             id="nextWeekBtn"
+            data-target-week="<?= htmlspecialchars($nextWeekStart) ?>"
             aria-label="Semaine suivante"
-            <?= $activeWeek >= count($weeks) - 1 ? 'disabled' : '' ?>
           >&#xf054;</button>
         </div>
       </section>
@@ -225,7 +244,8 @@ extract($pageData);
       const pills = Array.from(document.querySelectorAll('.resource-pill'));
       const countLabel = document.getElementById('resourceCountLabel');
       const selectedRessInput = document.getElementById('selectedRessId');
-      const weekInput = document.getElementById('weekInput');
+      const weekStartInput = document.getElementById('weekStartInput');
+      const dateJumpInput = document.getElementById('dateJumpInput');
       const form = document.getElementById('resourceSearchForm');
 
       function normalizeText(str) {
@@ -257,6 +277,12 @@ extract($pageData);
         }
       }
 
+      function goToWeek(weekStartDate) {
+        if (!weekStartDate || !weekStartInput || !form) return;
+        weekStartInput.value = weekStartDate;
+        form.submit();
+      }
+
       if (searchInput) {
         searchInput.addEventListener('input', filterPillsLive);
         filterPillsLive();
@@ -273,33 +299,22 @@ extract($pageData);
       });
 
       document.querySelectorAll('.week-item').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          if (weekInput && form) {
-            weekInput.value = btn.dataset.weekIndex;
-            form.submit();
-          }
-        });
+        btn.addEventListener('click', () => goToWeek(btn.dataset.weekStart));
       });
 
       const prevBtn = document.getElementById('prevWeekBtn');
       const nextBtn = document.getElementById('nextWeekBtn');
-      const currentWeek = parseInt(weekInput ? weekInput.value : '0', 10) || 0;
-      const maxWeek = <?= max(0, count($weeks) - 1) ?>;
-
       if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-          if (currentWeek > 0 && weekInput && form) {
-            weekInput.value = String(currentWeek - 1);
-            form.submit();
-          }
-        });
+        prevBtn.addEventListener('click', () => goToWeek(prevBtn.dataset.targetWeek));
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => goToWeek(nextBtn.dataset.targetWeek));
       }
 
-      if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-          if (currentWeek < maxWeek && weekInput && form) {
-            weekInput.value = String(currentWeek + 1);
-            form.submit();
+      if (dateJumpInput) {
+        dateJumpInput.addEventListener('change', () => {
+          if (dateJumpInput.value) {
+            goToWeek(dateJumpInput.value);
           }
         });
       }

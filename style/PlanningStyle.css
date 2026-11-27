@@ -265,6 +265,11 @@
   padding: 12px 20px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .selected-resource-summary {
@@ -283,6 +288,45 @@
 
 .selected-resource-summary small {
   color: #64748b;
+  font-size: 12px;
+}
+
+.week-jump-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.btn-week-jump {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1d284f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-week-jump:hover {
+  background: #f1f5f9;
+}
+
+.date-jump-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.date-jump-label input[type="date"] {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
   font-size: 12px;
 }
 
@@ -325,7 +369,7 @@
 }
 
 .calendar-body {
-  height: 480px;
+  height: 780px; /* 13 heures * 60px (07:00 -> 20:00) */
   display: grid;
   grid-template-columns: 80px 1fr;
 }
@@ -456,9 +500,8 @@
   cursor: pointer;
 }
 
-.week-arrow:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+.week-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .week-list {
