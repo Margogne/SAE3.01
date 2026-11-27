@@ -22,6 +22,11 @@
   line-height: normal;
 }
 
+a{
+  color: inherit; 
+  text-decoration: none;
+}
+
 .profile-menu {
   position: absolute;
   top: calc(100% + 8px);
@@ -85,22 +90,8 @@
   gap: 4px;
 }
 
-.nav-link {
-  background: none;
-  border: none;
-  position: relative;
-  display: flex;
-  height: 54px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 17px 15px;
-  color: #fff;
-  font-family: "Inter:Bold", Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: normal;
-}
+
+
 
 .nav-link::after {
   position: absolute;
