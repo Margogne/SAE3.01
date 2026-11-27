@@ -109,19 +109,21 @@
   margin: 0 auto;
   flex: 1;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   padding: 32px 24px;
+  box-sizing: border-box;
 }
 
 .content-column {
   display: flex;
-  width: min(875px, 100%);
+  width: 100%;
+  max-width: 875px;
   min-width: 0;
+  margin-inline: auto;
   flex-direction: column;
   gap: 36px;
+  box-sizing: border-box;
 }
-
-
 
 /* --- Carte Logistique --- */
 .logistics-card {
@@ -178,6 +180,7 @@
 
 /* --- Carte Description / Sessions --- */
 .description-card {
+  width: 100%;
   min-width: 0;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -195,6 +198,14 @@
   justify-content: space-between;
   border-bottom: 2px solid #e2e8f0;
   padding-bottom: 8px;
+}
+
+.logistics-card,
+.description-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .sessions-list {
@@ -288,6 +299,13 @@
 
 .logistics-card dt {
   overflow-wrap: anywhere;
+}
+
+.logistics-card,
+.description-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -505,7 +523,14 @@
 
 @media (max-width: 780px) {
   .project-body {
+    align-items: center;
     padding: 20px 16px;
+  }
+
+  .content-column {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
   }
 
   .logistics-card dl>div {
@@ -524,12 +549,15 @@
 
 @media (max-width: 600px) {
   .project-body {
+    align-items: center;
     width: 100%;
     padding: 20px 16px 32px;
   }
 
   .content-column {
     width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
     gap: 24px;
   }
 
@@ -537,5 +565,19 @@
     width: 100%;
     margin: 0;
     padding: 16px;
+  }
+}
+
+@media (min-width: 801px) {
+  .content-column {
+    max-width: 875px; /* <-- Modifie cette valeur pour changer la taille max */
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .logistics-card,
+  .description-card {
+    max-width: 100%;
+    width: 100%;
   }
 }
