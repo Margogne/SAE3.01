@@ -1,6 +1,6 @@
 <?php
 include("../controller/ECController.php");
-$_POST['trait']='1';
+$_POST['trait'] = '1';
 ?>
 <!doctype html>
 <html lang="fr">
@@ -16,10 +16,10 @@ $_POST['trait']='1';
 <body>
   <div class="app-shell">
     <?php
-       /* $_POST['trait']='2';
-        include '../model/ECheaderModel.php';*/
-        
-        ?>
+    $_POST['trait'] = '2';
+    include '../model/ECheaderModel.php';
+
+    ?>
 
     <section class="page-heading">
       <div class="page-heading-inner">
