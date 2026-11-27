@@ -135,6 +135,7 @@ CREATE TABLE PARTICIPER(
 );
 CREATE TABLE RAPPORT(
    id_rap INT AUTO_INCREMENT,
+   titre_rap VARCHAR(100) NOT NULL,
    nbparticipant_rap INT NOT NULL DEFAULT 0,
    nbincid_rap INT NOT NULL DEFAULT 0,
    desc_rap VARCHAR(1500),
@@ -292,6 +293,6 @@ INSERT INTO REFERENCER (id_proj, id_util, id_role, nom_role) VALUES
 (5, 3, 9, 'gestionnaire'),
 (6, 4, 10, 'membre');
 
-INSERT INTO RAPPORT (id_rap, nbparticipant_rap, nbincid_rap, desc_rap, date_rap, id_exp) VALUES
-(1, 1, 1, 'Rapport intermédiaire : premiers tests de benchmark validés malgré une surchauffe GPU.', '2024-02-15', 1),
-(2, 1, 1, 'Bilan à mi-parcours de la simulation Monte-Carlo au LMM.', '2024-10-15', 4);
+INSERT INTO RAPPORT (id_rap, titre_rap, nbparticipant_rap, nbincid_rap, desc_rap, date_rap, id_exp) VALUES
+(1, 'Rapport intermédiaire - Benchmark Transformers', 1, 1, 'Rapport intermédiaire : premiers tests de benchmark validés malgré une surchauffe GPU.', '2024-02-15', 1),
+(2, 'Bilan mi-parcours - Simulation Monte-Carlo', 1, 1, 'Bilan à mi-parcours de la simulation Monte-Carlo au LMM.', '2024-10-15', 4);

@@ -267,6 +267,14 @@ function get_incidents_from_exp($id): array{
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+/* #Rapport */
+function get_rapport_from_exp($id): array{
+    $bdd = get_bdd();
+    $sql = "SELECT * FROM rapport  WHERE rapport.id_exp = :id_exp ORDER BY date_rap DESC";
+    $stmt = $bdd->prepare($sql);
+    $stmt->execute([ ':id_exp' => $id ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 /*-----------------------------------------
             Insert
 -----------------------------------------*/
@@ -329,27 +337,53 @@ function insert_proj()
 
 function insert_incident()
 {
-    // 1. Récupération et nettoyage des données du POST
+    
     $titreIncid = trim((string) ($post['titre_incid'] ?? ''));
     $descIncid  = trim((string) ($post['desc_incid'] ?? ''));
     $idSess     = ($post['id_sess'] ?? 0);
 
-    // 2. Vérification des champs obligatoires (id_sess est NOT NULL et FK)
     if ($titreIncid === '' || $idSess <= 0) {
         return false;
     }
 
-    // 3. Requête préparée d'insertion (id_incid est géré par AUTO_INCREMENT)
     $bdd = get_bdd();
     $sql = "INSERT INTO incident (titre_incid, desc_incid, id_sess)
             VALUES (:titre_incid, :desc_incid, :id_sess)";
-
     $stmt = $bdd->prepare($sql);
 
     $stmt->execute([
         ':titre_incid' => $titreIncid,
         ':desc_incid'  => $descIncid,
         ':id_sess'     => $idSess
+    ]);
+}
+
+function insert_rapport()
+{
+    $getParams = array_change_key_case($_GET, CASE_LOWER);
+
+    $idExp = (int) ($getParams['id_exp'] ?? 0);
+
+    $titreRap = trim((string) ($_POST['titre_rap'] ?? ''));
+    $descRap  = trim((string) ($_POST['desc_rap'] ?? ''));
+
+    $nbParticipantRap = count(get_participants_from_exp($idExp));
+    $nbIncidRap       = count(get_incidents_from_exp($idExp));
+    $dateRap          = date('Y-m-d');
+
+    $bdd = get_bdd();
+    $sql = "INSERT INTO rapport (titre_rap, nbparticipant_rap, nbincid_rap, desc_rap, date_rap, id_exp)
+            VALUES (:titre_rap, :nbparticipant_rap, :nbincid_rap, :desc_rap, :date_rap, :id_exp)";
+
+    $stmt = $bdd->prepare($sql);
+
+    $stmt->execute([
+        ':titre_rap'         => $titreRap,
+        ':nbparticipant_rap' => $nbParticipantRap,
+        ':nbincid_rap'       => $nbIncidRap,
+        ':desc_rap'          => $descRap,
+        ':date_rap'          => $dateRap,
+        ':id_exp'            => $idExp
     ]);
 }
 ?>

@@ -11,6 +11,9 @@ if (isset($_POST["nom_proj"]) && isset($_POST["desc_proj"]) && isset($_POST["dat
 if (isset($_POST['titre_incid'], $_POST['desc_incid'], $_POST['id_sess'])) {
     insert_incident();
 }
+if (isset($_POST['desc_rap'])) {
+    insert_rapport();
+}
 $userNom = $_SESSION['user_nom'] ?? 'Utilisateur';
 $userPrenom = $_SESSION['user_prenom'] ?? '';
 $userRole = $_SESSION['user_role'] ?? 'Enseignant chercheur';
