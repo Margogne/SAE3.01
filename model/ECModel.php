@@ -32,6 +32,7 @@ function get_projets(){
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
+
 function get_projets_with_search(string $search=''): array
 {
     $bdd = get_bdd();
@@ -53,12 +54,14 @@ function get_projets_with_search(string $search=''): array
     $result= $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
+
 function get_projets_from_util($id) : array{
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM projet JOIN referencer on referencer.id_proj=projet.id_proj WHERE id_util = \''.$id.'\'') ;
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
+
 function get_projet_from_exp($id){
     $bdd = get_bdd();
     $sql = "SELECT * FROM experimentation JOIN projet on projet.id_proj=experimentation.id_proj WHERE experimentation.id_exp = :id_exp";
@@ -97,6 +100,7 @@ function get_experimentation($id){
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
 }
+
 function get_experimentations_from_util($id){
     $bdd = get_bdd();
     $query = $bdd->query('SELECT * FROM experimentation JOIN travailler on experimentation.id_exp=travailler.id_exp 
@@ -104,6 +108,7 @@ function get_experimentations_from_util($id){
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
+
 function get_experimentations_from_projet($id): array
 {
     $bdd = get_bdd();

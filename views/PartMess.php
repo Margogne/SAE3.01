@@ -7,11 +7,14 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$flashMessage = gestion_message_delete($_SESSION, $_GET, 'PartMess.php');
+$sendState = gestion_message_send($_SESSION, $_POST, $_GET, 'PartMess.php');
+$sendError = $sendState['sendError'];
+$draftReceiverId = $sendState['draftReceiverId'];
+$draftContent = $sendState['draftContent'];
 
 $flashDelete = gestion_message_delete($_SESSION, $_GET, 'PartMess.php');
 $flashRead = gestion_message_mark_read($_SESSION, $_GET, 'PartMess.php');
-$flashMessage = $flashDelete ?? $flashRead;
+$flashMessage = $flashDelete ?? $flashRead ?? $sendState['flashSent'];
 
 $pageData = prepare_part_mess_page_data($_SESSION, $_GET);
 if ($pageData === null) {
@@ -20,6 +23,7 @@ if ($pageData === null) {
 }
 
 extract($pageData);
+$recipients = get_recipient_users((int) $_SESSION['user_id']);
 
 /* ==============================================
    SECTION : HTML DE LA PAGE
@@ -127,6 +131,13 @@ extract($pageData);
                 </div>
             </section>
 
+            <!-- gestion des erreur -->
+            <?php if (!empty($flashMessage)): ?>
+                <p class="flash-message" role="status"><?= htmlspecialchars($flashMessage) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($sendError)): ?>
+                <p class="error-message" role="alert"><?= htmlspecialchars($sendError) ?></p>
+            <?php endif; ?>
             <?php if (!empty($dbError)): ?>
                 <p class="error-message" role="alert"><?= htmlspecialchars($dbError) ?></p>
             <?php endif; ?>
@@ -178,6 +189,38 @@ extract($pageData);
                     <button type="submit" class="btn-filter-submit">Filtrer</button>
                 </form>
 
+            </section>
+
+            <!-- ENVOIE DE MESSAGE -->
+            <section id="compose-message" class="compose-card" aria-label="Écrire un message">
+                <h2>Écrire un message</h2>
+                <form method="POST" action="PartMess.php?status=<?= urlencode($status) ?>&amp;q=<?= urlencode($query) ?>" class="compose-form">
+                    <div class="compose-field">
+                        <label for="receiver_id">Destinataire</label>
+                        <select id="receiver_id" name="receiver_id" required>
+                            <option value="">-- Choisir un utilisateur --</option>
+                                <?php foreach ($recipients as $recipient): ?>
+                                    <?php $rid = (int) $recipient['id_util']; ?>
+                                    <option value="<?= $rid ?>" <?= $draftReceiverId === $rid ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($recipient['prenom_util'] . ' ' . $recipient['nom_util']) ?>
+                                        (<?= htmlspecialchars($recipient['type_util']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="compose-field">
+                        <label for="contenu_mess">Message</label>
+                        <textarea id="contenu_mess" name="contenu_mess" rows="4" maxlength="5000"
+                            placeholder="Rédigez votre message…" required><?= htmlspecialchars($draftContent) ?></textarea>
+                    </div>
+
+                    <div class="compose-actions">
+                        <button type="submit" name="send_message" value="1" class="mess-primary-action">
+                            Envoyer le message
+                        </button>
+                    </div>
+                </form>
             </section>
 
             <!-- corps de page -->

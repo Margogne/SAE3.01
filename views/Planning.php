@@ -3,13 +3,15 @@ session_start();
 require_once '../model/model.php';
 require_once '../model/PlanningModel.php';
 
-$pageData = init_planning_page($_GET, $_SESSION);
-if ($pageData === null) {
+$page = init_planning_page($_GET, $_SESSION);
+if ($page === null) {
     header('Location: ID.php');
     exit();
 }
 
-extract($pageData);
+extract($page);
+$hasResource = $selectedRessourceId > 0;
+$hasQuery = $searchQuery !== '';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -25,13 +27,14 @@ extract($pageData);
 
 <body>
   <div class="app-shell">
-    <!-- Header conservé tel quel -->
+
+    <!-- HEADER de EC -->
     <?php
       $_POST['trait'] = '5';
       include '../model/ECheaderModel.php';
+    ?>
 
-      ?>
-
+    <!--BANDEAU Titre -->
     <section class="title-strip">
       <div>
         <h1><span class="fa">&#xf073;</span> Planning des Salles &amp; Équipements</h1>
@@ -39,20 +42,27 @@ extract($pageData);
       </div>
     </section>
 
+    <!-- corp de page -->
     <main class="planning-main">
+
+      <!-- Gestion des Erreur -->
       <?php if ($dbError !== ''): ?>
         <div class="alert-error" role="alert">
           <?= htmlspecialchars($dbError) ?>
         </div>
       <?php endif; ?>
 
+      <!-- Section Filtres -->
       <section class="planning-filters" aria-label="Recherche de ressources">
-        <form method="GET" action="planning.php" class="resource-search-form" id="resourceSearchForm">
+
+        <!-- Zone de Recherche -->
+        <form method="GET" action="Planning.php" class="resource-search-form" id="resourceSearchForm">
           <input type="hidden" name="week_start" value="<?= htmlspecialchars($activeMonday) ?>" />
           <?php if ($selectedRessourceId > 0): ?>
             <input type="hidden" name="ress_id" value="<?= (int) $selectedRessourceId ?>" />
           <?php endif; ?>
 
+          <!-- Barre de recherche -->
           <label class="resource-search-label" for="resourceSearchInput">
             <span class="sr-only">Rechercher une ressource</span>
             <span class="fa search-icon">&#xf002;</span>
@@ -65,47 +75,49 @@ extract($pageData);
             />
           </label>
 
+          <!-- Bouton de Recherche -->
           <button type="submit" class="btn-search-submit">Rechercher</button>
-          <?php if ($searchQuery !== ''): ?>
-            <a href="<?= htmlspecialchars($resetUrl) ?>" class="btn-search-reset">Réinitialiser</a>
-          <?php endif; ?>
+
         </form>
-
+        
+        <!-- note bilan de presence des ressources -->
         <div class="resource-results-bar" id="resourceResultsInfo">
-          <span><?= count($filteredResources) ?> ressource(s) trouvée(s)</span>
+          <span><?= count($filteredResources) ?> ressource(s) trouvée(s)</span><!-- j'adore la fonction count() -->
         </div>
 
+        <!-- Affichage des ressources -->
         <div class="resource-pills" id="resourceList" role="listbox" aria-label="Ressources correspondantes">
-          <?php if (empty($filteredResources)): ?>
+          <?php if (empty($filteredResources)) : ?>
             <p class="no-resource-match">Aucune ressource ne correspond à cette recherche.</p>
-          <?php else: ?>
-            <?php foreach ($filteredResources as $ress): ?>
-              <?php
-                $isSelected = ((int) $ress['id_ress'] === (int) $selectedRessourceId);
-                $pillUrl = build_planning_url([
-                    'week_start' => $activeMonday,
-                    'ress_id'    => (int) $ress['id_ress'],
-                    'q'          => $searchQuery !== '' ? $searchQuery : null,
-                ]);
-              ?>
-              <a
-                href="<?= htmlspecialchars($pillUrl) ?>"
-                class="resource-pill <?= $isSelected ? 'active' : '' ?>"
-                aria-selected="<?= $isSelected ? 'true' : 'false' ?>"
-              >
-                <span class="resource-badge <?= htmlspecialchars($ress['categorie_classe']) ?>">
-                  <?= htmlspecialchars($ress['categorie_detectee']) ?>
-                </span>
-                <strong class="resource-pill-title"><?= htmlspecialchars($ress['nom_ress']) ?></strong>
-                <small class="resource-pill-desc"><?= htmlspecialchars($ress['desc_ress']) ?></small>
-              </a>
-            <?php endforeach; ?>
-          <?php endif; ?>
+          <?php else : foreach ($filteredResources as $ress) :
+            $isSelected = (int)$ress['id_ress'] === (int)$selectedRessourceId;
+          ?>
+            <a href="<?= htmlspecialchars(build_planning_url([
+              'week_start' => $activeMonday,
+              'ress_id' => (int)$ress['id_ress'],
+              'q' => $searchQuery ?: null
+            ])) ?>"
+              class="resource-pill <?= $isSelected ? 'active' : '' ?>"
+              aria-selected="<?= $isSelected ? 'true' : 'false' ?>">
+
+              <span class="resource-badge <?= htmlspecialchars($ress['categorie_classe']) ?>">
+                <?= htmlspecialchars($ress['categorie_detectee']) ?>
+              </span>
+              <strong class="resource-pill-title"><?= htmlspecialchars($ress['nom_ress']) ?></strong>
+              <small class="resource-pill-desc"><?= htmlspecialchars($ress['desc_ress']) ?></small>
+            </a>
+          <?php endforeach; endif; ?>
         </div>
+
       </section>
 
+      <!-- Bloc Calendrier -->
       <section class="calendar-card" aria-label="Planning hebdomadaire">
+      
+        <!-- bar de manip  -->
         <div class="calendar-toolbar">
+
+          <!-- affichage pour ressource -->
           <div class="selected-resource-summary">
             <span>Ressource affichée :</span>
             <strong>
@@ -115,7 +127,8 @@ extract($pageData);
               <small><?= htmlspecialchars($selectedRessource['desc_ress']) ?></small>
             <?php endif; ?>
           </div>
-
+        
+          <!-- Bar bouton calendrier -->
           <form method="GET" action="planning.php" class="week-jump-controls">
             <?php if ($selectedRessourceId > 0): ?>
               <input type="hidden" name="ress_id" value="<?= (int) $selectedRessourceId ?>" />
@@ -123,9 +136,9 @@ extract($pageData);
             <?php if ($searchQuery !== ''): ?>
               <input type="hidden" name="q" value="<?= htmlspecialchars($searchQuery) ?>" />
             <?php endif; ?>
-
+          
             <a class="btn-week-jump" href="<?= htmlspecialchars($todayUrl) ?>">Aujourd'hui</a>
-
+          
             <label class="date-jump-label" for="dateJumpInput">
               <span>Aller à une date :</span>
               <input
@@ -135,15 +148,18 @@ extract($pageData);
                 value="<?= htmlspecialchars($activeMonday) ?>"
               />
             </label>
-
             <button type="submit" class="btn-week-jump">Aller</button>
           </form>
+
         </div>
 
+        <!-- calendrier -->
         <div class="calendar-scroll">
+
+          <!-- En-Tete -->
           <div class="calendar-head">
             <div class="hours-heading">Heures</div>
-            <?php foreach ($days as $day): ?>
+              <?php foreach ($days as $day): ?>
               <div class="day-heading">
                 <b><?= htmlspecialchars($day['label']) ?></b>
                 <span><?= htmlspecialchars($day['date']) ?></span>
@@ -151,13 +167,17 @@ extract($pageData);
             <?php endforeach; ?>
           </div>
 
+          <!-- Corp -->
           <div class="calendar-body">
+
+            <!-- heures -->
             <div class="hours-column">
               <?php for ($h = 7; $h < 20; $h++): ?>
                 <div><?= sprintf('%02d:00', $h) ?></div>
               <?php endfor; ?>
             </div>
 
+            <!-- Affichage -->
             <div class="days-grid">
               <?php foreach ($days as $dayIndex => $day): ?>
                 <div class="day-column" aria-label="<?= htmlspecialchars($day['label']) ?>">
@@ -185,6 +205,7 @@ extract($pageData);
                 <p class="empty-week">Aucun créneau réservé pour cette ressource sur cette semaine.</p>
               <?php endif; ?>
             </div>
+            
           </div>
         </div>
 
