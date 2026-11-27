@@ -20,36 +20,17 @@ extract($pageData);
   <title>Planning des Salles &amp; Équipements - Le Mans Université</title>
   <link rel="stylesheet" href="../style/PartGenStyle.css" />
   <link rel="stylesheet" href="../style/PlanningStyle.css" />
+  <link rel="stylesheet" href="../style/ECheader.css" />
 </head>
 
 <body>
   <div class="app-shell">
     <!-- Header conservé tel quel -->
-    <header class="site-header" id="siteHeader">
-      <a class="brand" href="PartAcc.php" aria-label="Le Mans Université">
-        <img src="../assets/img/logoLemansBlancSurBleu.png" alt="Le Mans Université" />
-      </a>
+    <?php
+      $_POST['trait'] = '5';
+      include '../model/ECheaderModel.php';
 
-      <nav class="main-nav" aria-label="Navigation principale">
-        <a class="nav-link" href="#dashboard">Dashboard</a>
-        <a class="nav-link" href="PartAcc.php">Expérimentations</a>
-        <a class="nav-link" href="#Ressource">Ressources</a>
-        <a class="nav-link" href="#messagerie">Messagerie</a>
-        <a class="nav-link active" href="Planning.php">Planning</a>
-      </nav>
-
-      <div class="header-actions">
-        <div class="menu-anchor">
-          <button type="button" class="profile-button" aria-haspopup="menu">
-            <span class="avatar"><?= htmlspecialchars($initials) ?></span>
-            <span class="profile-copy">
-              <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
-              <small><?= htmlspecialchars($userRole) ?></small>
-            </span>
-          </button>
-        </div>
-      </div>
-    </header>
+      ?>
 
     <section class="title-strip">
       <div>
