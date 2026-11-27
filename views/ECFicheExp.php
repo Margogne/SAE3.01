@@ -18,79 +18,17 @@ include("../controller/ECController.php");
 <body>
   <div class="app-shell">
     <div class="page">
-      <header class="site-header">
+      <?php
+      $_POST['trait'] = '2';
+      include '../model/ECheaderModel.php';
 
-        <button class="brand" aria-label="Retour au tableau de bord">
-          <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
-        </button>
-
-        <nav class="main-navigation" aria-label="Navigation principale">
-          <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-          <button class="nav-link active">Projets</button>
-          <button class="nav-link">Ressources</button>
-          <button class="nav-link">Messagerie</button>
-        </nav>
-        <div class="header-actions">
-          <!-- langue -->
-          <div class="menu-anchor language-anchor">
-            <button type="button" class="language-trigger" aria-haspopup="menu">
-              <img src="../assets/img/Globe.svg" alt="" />
-              <span>FR</span>
-              <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
-            </button>
-            <div class="dropdown language-menu" role="menu" style="display: none;">
-              <a href="?id=<?= $_GET['id_exp'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span class="fa">&#xf00c;</span></a>
-              <a href="?id=<?= $_GET['id_exp'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-              <a href="?id=<?= $_GET['id_exp'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
-            </div>
-          </div>
-
-          <!-- notifications -->
-          <div class="menu-anchor">
-            <button type="button" class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog">
-              <img src="../assets/img/bell.svg" alt="" />
-            </button>
-            <div class="dropdown notification-menu" role="dialog" aria-label="Notifications" style="display: none;">
-              <h2>Notifications</h2>
-              <div class="empty-notifications">
-                <span class="notification-illustration">
-                  <span class="fa" style="font-size: 24px; color: #9ba8bd;">&#xf0a2;</span>
-                </span>
-                <strong>Aucune notification</strong>
-                <p>Vous êtes à jour. Les nouvelles activités apparaîtront ici.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="menu-anchor profile-anchor">
-            <button type="button" class="profile-button" aria-haspopup="menu">
-              <span class="avatar"><?= htmlspecialchars($initials) ?></span>
-              <span class="profile-copy">
-                <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
-                <small><?= htmlspecialchars($userRole) ?></small>
-              </span>
-              <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
-            </button>
-            <div class="dropdown profile-menu" role="menu" style="display: none;">
-              <div class="profile-menu-heading">
-                <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
-                <span>
-                  <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
-                  <small><?= htmlspecialchars($userRole) ?></small>
-                </span>
-              </div>
-              <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span>Se déconnecter</a>
-            </div>
-          </div>
-
-        </div>
-      </header>
+      ?>
 
       <section class="hero">
         <div class="hero-content">
           <button class="back-link" onclick="history.back()">
             <span class="fa" aria-hidden="true"></span> Retour au
-              projet
+            projet
           </button>
           <!--<div class="tags">
               <span class="tag subject">Robotique &amp; Ergonomie</span>
@@ -99,8 +37,10 @@ include("../controller/ECController.php");
           <h1><?= get_experimentation($_GET['id_exp'])['titre_exp'] ?></h1>
           <div class="hero-meta">
             <!--<span><span class="fa" aria-hidden="true"></span> Responsable : Dr. L. Oubahssi</span>-->
-            <span><span class="fa" aria-hidden="true"></span> Début : <?= get_experimentation($_GET['id_exp'])['datedeb_exp'] ?></span>
-            <span><span class="fa" aria-hidden="true"></span> Fin : <?= get_experimentation($_GET['id_exp'])['datefin_exp'] ?></span>
+            <span><span class="fa" aria-hidden="true"></span> Début :
+              <?= get_experimentation($_GET['id_exp'])['datedeb_exp'] ?></span>
+            <span><span class="fa" aria-hidden="true"></span> Fin :
+              <?= get_experimentation($_GET['id_exp'])['datefin_exp'] ?></span>
             <span><span class="fa" aria-hidden="true"></span> Laboratoire :
               <?= htmlspecialchars(get_lab_from_exp($_GET['id_exp'])['nom_lab']) ?></span>
           </div>
@@ -195,8 +135,10 @@ include("../controller/ECController.php");
                 </article>-->
               <?php } ?>
               <form method="POST">
-                <label class="field"><input name="titre_incid" required type="text" placeholder="Titre de l'incident" /></label>
-                <label class="field"><input name="desc_incid" required type="text" placeholder="Détails de l'incident" /></label>
+                <label class="field"><input name="titre_incid" required type="text"
+                    placeholder="Titre de l'incident" /></label>
+                <label class="field"><input name="desc_incid" required type="text"
+                    placeholder="Détails de l'incident" /></label>
                 <button class="add" type="submit">Ajouter</button>
               </form>
 
@@ -245,7 +187,8 @@ include("../controller/ECController.php");
                 </div>-->
 
             </div>
-            <a href="ECListePart.php?id_exp=<?= $_GET['id_exp'] ?>" style="color: inherit; text-decoration: none;"><button class="participants-button">
+            <a href="ECListePart.php?id_exp=<?= $_GET['id_exp'] ?>"
+              style="color: inherit; text-decoration: none;"><button class="participants-button">
                 Voir la liste des Participants
               </button></a>
           </aside>
