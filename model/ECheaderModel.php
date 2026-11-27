@@ -1,9 +1,9 @@
 <?php
-    $dashboard = "";
-    $projets = "";
-    $ressources = "";
-    $messagerie = "";
-    $planning = "";
+$dashboard = "";
+$projets = "";
+$ressources = "";
+$messagerie = "";
+$planning = "";
 function trait_eq()
 {
     $GLOBALS["dashboard"] = "";
@@ -29,7 +29,7 @@ function trait_eq()
             $GLOBALS["planning"] = "active";
             break;
     }
-} 
+}
 trait_eq();
 ?>
 
@@ -50,6 +50,8 @@ trait_eq();
                 class="nav-link <?= $ressources ?>">Ressources</button></a>
         <a href="ECMess.php" style="color: inherit; text-decoration: none;"><button
                 class="nav-link <?= $messagerie ?>">Messagerie</button></a>
+        <a href="Planning.php" style="color: inherit; text-decoration: none;"><button
+                class="nav-link <?= $planning ?>">Planning</button></a>
     </nav>
 
     <div class="header-actions">
