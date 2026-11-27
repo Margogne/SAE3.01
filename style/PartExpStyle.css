@@ -1,0 +1,569 @@
+/* ==========================================================================
+   BANDEAU HERO DE L'EXPÉRIMENTATION
+   ========================================================================== */
+
+.project-hero {
+  position: relative;
+  min-height: 165px;
+  overflow: hidden;
+}
+
+.hero-photo,
+.hero-shade {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-photo {
+  background: url("../assets/img/FondProjet.png") center 49% / cover no-repeat;
+  transform: scale(1.02);
+}
+
+.hero-shade {
+  background: linear-gradient(90deg, rgba(15, 22, 46, 0.95), rgba(29, 40, 79, 0.85));
+}
+
+.hero-content {
+  position: relative;
+  display: flex;
+  max-width: 1440px;
+  min-width: 0;
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px 24px 25px;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #9ba8bd;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #fff;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badges span {
+  border: 1px solid #c94a29;
+  border-radius: 4px;
+  background: rgba(201, 74, 41, 0.2);
+  padding: 4px 10px;
+  color: #ff8a65;
+  font-family: "Roboto:Bold";
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.badges .status {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.badges .fa {
+  margin-right: 4px;
+  font-size: 8px;
+}
+
+.hero-content h1 {
+  color: #fff;
+  font-family: "Roboto:Bold";
+  font-size: 24px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  color: #9ba8bd;
+  font-size: 13px;
+}
+
+.project-meta .fa {
+  margin-right: 6px;
+  color: #c94a29;
+}
+
+/* ==========================================================================
+     CORPS DE LA PAGE (FICHE DÉTAILLÉE & SESSIONS)
+     ========================================================================== */
+
+.project-body {
+  display: flex;
+  max-width: 1440px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+
+.content-column {
+  display: flex;
+  width: 100%;
+  max-width: 875px;
+  min-width: 0;
+  margin-inline: auto;
+  flex-direction: column;
+  gap: 36px;
+  box-sizing: border-box;
+}
+
+/* --- Carte Logistique --- */
+.logistics-card {
+  width: 100%;
+  min-width: 0;
+  border-radius: 8px;
+  background: #c94a29;
+  padding: 20px;
+  color: #fff;
+}
+
+.logistics-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: "Roboto:Bold";
+  font-size: 14px;
+}
+
+.logistics-card dl {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.logistics-card dl>div {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 25px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 6px;
+  font-size: 12px;
+}
+
+.logistics-card dd {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 12px;
+  min-width: 0;
+  font-family: "Roboto:Bold";
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.logistics-card dd span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* --- Carte Description / Sessions --- */
+.description-card {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.description-card header,
+.session-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  justify-content: space-between;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.logistics-card,
+.description-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.sessions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.session-item {
+  padding: 14px 0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.session-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 220px;
+  overflow-wrap: anywhere;
+}
+
+.session-info strong {
+  color: #1d284f;
+  font-family: "Roboto:Bold";
+  font-size: 13.5px;
+}
+
+.session-status-sub {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.session-register-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #1d284f;
+  color: #fff;
+  font-family: "Roboto:Bold";
+  font-size: 12.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.session-register-btn:hover:not(.registered) {
+  background: #c94a29;
+}
+
+.session-register-btn.registered {
+  background: #177e61;
+  cursor: default;
+}
+
+.description-card h2 {
+  font-family: "Roboto:Bold";
+  font-size: 15px;
+}
+
+.description-card h2 .fa {
+  margin-right: 8px;
+  color: #c94a29;
+}
+
+.description-card p {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.project-body,
+.content-column,
+.logistics-card,
+.logistics-card dl,
+.logistics-card dl>div,
+.logistics-card dt,
+.logistics-card dd {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.logistics-card dt {
+  overflow-wrap: anywhere;
+}
+
+.logistics-card,
+.description-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+     MODALE D'INSCRIPTION EN 3 ÉTAPES
+     ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(15, 22, 46, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.modal-close {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(15, 22, 46, 0.85);
+  color: #fff;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.consent-modal {
+  position: relative;
+  display: flex;
+  width: min(618px, 100%);
+  min-height: 420px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  flex-direction: column;
+  border: 1px solid #1d284f;
+  border-radius: 20px;
+  background: #fff;
+  padding: 42px 56px;
+  color: #1d284f;
+  box-shadow: 0 24px 70px rgba(7, 29, 51, 0.25);
+}
+
+.modal-kicker {
+  margin-bottom: 12px;
+  color: #c94a29;
+  font-family: "Inter:Regular";
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.progress-steps {
+  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.progress-steps::before {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: 16px;
+  height: 3px;
+  background: #c94a29;
+  content: "";
+}
+
+.progress-steps span {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border: 2px solid #c94a29;
+  border-radius: 50%;
+  background: #fff;
+  color: #c94a29;
+  font-size: 18px;
+}
+
+.progress-steps span.active {
+  background: #c94a29;
+  color: #fff;
+}
+
+.consent-modal h2 {
+  margin-bottom: 8px;
+  font-family: "Roboto:Bold";
+  font-size: 20px;
+}
+
+.consent-list {
+  margin: 16px 0 12px 24px;
+  list-style: disc;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.slot-form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.slot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.slot-list label {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 12px;
+  font-family: "Roboto:Bold";
+  font-size: 18px;
+}
+
+.slot-list input {
+  width: 16px;
+  height: 16px;
+  accent-color: #c94a29;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #cbd5e1;
+  color: #0f162e;
+  font-family: "Roboto:Bold";
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.next-button {
+  display: inline-flex;
+  min-width: 161px;
+  height: 54px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: #1d284f;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.next-button strong {
+  font-family: "Roboto:Bold";
+  font-size: 18px;
+}
+
+.next-button small {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.next-button.done {
+  font-family: "Roboto:Bold";
+  font-size: 18px;
+}
+
+.confirmation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.confirmation>span {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 18px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7f5ef;
+  color: #177e61;
+  font-size: 28px;
+}
+
+/* ==========================================================================
+     RESPONSIVE SPÉCIFIQUE À LA PAGE
+     ========================================================================== */
+
+@media (max-width: 780px) {
+  .project-body {
+    align-items: center;
+    padding: 20px 16px;
+  }
+
+  .content-column {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .logistics-card dl>div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logistics-card dd {
+    justify-content: flex-start;
+  }
+
+  .consent-modal {
+    padding: 36px 24px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .project-body {
+    align-items: center;
+    width: 100%;
+    padding: 20px 16px 32px;
+  }
+
+  .content-column {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    gap: 24px;
+  }
+
+  .logistics-card {
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+  }
+}
