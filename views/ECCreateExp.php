@@ -91,7 +91,7 @@ include "../controller/ECController.php";
       <div class="page-heading-inner">
         <a href="ECDashboard.php" class="back-link">
           <span class="fa-icon" aria-hidden="true">&#xf060;</span>
-          Retour aux projets
+          Retour
         </a>
         <h1>
           <span class="fa-icon" aria-hidden="true">&#xf65e;</span>
@@ -193,7 +193,7 @@ include "../controller/ECController.php";
           </section>
 
           <div class="form-actions">
-            <button class="cancel-button" type="reset">Annuler</button>
+            <button class="cancel-button" type="reset" onclick="history.back()">Annuler</button>
             <button class="submit-button" type="submit">
               <span class="fa-icon" aria-hidden="true">&#xf1d8;</span>
               Créer l’expérimentation

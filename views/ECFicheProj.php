@@ -93,7 +93,7 @@ include("../controller/ECController.php");
         <div class="hero-image"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-          <button class="back-link">
+          <button class="back-link" onclick="history.back()">
             <span class="fa-solid" aria-hidden="true">&#xf060;</span> Retour à la liste des projets
           </button>
           <!--<div class="badges">

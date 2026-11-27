@@ -88,9 +88,9 @@ include("../controller/ECController.php");
 
       <section class="hero">
         <div class="hero-content">
-          <button class="back-link">
-            <a href="ECFicheProj.php?id_proj=<?= get_projet_from_exp($_GET['id_exp'])['id_proj'] ?>" style="color: inherit; text-decoration: none;"><span class="fa" aria-hidden="true"></span> Retour au
-              projet</a>
+          <button class="back-link" onclick="history.back()">
+            <span class="fa" aria-hidden="true"></span> Retour au
+              projet
           </button>
           <!--<div class="tags">
               <span class="tag subject">Robotique &amp; Ergonomie</span>

@@ -88,9 +88,9 @@
     </header>
 
     <section class="page-heading">
-      <a class="back-link" href="#">
+      <button class="back-link"  onclick="history.back()">
         <span class="fa"></span> Retour à l’expérimentation
-      </a>
+      </button>
       <h1><span class="fa"></span> Gestion des participants</h1>
       <p>Modifiez les restrictions et rétributions des participants et acceptez les demandes.</p>
     </section>
