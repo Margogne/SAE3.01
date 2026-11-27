@@ -651,6 +651,99 @@ function gestion_message_mark_read(array $session, array $get, string $redirectP
     return null;
 }
 
+function get_recipient_users(int $currentUserId): array
+{
+    $bdd = get_bdd();
+    $sql = 'SELECT id_util, nom_util, prenom_util, type_util
+            FROM UTILISATEUR
+            WHERE id_util <> :current_user_id
+            ORDER BY nom_util ASC, prenom_util ASC';
+    $stmt = $bdd->prepare($sql);
+    $stmt->execute([':current_user_id' => $currentUserId]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function send_message(int $senderId, int $receiverId, string $contenu, ?string &$error = null): bool
+{
+    $error = null;
+    $cleanContent = trim($contenu);
+
+    if ($senderId <= 0 || $receiverId <= 0 || $senderId === $receiverId) {
+        $error = 'Veuillez sélectionner un destinataire valide.';
+        return false;
+    }
+
+    if ($cleanContent === '') {
+        $error = 'Le contenu du message ne peut pas être vide.';
+        return false;
+    }
+
+    if (mb_strlen($cleanContent, 'UTF-8') > 5000) {
+        $error = 'Le message ne peut pas dépasser 5000 caractères.';
+        return false;
+    }
+
+    try {
+        $bdd = get_bdd();
+
+        // Vérifie que le destinataire existe bien en base
+        $checkStmt = $bdd->prepare('SELECT id_util FROM UTILISATEUR WHERE id_util = :id_util');
+        $checkStmt->execute([':id_util' => $receiverId]);
+        if (!$checkStmt->fetchColumn()) {
+            $error = 'Destinataire introuvable.';
+            return false;
+        }
+
+        $sql = 'INSERT INTO ECHANGER (id_util_receveur, `id_util_expéditeur`, date_envoi, contenu_mess, status_mess)
+                VALUES (:receveur, :expediteur, :date_envoi, :contenu, 0)';
+        $stmt = $bdd->prepare($sql);
+
+        return $stmt->execute([
+            ':receveur' => $receiverId,
+            ':expediteur' => $senderId,
+            ':date_envoi' => date('Y-m-d H:i:s'),
+            ':contenu' => $cleanContent,
+        ]);
+    } catch (PDOException $e) {
+        $error = "Impossible d'envoyer le message (vérifiez qu'un message n'a pas déjà été envoyé à la même seconde à ce destinataire).";
+        return false;
+    }
+}
+
+function gestion_message_send(array $session, array $post, array $get, string $redirectPage = 'PartMess.php'): array
+{
+    $status = $get['status'] ?? 'all';
+    if (!in_array($status, ['all', 'unread', 'read'], true)) {
+        $status = 'all';
+    }
+    $query = trim((string) ($get['q'] ?? ''));
+
+    $sendError = '';
+    $draftReceiverId = isset($post['receiver_id']) ? (int) $post['receiver_id'] : 0;
+    $draftContent = (string) ($post['contenu_mess'] ?? '');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($post['send_message'])) {
+        $senderId = (int) ($session['user_id'] ?? 0);
+        $serviceError = null;
+
+        if (send_message($senderId, $draftReceiverId, $draftContent, $serviceError)) {
+            $url = $redirectPage
+                . '?status=' . urlencode($status)
+                . '&q=' . urlencode($query)
+                . '&flash=sent';
+            header('Location: ' . $url);
+            exit();
+        }
+
+        $sendError = $serviceError ?? "Erreur lors de l'envoi du message.";
+    }
+
+    $flashSent = (($get['flash'] ?? '') === 'sent') ? 'Votre message a bien été envoyé.' : null;
+
+    return compact('sendError', 'flashSent', 'draftReceiverId', 'draftContent');
+}
+
 /*  ===========================================
     GESTIONNAIRE - Gestion des projet
     =========================================== */
