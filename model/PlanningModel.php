@@ -76,6 +76,22 @@ function filter_resources_by_query(array $resources, string $query): array
 }
 
 /**
+ * Construit une URL de navigation vers planning.php en conservant les paramètres actifs.
+ */
+function build_planning_url(array $params = []): string
+{
+    $filtered = array_filter($params, function ($value) {
+        return $value !== null && $value !== '';
+    });
+
+    if (empty($filtered)) {
+        return 'planning.php';
+    }
+
+    return 'planning.php?' . http_build_query($filtered, '', '&', PHP_QUERY_RFC3986);
+}
+
+/**
  * Normalise une date (YYYY-MM-DD) vers le lundi de sa semaine.
  */
 function get_monday_of_date(string $dateStr): DateTimeImmutable
@@ -95,18 +111,9 @@ function get_monday_of_date(string $dateStr): DateTimeImmutable
 function build_surrounding_weeks(DateTimeImmutable $currentMonday, int $radiusBefore = 6, int $radiusAfter = 8): array
 {
     $months = [
-        1 => 'janv.',
-        2 => 'févr.',
-        3 => 'mars',
-        4 => 'avr.',
-        5 => 'mai',
-        6 => 'juin',
-        7 => 'juil.',
-        8 => 'août',
-        9 => 'sept.',
-        10 => 'oct.',
-        11 => 'nov.',
-        12 => 'déc.'
+        1 => 'janv.', 2 => 'févr.', 3 => 'mars', 4 => 'avr.',
+        5 => 'mai',   6 => 'juin',  7 => 'juil.', 8 => 'août',
+        9 => 'sept.', 10 => 'oct.', 11 => 'nov.', 12 => 'déc.'
     ];
 
     $weeks = [];
@@ -115,9 +122,8 @@ function build_surrounding_weeks(DateTimeImmutable $currentMonday, int $radiusBe
         $m = (int) $monday->format('n');
         $weeks[] = [
             'start_date' => $monday->format('Y-m-d'),
-            'code' => 'S' . $monday->format('W'),
-            'label' => $monday->format('d') . ' ' . ($months[$m] ?? $monday->format('m')) . ' ' . $monday->format('y'),
-            'is_current' => ($offset === 0),
+            'code'       => 'S' . $monday->format('W'),
+            'label'      => $monday->format('d') . ' ' . ($months[$m] ?? $monday->format('m')) . ' ' . $monday->format('y'),
         ];
     }
 
@@ -131,18 +137,9 @@ function get_week_days(string $startDate): array
 {
     $labels = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI'];
     $months = [
-        1 => 'Janv.',
-        2 => 'Févr.',
-        3 => 'Mars',
-        4 => 'Avr.',
-        5 => 'Mai',
-        6 => 'Juin',
-        7 => 'Juil.',
-        8 => 'Août',
-        9 => 'Sept.',
-        10 => 'Oct.',
-        11 => 'Nov.',
-        12 => 'Déc.'
+        1 => 'Janv.', 2 => 'Févr.', 3 => 'Mars', 4 => 'Avr.',
+        5 => 'Mai',   6 => 'Juin',  7 => 'Juil.', 8 => 'Août',
+        9 => 'Sept.', 10 => 'Oct.', 11 => 'Nov.', 12 => 'Déc.'
     ];
 
     $days = [];
@@ -152,7 +149,7 @@ function get_week_days(string $startDate): array
         $m = (int) $d->format('n');
         $days[] = [
             'label' => $labels[$i],
-            'date' => $d->format('d') . ' ' . ($months[$m] ?? $d->format('m')),
+            'date'  => $d->format('d') . ' ' . ($months[$m] ?? $d->format('m')),
         ];
     }
 
@@ -160,8 +157,7 @@ function get_week_days(string $startDate): array
 }
 
 /**
- * Récupère les créneaux/réservations d'une ressource pour une semaine donnée.
- * Adapte les noms de tables/colonnes si ton schéma de session/réservation diffère.
+ * Récupère les créneaux / horaires d'usage de la table RESERVATION pour une ressource et une semaine.
  */
 function get_resource_reservations_for_week(int $ressourceId, string $weekStartDate): array
 {
@@ -171,7 +167,7 @@ function get_resource_reservations_for_week(int $ressourceId, string $weekStartD
 
     $bdd = get_bdd();
     $startDt = get_monday_of_date($weekStartDate);
-    $endDt = $startDt->modify('+7 days'); // inclut toute la semaine jusqu'au dimanche soir
+    $endDt   = $startDt->modify('+7 days');
 
     $tones = ['blue', 'orange', 'green', 'purple'];
     $bookings = [];
@@ -193,28 +189,27 @@ function get_resource_reservations_for_week(int $ressourceId, string $weekStartD
 
     $stmt = $bdd->prepare($sql);
     $stmt->execute([
-        ':ress_id' => $ressourceId,
+        ':ress_id'  => $ressourceId,
         ':start_dt' => $startDt->format('Y-m-d H:i:s'),
-        ':end_dt' => $endDt->format('Y-m-d H:i:s'),
+        ':end_dt'   => $endDt->format('Y-m-d H:i:s'),
     ]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as $idx => $row) {
         $debut = new DateTimeImmutable((string) $row['datedeb_res']);
-        $fin = new DateTimeImmutable((string) $row['datefin_res']);
+        $fin   = new DateTimeImmutable((string) $row['datefin_res']);
 
-        // Index du jour dans la semaine (0 = Lundi ... 6 = Dimanche)
         $dayDiff = (int) $startDt->diff($debut->setTime(0, 0, 0))->format('%r%a');
         if ($dayDiff < 0 || $dayDiff > 4) {
             continue;
         }
 
-        // Grille affichée de 07:00 à 20:00 (60px par heure) pour couvrir les créneaux matinaux et soirées
-        $gridStartHour = 7.0;
+        // Grille de 07:00 à 20:00 (60px par heure)
+        $gridStartHour  = 7.0;
         $startHourFloat = ((int) $debut->format('H')) + (((int) $debut->format('i')) / 60.0);
-        $endHourFloat = ((int) $fin->format('H')) + (((int) $fin->format('i')) / 60.0);
+        $endHourFloat   = ((int) $fin->format('H')) + (((int) $fin->format('i')) / 60.0);
 
-        $topPx = max(0.0, ($startHourFloat - $gridStartHour) * 60.0);
+        $topPx    = max(0.0, ($startHourFloat - $gridStartHour) * 60.0);
         $heightPx = max(28.0, ($endHourFloat - $startHourFloat) * 60.0);
 
         $titre = !empty($row['titre_exp'])
@@ -224,14 +219,14 @@ function get_resource_reservations_for_week(int $ressourceId, string $weekStartD
         $statut = (string) ($row['statut_sess'] ?? '');
 
         $bookings[] = [
-            'id_res' => (int) $row['id_res'],
-            'day_index' => $dayDiff,
-            'top_px' => $topPx,
-            'height_px' => $heightPx,
-            'title' => $titre,
-            'person' => $statut !== '' ? 'Session #' . (int) $row['id_sess'] . ' (' . $statut . ')' : 'Session #' . (int) $row['id_sess'],
+            'id_res'     => (int) $row['id_res'],
+            'day_index'  => $dayDiff,
+            'top_px'     => $topPx,
+            'height_px'  => $heightPx,
+            'title'      => $titre,
+            'person'     => $statut !== '' ? 'Session #' . (int) $row['id_sess'] . ' (' . $statut . ')' : 'Session #' . (int) $row['id_sess'],
             'time_label' => $debut->format('H:i') . ' - ' . $fin->format('H:i'),
-            'tone' => $tones[$idx % count($tones)],
+            'tone'       => $tones[$idx % count($tones)],
         ];
     }
 
@@ -247,22 +242,22 @@ function init_planning_page(array $get, array $session): ?array
         return null;
     }
 
-    $userNom = (string) ($session['user_nom'] ?? 'Utilisateur');
+    $userNom    = (string) ($session['user_nom'] ?? 'Utilisateur');
     $userPrenom = (string) ($session['user_prenom'] ?? '');
-    $userRole = (string) ($session['user_role'] ?? 'Gestionnaire');
-    $initials = compute_initials($userPrenom, $userNom);
+    $userRole   = (string) ($session['user_role'] ?? 'Gestionnaire');
+    $initials   = compute_initials($userPrenom, $userNom);
 
     $searchQuery = trim((string) ($get['q'] ?? ''));
 
-    // Permet de naviguer vers n'importe quelle semaine via ?week_start=YYYY-MM-DD (défaut : semaine actuelle)
-    $requestedDate = (string) ($get['week_start'] ?? date('Y-m-d'));
-    $currentMonday = get_monday_of_date($requestedDate);
-    $prevWeekStart = $currentMonday->modify('-7 days')->format('Y-m-d');
-    $nextWeekStart = $currentMonday->modify('+7 days')->format('Y-m-d');
+    $requestedDate  = (string) ($get['week_start'] ?? date('Y-m-d'));
+    $currentMonday  = get_monday_of_date($requestedDate);
+    $activeMonday   = $currentMonday->format('Y-m-d');
+    $prevWeekStart  = $currentMonday->modify('-7 days')->format('Y-m-d');
+    $nextWeekStart  = $currentMonday->modify('+7 days')->format('Y-m-d');
     $todayWeekStart = get_monday_of_date(date('Y-m-d'))->format('Y-m-d');
 
     $weeks = build_surrounding_weeks($currentMonday, 6, 8);
-    $days = get_week_days($currentMonday->format('Y-m-d'));
+    $days  = get_week_days($activeMonday);
 
     $dbError = '';
     $allResources = [];
@@ -288,10 +283,7 @@ function init_planning_page(array $get, array $session): ?array
                 }
             }
 
-            $bookings = get_resource_reservations_for_week(
-                $selectedRessourceId,
-                $currentMonday->format('Y-m-d')
-            );
+            $bookings = get_resource_reservations_for_week($selectedRessourceId, $activeMonday);
         } else {
             $selectedRessourceId = 0;
         }
@@ -299,16 +291,40 @@ function init_planning_page(array $get, array $session): ?array
         $dbError = 'Erreur lors du chargement des ressources ou des réservations.';
     }
 
+    $resetUrl = build_planning_url([
+        'week_start' => $activeMonday,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+    ]);
+
+    $todayUrl = build_planning_url([
+        'week_start' => $todayWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
+    $prevWeekUrl = build_planning_url([
+        'week_start' => $prevWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
+    $nextWeekUrl = build_planning_url([
+        'week_start' => $nextWeekStart,
+        'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+        'q'          => $searchQuery !== '' ? $searchQuery : null,
+    ]);
+
     return compact(
         'userNom',
         'userPrenom',
         'userRole',
         'initials',
         'searchQuery',
-        'currentMonday',
-        'prevWeekStart',
-        'nextWeekStart',
-        'todayWeekStart',
+        'activeMonday',
+        'prevWeekUrl',
+        'nextWeekUrl',
+        'todayUrl',
+        'resetUrl',
         'weeks',
         'days',
         'filteredResources',

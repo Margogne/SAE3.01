@@ -10,7 +10,6 @@ if ($pageData === null) {
 }
 
 extract($pageData);
-$activeMondayStr = $currentMonday->format('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -34,8 +33,9 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
       <nav class="main-nav" aria-label="Navigation principale">
         <a class="nav-link" href="#dashboard">Dashboard</a>
         <a class="nav-link" href="PartAcc.php">Expérimentations</a>
-        <a class="nav-link active" href="planning.php">Ressources</a>
+        <a class="nav-link" href="#Ressource">Ressources</a>
         <a class="nav-link" href="#messagerie">Messagerie</a>
+        <a class="nav-link active" href="Planning.php">Planning</a>
       </nav>
 
       <div class="header-actions">
@@ -67,8 +67,10 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
 
       <section class="planning-filters" aria-label="Recherche de ressources">
         <form method="GET" action="planning.php" class="resource-search-form" id="resourceSearchForm">
-          <input type="hidden" name="week_start" id="weekStartInput" value="<?= htmlspecialchars($activeMondayStr) ?>" />
-          <input type="hidden" name="ress_id" id="selectedRessId" value="<?= (int) $selectedRessourceId ?>" />
+          <input type="hidden" name="week_start" value="<?= htmlspecialchars($activeMonday) ?>" />
+          <?php if ($selectedRessourceId > 0): ?>
+            <input type="hidden" name="ress_id" value="<?= (int) $selectedRessourceId ?>" />
+          <?php endif; ?>
 
           <label class="resource-search-label" for="resourceSearchInput">
             <span class="sr-only">Rechercher une ressource</span>
@@ -79,20 +81,17 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
               name="q"
               value="<?= htmlspecialchars($searchQuery) ?>"
               placeholder="Rechercher une ressource (nom, Salle, Matériel, bâtiment, équipement...)"
-              autocomplete="off"
             />
           </label>
 
           <button type="submit" class="btn-search-submit">Rechercher</button>
           <?php if ($searchQuery !== ''): ?>
-            <a href="planning.php?week_start=<?= urlencode($activeMondayStr) ?>" class="btn-search-reset">Réinitialiser</a>
+            <a href="<?= htmlspecialchars($resetUrl) ?>" class="btn-search-reset">Réinitialiser</a>
           <?php endif; ?>
         </form>
 
         <div class="resource-results-bar" id="resourceResultsInfo">
-          <span id="resourceCountLabel">
-            <?= count($filteredResources) ?> ressource(s) trouvée(s)
-          </span>
+          <span><?= count($filteredResources) ?> ressource(s) trouvée(s)</span>
         </div>
 
         <div class="resource-pills" id="resourceList" role="listbox" aria-label="Ressources correspondantes">
@@ -100,14 +99,17 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
             <p class="no-resource-match">Aucune ressource ne correspond à cette recherche.</p>
           <?php else: ?>
             <?php foreach ($filteredResources as $ress): ?>
-              <?php $isSelected = ((int) $ress['id_ress'] === (int) $selectedRessourceId); ?>
-              <button
-                type="button"
+              <?php
+                $isSelected = ((int) $ress['id_ress'] === (int) $selectedRessourceId);
+                $pillUrl = build_planning_url([
+                    'week_start' => $activeMonday,
+                    'ress_id'    => (int) $ress['id_ress'],
+                    'q'          => $searchQuery !== '' ? $searchQuery : null,
+                ]);
+              ?>
+              <a
+                href="<?= htmlspecialchars($pillUrl) ?>"
                 class="resource-pill <?= $isSelected ? 'active' : '' ?>"
-                data-ress-id="<?= (int) $ress['id_ress'] ?>"
-                data-ress-name="<?= htmlspecialchars(mb_strtolower($ress['nom_ress'], 'UTF-8')) ?>"
-                data-ress-desc="<?= htmlspecialchars(mb_strtolower($ress['desc_ress'], 'UTF-8')) ?>"
-                data-ress-type="<?= htmlspecialchars(mb_strtolower($ress['categorie_detectee'], 'UTF-8')) ?>"
                 aria-selected="<?= $isSelected ? 'true' : 'false' ?>"
               >
                 <span class="resource-badge <?= htmlspecialchars($ress['categorie_classe']) ?>">
@@ -115,7 +117,7 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
                 </span>
                 <strong class="resource-pill-title"><?= htmlspecialchars($ress['nom_ress']) ?></strong>
                 <small class="resource-pill-desc"><?= htmlspecialchars($ress['desc_ress']) ?></small>
-              </button>
+              </a>
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
@@ -125,28 +127,36 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
         <div class="calendar-toolbar">
           <div class="selected-resource-summary">
             <span>Ressource affichée :</span>
-            <strong id="activeResourceName">
+            <strong>
               <?= $selectedRessource ? htmlspecialchars($selectedRessource['nom_ress']) : 'Aucune ressource sélectionnée' ?>
             </strong>
             <?php if ($selectedRessource): ?>
-              <small id="activeResourceDesc"><?= htmlspecialchars($selectedRessource['desc_ress']) ?></small>
+              <small><?= htmlspecialchars($selectedRessource['desc_ress']) ?></small>
             <?php endif; ?>
           </div>
 
-          <div class="week-jump-controls">
-            <a
-              class="btn-week-jump"
-              href="planning.php?week_start=<?= urlencode($todayWeekStart) ?>&amp;ress_id=<?= (int) $selectedRessourceId ?>&amp;q=<?= urlencode($searchQuery) ?>"
-            >Aujourd'hui</a>
+          <form method="GET" action="planning.php" class="week-jump-controls">
+            <?php if ($selectedRessourceId > 0): ?>
+              <input type="hidden" name="ress_id" value="<?= (int) $selectedRessourceId ?>" />
+            <?php endif; ?>
+            <?php if ($searchQuery !== ''): ?>
+              <input type="hidden" name="q" value="<?= htmlspecialchars($searchQuery) ?>" />
+            <?php endif; ?>
+
+            <a class="btn-week-jump" href="<?= htmlspecialchars($todayUrl) ?>">Aujourd'hui</a>
+
             <label class="date-jump-label" for="dateJumpInput">
               <span>Aller à une date :</span>
               <input
                 type="date"
                 id="dateJumpInput"
-                value="<?= htmlspecialchars($activeMondayStr) ?>"
+                name="week_start"
+                value="<?= htmlspecialchars($activeMonday) ?>"
               />
             </label>
-          </div>
+
+            <button type="submit" class="btn-week-jump">Aller</button>
+          </form>
         </div>
 
         <div class="calendar-scroll">
@@ -198,35 +208,37 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
         </div>
 
         <div class="week-picker">
-          <button
-            type="button"
+          <a
+            href="<?= htmlspecialchars($prevWeekUrl) ?>"
             class="week-arrow fa"
-            id="prevWeekBtn"
-            data-target-week="<?= htmlspecialchars($prevWeekStart) ?>"
             aria-label="Semaine précédente"
-          >&#xf053;</button>
+          >&#xf053;</a>
 
           <div class="week-list">
             <?php foreach ($weeks as $week): ?>
-              <?php $isActive = ($week['start_date'] === $activeMondayStr); ?>
-              <button
-                type="button"
+              <?php
+                $isActive = ($week['start_date'] === $activeMonday);
+                $weekUrl = build_planning_url([
+                    'week_start' => $week['start_date'],
+                    'ress_id'    => $selectedRessourceId > 0 ? $selectedRessourceId : null,
+                    'q'          => $searchQuery !== '' ? $searchQuery : null,
+                ]);
+              ?>
+              <a
+                href="<?= htmlspecialchars($weekUrl) ?>"
                 class="week-item <?= $isActive ? 'active' : '' ?>"
-                data-week-start="<?= htmlspecialchars($week['start_date']) ?>"
               >
                 <span><?= htmlspecialchars($week['code']) ?> —</span>
                 <b><?= htmlspecialchars($week['label']) ?></b>
-              </button>
+              </a>
             <?php endforeach; ?>
           </div>
 
-          <button
-            type="button"
+          <a
+            href="<?= htmlspecialchars($nextWeekUrl) ?>"
             class="week-arrow fa"
-            id="nextWeekBtn"
-            data-target-week="<?= htmlspecialchars($nextWeekStart) ?>"
             aria-label="Semaine suivante"
-          >&#xf054;</button>
+          >&#xf054;</a>
         </div>
       </section>
     </main>
@@ -237,89 +249,6 @@ $activeMondayStr = $currentMonday->format('Y-m-d');
       <span>• Gestionnaire - Planning</span>
     </footer>
   </div>
-
-  <script>
-    (function () {
-      const searchInput = document.getElementById('resourceSearchInput');
-      const pills = Array.from(document.querySelectorAll('.resource-pill'));
-      const countLabel = document.getElementById('resourceCountLabel');
-      const selectedRessInput = document.getElementById('selectedRessId');
-      const weekStartInput = document.getElementById('weekStartInput');
-      const dateJumpInput = document.getElementById('dateJumpInput');
-      const form = document.getElementById('resourceSearchForm');
-
-      function normalizeText(str) {
-        return (str || '')
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .trim();
-      }
-
-      function filterPillsLive() {
-        if (!searchInput || pills.length === 0) return;
-        const terms = normalizeText(searchInput.value).split(/\s+/).filter(Boolean);
-        let visibleCount = 0;
-
-        pills.forEach((pill) => {
-          const hay = normalizeText(
-            (pill.dataset.ressName || '') + ' ' +
-            (pill.dataset.ressDesc || '') + ' ' +
-            (pill.dataset.ressType || '')
-          );
-          const match = terms.every((term) => hay.includes(term));
-          pill.style.display = match ? '' : 'none';
-          if (match) visibleCount++;
-        });
-
-        if (countLabel) {
-          countLabel.textContent = visibleCount + ' ressource(s) trouvée(s)';
-        }
-      }
-
-      function goToWeek(weekStartDate) {
-        if (!weekStartDate || !weekStartInput || !form) return;
-        weekStartInput.value = weekStartDate;
-        form.submit();
-      }
-
-      if (searchInput) {
-        searchInput.addEventListener('input', filterPillsLive);
-        filterPillsLive();
-      }
-
-      pills.forEach((pill) => {
-        pill.addEventListener('click', () => {
-          const ressId = pill.dataset.ressId;
-          if (selectedRessInput && form && ressId) {
-            selectedRessInput.value = ressId;
-            form.submit();
-          }
-        });
-      });
-
-      document.querySelectorAll('.week-item').forEach((btn) => {
-        btn.addEventListener('click', () => goToWeek(btn.dataset.weekStart));
-      });
-
-      const prevBtn = document.getElementById('prevWeekBtn');
-      const nextBtn = document.getElementById('nextWeekBtn');
-      if (prevBtn) {
-        prevBtn.addEventListener('click', () => goToWeek(prevBtn.dataset.targetWeek));
-      }
-      if (nextBtn) {
-        nextBtn.addEventListener('click', () => goToWeek(nextBtn.dataset.targetWeek));
-      }
-
-      if (dateJumpInput) {
-        dateJumpInput.addEventListener('change', () => {
-          if (dateJumpInput.value) {
-            goToWeek(dateJumpInput.value);
-          }
-        });
-      }
-    })();
-  </script>
 </body>
 
 </html>

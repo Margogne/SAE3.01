@@ -701,15 +701,15 @@ function get_projects_for_listing(int $userId): array
     foreach ($rows as $row) {
         $pid = (int) $row['id_proj'];
         $projects[] = [
-            'id'          => $pid,
-            'title'       => (string) ($row['nom_proj'] ?? ''),
+            'id' => $pid,
+            'title' => (string) ($row['nom_proj'] ?? ''),
             'description' => (string) ($row['desc_proj'] ?? ''),
-            'datedeb'     => (string) ($row['datedeb_proj'] ?? ''),
-            'datefin'     => (string) ($row['datefin_proj'] ?? ''),
-            'lab'         => (string) ($row['nom_lab'] ?? ''),
-            'city'        => (string) ($row['ville_lab'] ?? ''),
-            'owner'       => $ownersByProject[$pid] ?? '',
-            'mine'        => !empty($row['is_mine']),
+            'datedeb' => (string) ($row['datedeb_proj'] ?? ''),
+            'datefin' => (string) ($row['datefin_proj'] ?? ''),
+            'lab' => (string) ($row['nom_lab'] ?? ''),
+            'city' => (string) ($row['ville_lab'] ?? ''),
+            'owner' => $ownersByProject[$pid] ?? '',
+            'mine' => !empty($row['is_mine']),
         ];
     }
 
@@ -730,7 +730,7 @@ function filter_projects_listing(array $projects, string $query, bool $mineOnly)
         );
 
         $matchesQuery = ($needle === '') || (mb_strpos($haystack, $needle) !== false);
-        $matchesMine  = (!$mineOnly) || !empty($project['mine']);
+        $matchesMine = (!$mineOnly) || !empty($project['mine']);
 
         return $matchesQuery && $matchesMine;
     }));
@@ -742,16 +742,16 @@ function init_gest_list_project_page(array $get, array $session): ?array
         return null;
     }
 
-    $userId     = (int) $session['user_id'];
-    $userNom    = (string) ($session['user_nom'] ?? '');
+    $userId = (int) $session['user_id'];
+    $userNom = (string) ($session['user_nom'] ?? '');
     $userPrenom = (string) ($session['user_prenom'] ?? '');
-    $userRole   = (string) ($session['user_role'] ?? '');
-    $initials   = compute_initials($userPrenom, $userNom);
+    $userRole = (string) ($session['user_role'] ?? '');
+    $initials = compute_initials($userPrenom, $userNom);
 
-    $query    = trim((string) ($get['search'] ?? ''));
+    $query = trim((string) ($get['search'] ?? ''));
     $mineOnly = isset($get['mine']) && (string) $get['mine'] === '1';
 
-    $dbError  = '';
+    $dbError = '';
     $projects = [];
 
     try {
