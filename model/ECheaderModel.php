@@ -42,33 +42,23 @@ trait_eq();
 
     <!-- onglets -->
     <nav class="main-navigation" aria-label="Navigation principale">
-        <a href="ECDashboard.php" style="color: inherit; text-decoration: none;"><button
-                class="nav-link <?= $dashboard ?>">Dashboard</button></a>
-        <a href="ECListProjet.php" style="color: inherit; text-decoration: none;"><button
-                class="nav-link <?= $projets ?>">Projets</button></a>
-        <a href="ECRessources.php" style="color: inherit; text-decoration: none;"><button
-                class="nav-link <?= $ressources ?>">Ressources</button></a>
-        <a href="ECMess.php" style="color: inherit; text-decoration: none;"><button
-                class="nav-link <?= $messagerie ?>">Messagerie</button></a>
-        <a href="Planning.php" style="color: inherit; text-decoration: none;"><button
-                class="nav-link <?= $planning ?>">Planning</button></a>
+        <a href="ECDashboard.php" style="color: inherit; text-decoration: none;"><button class="nav-link <?= $dashboard ?>">Dashboard</button></a>
+        <a href="ECListProjet.php" style="color: inherit; text-decoration: none;"><button class="nav-link <?= $projets ?>">Projets</button></a>
+        <a href="ECRessources.php" style="color: inherit; text-decoration: none;"><button class="nav-link <?= $ressources ?>">Ressources</button></a>
+        <a href="ECMess.php" style="color: inherit; text-decoration: none;"><button class="nav-link <?= $messagerie ?>">Messagerie</button></a>
+        <a href="Planning.php" style="color: inherit; text-decoration: none;"><button class="nav-link <?= $planning ?>">Planning</button></a>
     </nav>
 
     <div class="header-actions">
         <!-- langue -->
-        <div class="menu-anchor language-anchor">
-            <button type="button" class="language-trigger" aria-haspopup="menu">
+        <div class="menu-anchor">
+            <button type="button" class="language-trigger" aria-haspopup="menu" type="button" id="btn-translate-toggle" onclick="toggleLanguage()">
                 <img src="../assets/img/Globe.svg" alt="" />
-                <span>FR</span>
-                <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
+                <span>Langue</span>
             </button>
-            <div class="dropdown language-menu" role="menu" style="display: none;">
-                <a href="?lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                        class="fa">&#xf00c;</span></a>
-                <a href="?lang=EN" class="dropdown-item" role="menuitem">EN</a>
-                <a href="?lang=ES" class="dropdown-item" role="menuitem">ES</a>
-            </div>
         </div>
+
+        <div id="google_translate_element" style="display:none;"></div>
 
         <!-- notifications -->
         <div class="menu-anchor">
@@ -105,10 +95,52 @@ trait_eq();
                         <small><?= htmlspecialchars($userRole) ?></small>
                     </span>
                 </div>
-                <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                        class="fa">&#xf2f5;</span>Se déconnecter</a>
+                <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span class="fa">&#xf2f5;</span>Se déconnecter</a>
             </div>
         </div>
 
     </div>
+
+    <script>
+        if (!window.__googleTranslateSetupDone) {
+            window.__googleTranslateSetupDone = true;
+            window.currentTranslateLang = 'fr';
+
+            window.googleTranslateElementInit = function() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'fr',
+                    includedLanguages: 'fr,en,es,de',
+                    autoDisplay: false
+                }, 'google_translate_element');
+            };
+
+            window.setLanguage = function(lang) {
+                window.currentTranslateLang = lang;
+                const btn = document.getElementById('btn-translate-toggle');
+                if (btn) {
+                    btn.textContent = (lang === 'fr') ? 'EN' : 'FR';
+                }
+
+                const select = document.querySelector('#google_translate_element select.goog-te-combo');
+                if (select) {
+                    select.value = lang;
+                    select.dispatchEvent(new Event('change'));
+                    return;
+                }
+
+                const cookieValue = (lang === 'fr') ? '' : `/fr/${lang}`;
+                document.cookie = `googtrans=${cookieValue}; path=/`;
+                window.location.reload();
+            };
+
+            window.toggleLanguage = function() {
+                const nextLang = (window.currentTranslateLang === 'fr') ? 'en' : 'fr';
+                window.setLanguage(nextLang);
+            };
+
+            const gtScript = document.createElement('script');
+            gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            document.body.appendChild(gtScript);
+        }
+    </script>
 </header>

@@ -16,77 +16,11 @@ include "../controller/ECController.php";
 
 <body>
   <div class="app-shell">
-    <header class="site-header">
 
-      <button class="brand" aria-label="Retour au tableau de bord">
-        <a href="ECDashboard.php"><img src="../assets/img/logoLemansBlancSurBleu.svg" alt="Le Mans Université" /></a>
-      </button>
+    <?php
+    $_POST['trait'] = '2';
+    require_once '../model/ECheaderModel.php'; ?>
 
-      <nav class="main-navigation" aria-label="Navigation principale">
-        <a href="ECDashboard.php"><button class="nav-link">Dashboard</button></a>
-        <a href="ECListProjet.php"><button class="nav-link active">Projets</button></a>
-        <a href="ECRessources.php"><button class="nav-link">Ressources</button></a>
-        <a href="ECMess.php"><button class="nav-link">Messagerie</button></a>
-      </nav>
-
-      <div class="header-actions">
-        <!-- langue -->
-        <div class="menu-anchor language-anchor">
-          <button type="button" class="language-trigger" aria-haspopup="menu">
-            <img src="../assets/img/Globe.svg" alt="" />
-            <span>FR</span>
-            <img class="small-chevron" src="../assets/img/Vector.svg" alt="" />
-          </button>
-          <div class="dropdown language-menu" role="menu" style="display: none;">
-            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=FR" class="dropdown-item selected" role="menuitem">FR <span
-                class="fa">&#xf00c;</span></a>
-            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=EN" class="dropdown-item" role="menuitem">EN</a>
-            <a href="?id_proj=<?= $_GET['id_proj'] ?>&lang=ES" class="dropdown-item" role="menuitem">ES</a>
-          </div>
-        </div>
-
-        <!-- notifications -->
-        <div class="menu-anchor">
-          <button type="button" class="icon-trigger" aria-label="Notifications" aria-haspopup="dialog">
-            <img src="../assets/img/bell.svg" alt="" />
-          </button>
-          <div class="dropdown notification-menu" role="dialog" aria-label="Notifications" style="display: none;">
-            <h2>Notifications</h2>
-            <div class="empty-notifications">
-              <span class="notification-illustration">
-                <span class="fa" style="font-size: 24px; color: #9ba8bd;">&#xf0a2;</span>
-              </span>
-              <strong>Aucune notification</strong>
-              <p>Vous êtes à jour. Les nouvelles activités apparaîtront ici.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="menu-anchor profile-anchor">
-          <button type="button" class="profile-button" aria-haspopup="menu">
-            <span class="avatar"><?= htmlspecialchars($initials) ?></span>
-            <span class="profile-copy">
-              <strong><?= htmlspecialchars($userNom . '.' . $userPrenom) ?></strong>
-              <small><?= htmlspecialchars($userRole) ?></small>
-            </span>
-            <img class="profile-chevron" src="../assets/img/Vector.svg" alt="" />
-          </button>
-          <div class="dropdown profile-menu" role="menu" style="display: none;">
-            <div class="profile-menu-heading">
-              <span class="avatar dark"><?= htmlspecialchars($initials) ?></span>
-              <span>
-                <strong><?= htmlspecialchars($userNom . ' ' . $userPrenom) ?></strong>
-                <small><?= htmlspecialchars($userRole) ?></small>
-              </span>
-            </div>
-            <a href="../controller.php?action=logout" class="dropdown-item danger" role="menuitem"><span
-                class="fa">&#xf2f5;</span>Se déconnecter</a>
-          </div>
-        </div>
-
-      </div>
-    </header>
-    
     <section class="page-heading">
       <div class="page-heading-inner">
         <a href="ECDashboard.php" class="back-link">
@@ -128,10 +62,10 @@ include "../controller/ECController.php";
                 $getParams = array_change_key_case($_GET, CASE_LOWER);
                 $idProjSelectionne = (int) ($getParams['id_proj'] ?? 0);
 
-                foreach (get_projets_from_util($_SESSION['user_id']) as $projet):
+                foreach (get_projets_from_util($_SESSION['user_id']) as $projet) :
                   $idProj = (int) $projet['id_proj'];
                   $selected = ($idProjSelectionne > 0 && $idProj === $idProjSelectionne) ? 'selected' : '';
-                  ?>
+                ?>
                   <option value="<?= $idProj ?>" <?= $selected ?>>
                     <?= htmlspecialchars($projet['nom_proj'] ?? '') ?>
                   </option>
@@ -146,14 +80,12 @@ include "../controller/ECController.php";
 
             <label class="field">
               <span>Titre de l’expérimenation *</span>
-              <input name="titre_exp" required type="text"
-                placeholder="Ex: Étude ergonomique des casques VR en environnement pédagogique" />
+              <input name="titre_exp" required type="text" placeholder="Ex: Étude ergonomique des casques VR en environnement pédagogique" />
             </label>
 
             <label class="field">
               <span>Description courte (résumé pour les catalogues/listes) *</span>
-              <input name="desc_exp" required type="text"
-                placeholder="Résumé en 1 ou 2 phrases pour l'affichage synthétique dans l'application..." />
+              <input name="desc_exp" required type="text" placeholder="Résumé en 1 ou 2 phrases pour l'affichage synthétique dans l'application..." />
             </label>
 
             <div class="date-row">
